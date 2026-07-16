@@ -29,7 +29,57 @@
   --sidebar-w: 230px;
   --header-h: 0px;
   --accent: #63b3ed;
+  --shadow: rgba(0,0,0,0.35);
 }
+
+/* ====== LIGHT THEME ====== */
+html.light {
+  --bg: #f0f4f8;
+  --bg2: #ffffff;
+  --bg3: #e8edf3;
+  --bg4: #dde4ed;
+  --border: rgba(49,130,206,0.14);
+  --border2: rgba(49,130,206,0.28);
+  --cyan: #2b6cb0;
+  --cyan2: #2c7a7b;
+  --amber: #c05621;
+  --green: #276749;
+  --red: #c53030;
+  --purple: #553c9a;
+  --text: #1a202c;
+  --text2: #4a5568;
+  --text3: #718096;
+  --shadow: rgba(0,0,0,0.12);
+}
+html.light .stat-card:hover { box-shadow: 0 8px 28px var(--shadow); }
+html.light .panel:hover { box-shadow: 0 4px 24px var(--shadow); }
+html.light .map-card:hover { box-shadow: 0 12px 32px var(--shadow), 0 0 0 1px rgba(49,130,206,0.22); }
+html.light #leaflet-map { filter: brightness(1.02) saturate(0.9); }
+html.light .scale-tab.active { color: #fff; }
+html.light .sidebar { box-shadow: 2px 0 16px var(--shadow); }
+html.light body { background: var(--bg); }
+html.light .lightbox { background: rgba(255,255,255,0.92); }
+html.light .lightbox img { border-color: var(--border2); box-shadow: 0 20px 60px rgba(0,0,0,0.18); }
+html.light .lb-close { background: var(--bg2); color: var(--text2); }
+html.light .lb-caption { background: rgba(240,244,248,0.9); color: var(--text2); }
+
+/* ====== THEME TOGGLE BUTTON ====== */
+.theme-toggle {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 20px; cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2); font-size: 11px; font-weight: 600;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.2s, box-shadow 0.25s;
+  white-space: nowrap; user-select: none;
+}
+.theme-toggle:hover {
+  background: var(--bg4); border-color: var(--cyan);
+  color: var(--cyan); transform: translateY(-1px);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+.theme-toggle .tt-icon { font-size: 14px; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+.theme-toggle:hover .tt-icon { transform: rotate(20deg) scale(1.1); }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -99,35 +149,47 @@ body {
   padding: 9px 20px; cursor: pointer;
   font-size: 13px; font-weight: 500; color: var(--text2);
   border-left: 2px solid transparent; position: relative;
-  transition: color 0.22s ease, background 0.22s ease;
+  transition: color 0.22s ease, background 0.25s ease, transform 0.2s ease;
   overflow: hidden;
 }
-/* ripple on click */
+/* sliding background fill */
 .nav-item::after {
   content: ''; position: absolute; inset: 0;
-  background: rgba(99,179,237,0.08);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.3s ease;
+  background: linear-gradient(90deg, rgba(99,179,237,0.1) 0%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
 }
-.nav-item:hover::after { transform: scaleX(1); }
+.nav-item:hover::after { transform: translateX(0); }
 .nav-item:hover { color: var(--text); }
+/* left border glow on hover */
+.nav-item::before {
+  content:''; position:absolute; left:0; top:20%; bottom:20%; width:2px;
+  background: var(--cyan); border-radius:0 2px 2px 0;
+  opacity:0; transform: scaleY(0.3);
+  transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+}
+.nav-item:hover::before { opacity:0.5; transform: scaleY(1); }
 .nav-item.active {
   background: linear-gradient(90deg, rgba(99,179,237,0.13) 0%, rgba(99,179,237,0.03) 100%);
   color: var(--cyan);
 }
 .nav-item svg {
   flex-shrink: 0; opacity: 0.6;
-  transition: opacity 0.22s ease, transform 0.22s ease, color 0.22s ease;
+  transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1), color 0.22s ease;
 }
-.nav-item:hover svg { opacity: 0.9; transform: translateX(2px); }
+.nav-item:hover svg { opacity: 1; transform: translateX(3px) scale(1.1); color: var(--cyan); }
 .nav-item.active svg { opacity: 1; color: var(--cyan); transform: translateX(2px); }
-.nav-item .nav-label { transition: letter-spacing 0.22s ease; }
+.nav-item .nav-label { transition: letter-spacing 0.22s ease, transform 0.22s ease; }
+.nav-item:hover .nav-label { transform: translateX(2px); }
 .nav-item.active .nav-label { letter-spacing: 0.01em; }
 .nav-item .nav-badge {
   margin-left: auto; font-size: 9px; padding: 2px 6px; border-radius: 20px;
   background: rgba(99,179,237,0.15); color: var(--cyan); font-weight: 600;
-  transition: background 0.22s ease;
+  transition: background 0.22s ease, transform 0.22s ease;
 }
+.nav-item:hover .nav-badge { transform: scale(1.1); background: rgba(99,179,237,0.22); }
 .nav-item.active .nav-badge { background: rgba(99,179,237,0.28); }
 
 .sidebar-footer {
@@ -298,23 +360,39 @@ body {
 .map-card.span2 img { aspect-ratio: 16/7; }
 
 /* ====== SCALE TABS ====== */
-.scale-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.scale-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
 .scale-tab {
-  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 600;
   cursor: pointer; border: 1px solid var(--border); color: var(--text2);
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  position: relative; overflow: hidden;
+  transition: color 0.22s ease, border-color 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, background 0.22s ease;
+  position: relative; overflow: hidden; background: transparent;
 }
+/* sliding shine on hover */
+.scale-tab::before {
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(99,179,237,0.18), transparent);
+  transition: left 0.4s ease;
+  pointer-events: none;
+}
+.scale-tab:hover::before { left: 150%; }
+/* glow fill on hover */
 .scale-tab::after {
   content:''; position:absolute; inset:0; border-radius:20px;
-  background:var(--cyan); opacity:0;
-  transform: scale(0.6); transition: opacity 0.22s ease, transform 0.22s ease;
+  background: rgba(99,179,237,0.08);
+  opacity:0; transition: opacity 0.2s ease;
+  pointer-events: none;
 }
-.scale-tab:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.scale-tab:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px) scale(1.04); box-shadow: 0 4px 16px rgba(99,179,237,0.2); }
+.scale-tab:hover::after { opacity: 1; }
+.scale-tab:active { transform: translateY(0) scale(0.97); }
 .scale-tab.active {
-  background: var(--cyan); color: #0d1117; border-color: var(--cyan);
-  box-shadow: 0 0 16px rgba(99,179,237,0.35);
+  background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+  color: #0d1117; border-color: transparent;
+  box-shadow: 0 0 20px rgba(99,179,237,0.4), 0 4px 12px rgba(99,179,237,0.25);
+  transform: translateY(-1px);
 }
+html.light .scale-tab:hover { box-shadow: 0 4px 16px rgba(43,108,178,0.2); }
+html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
 
 /* ====== ENV METRICS ====== */
 .env-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
@@ -377,45 +455,8 @@ body {
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ====== MAP INFO OVERLAY ====== */
+/* ====== MAP CARD BASE ====== */
 .map-card { position: relative; }
-.map-info-overlay {
-  position: absolute; inset: 0;
-  background: rgba(13,17,23,0.93);
-  border-radius: 10px 10px 0 0;
-  padding: 16px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.28s ease;
-  overflow-y: auto;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.map-card.info-open .map-info-overlay { opacity: 1; pointer-events: all; }
-.map-card.info-open img { filter: brightness(0.3); }
-.mio-tag { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); font-weight: 700; }
-.mio-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
-.mio-divider { height: 1px; background: var(--border); margin: 2px 0; }
-.mio-row { display: flex; justify-content: space-between; align-items: center; }
-.mio-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
-.mio-val { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--amber); }
-.mio-finding { font-size: 11px; color: var(--text2); line-height: 1.55; }
-.mio-finding strong { color: var(--cyan); }
-.mio-btn {
-  margin-top: 4px; display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px; border-radius: 20px; font-size: 10px; font-weight: 600;
-  background: rgba(99,179,237,0.15); border: 1px solid rgba(99,179,237,0.3);
-  color: var(--cyan); cursor: pointer; transition: background 0.2s;
-}
-.mio-btn:hover { background: rgba(99,179,237,0.28); }
-.map-card-toggle {
-  position: absolute; top: 8px; right: 8px; z-index: 5;
-  background: rgba(13,17,23,0.78); border: 1px solid var(--border2);
-  border-radius: 20px; padding: 4px 10px; font-size: 10px; font-weight: 600;
-  color: var(--cyan); cursor: pointer; display: flex; align-items: center; gap: 4px;
-  backdrop-filter: blur(4px); transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-}
-.map-card-toggle:hover { background: rgba(99,179,237,0.2); }
-.map-card.info-open .map-card-toggle { background: rgba(99,179,237,0.2); color: var(--amber); }
 
 /* ====== DOWNLOAD CARDS ====== */
 .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
@@ -579,6 +620,10 @@ body {
       <div class="topbar-sub" id="page-sub">Galle Road Corridor · 11 GN Divisions</div>
     </div>
     <div class="topbar-right">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme">
+        <span class="tt-icon" id="tt-icon">🌙</span>
+        <span id="tt-label">Dark</span>
+      </button>
       <div class="time-chip"><span id="liveclock">--:--:--</span> · Colombo LKT</div>
     </div>
   </div>
@@ -688,18 +733,6 @@ body {
       </div>
       <div class="map-viewer-grid mb20">
         <div class="map-card" data-src="images/fsi.png" data-title="Floor Space Index (FSI)">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Space Matrix · FSI</div>
-            <div class="mio-title">Floor Space Index</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Peak FSI (Galle Rd)</span><span class="mio-val">2.1</span></div>
-            <div class="mio-row"><span class="mio-label">Mean FSI (study area)</span><span class="mio-val">1.8</span></div>
-            <div class="mio-row"><span class="mio-label">Low FSI zone</span><span class="mio-val">&lt; 1.3</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Key finding:</strong> High FSI along Galle Road forms a vertical concrete wall blocking cooling sea breezes. Isolated high-density pockets act as <strong>thermal chimneys</strong>.</div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/fsi.png" alt="FSI" loading="lazy">
           <div class="map-card-info">
             <div class="map-card-tag">Space Matrix</div>
@@ -708,18 +741,6 @@ body {
           </div>
         </div>
         <div class="map-card" data-src="images/gsi.png" data-title="Ground Space Index (GSI)">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Space Matrix · GSI</div>
-            <div class="mio-title">Ground Space Index</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Core GSI average</span><span class="mio-val">0.72</span></div>
-            <div class="mio-row"><span class="mio-label">Coastal strip GSI</span><span class="mio-val">0.55</span></div>
-            <div class="mio-row"><span class="mio-label">Residential avg</span><span class="mio-val">0.48</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Key finding:</strong> Buildings cover ~72% of ground plane in the core — leaving minimal permeable surface. High GSI concentrated along <strong>Galle Road thermal axis</strong>.</div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/gsi.png" alt="GSI" loading="lazy">
           <div class="map-card-info">
             <div class="map-card-tag">Space Matrix</div>
@@ -728,18 +749,6 @@ body {
           </div>
         </div>
         <div class="map-card" data-src="images/osr.png" data-title="Open Space Ratio (OSR)">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Space Matrix · OSR</div>
-            <div class="mio-title">Open Space Ratio</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Commercial core OSR</span><span class="mio-val">0.05</span></div>
-            <div class="mio-row"><span class="mio-label">Coastal zone OSR</span><span class="mio-val">0.28</span></div>
-            <div class="mio-row"><span class="mio-label">SE wetland OSR</span><span class="mio-val">0.65</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Key finding:</strong> Critically low OSR in the commercial core — nearly zero open space per unit of development. <strong>Southeastern wetland</strong> is the only major cooling zone.</div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/osr.png" alt="OSR" loading="lazy">
           <div class="map-card-info">
             <div class="map-card-tag">Space Matrix</div>
@@ -762,18 +771,6 @@ body {
       </div>
       <div class="two-col mb20">
         <div class="map-card" data-src="images/umi.png" data-title="Urban Maturation Index" style="cursor:pointer;">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Composite Index · UMI</div>
-            <div class="mio-title">Urban Maturation Index</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Core UMI score</span><span class="mio-val">0.78</span></div>
-            <div class="mio-row"><span class="mio-label">Residential edge</span><span class="mio-val">0.41</span></div>
-            <div class="mio-row"><span class="mio-label">Components</span><span class="mio-val" style="font-size:10px;">5 equal</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Formula:</strong> UMI = (Centrality + FSI + GSI + OSR_inv + Entropy) / 5 — all min-max normalised. <strong>High UMI = more concrete, less green = hotter.</strong></div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/umi.png" alt="UMI" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
           <div class="map-card-info">
             <div class="map-card-tag">Composite Index</div>
@@ -782,18 +779,6 @@ body {
           </div>
         </div>
         <div class="map-card" data-src="images/entropy.png" data-title="Land Use Entropy" style="cursor:pointer;">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Land Use Mix · Entropy</div>
-            <div class="mio-title">Shannon Entropy Index</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Near station entropy</span><span class="mio-val">0.72</span></div>
-            <div class="mio-row"><span class="mio-label">Residential zones</span><span class="mio-val">Low</span></div>
-            <div class="mio-row"><span class="mio-label">Galle Rd corridors</span><span class="mio-val">High</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Key finding:</strong> High entropy near the station reflects genuine mixed use — the area's strongest planning asset. Low entropy residential areas <strong>trap and re-emit heat</strong> over large zones.</div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/entropy.png" alt="Entropy" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
           <div class="map-card-info">
             <div class="map-card-tag">Land Use Mix</div>
@@ -816,19 +801,6 @@ body {
       </div>
       <div class="two-col mb20">
         <div class="map-card" data-src="images/heatmap.jpg" data-title="Urban Heat Map" style="cursor:pointer;">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Thermal · Surface Temp</div>
-            <div class="mio-title">Urban Heat Map</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Peak surface temp</span><span class="mio-val" style="color:var(--red);">47°C</span></div>
-            <div class="mio-row"><span class="mio-label">Mean surface temp</span><span class="mio-val" style="color:var(--amber);">39°C</span></div>
-            <div class="mio-row"><span class="mio-label">Coastal cool zone</span><span class="mio-val" style="color:var(--green);">~32°C</span></div>
-            <div class="mio-row"><span class="mio-label">Data source</span><span class="mio-val" style="font-size:10px;">Landsat 8</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>Key finding:</strong> Hottest zones directly overlie Galle Road pavement corridor. <strong>62% of the study area</strong> classified as high heat stress. Sea breeze corridor partially cooled by ocean proximity.</div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/heatmap.jpg" alt="Heat Map" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
           <div class="map-card-info">
             <div class="map-card-tag">Thermal</div>
@@ -837,19 +809,6 @@ body {
           </div>
         </div>
         <div class="map-card" data-src="images/utci.png" data-title="UTCI Analysis" style="cursor:pointer;">
-          <span class="map-card-toggle" onclick="toggleMapInfo(this,event)">📊 Data</span>
-          <div class="map-info-overlay">
-            <div class="mio-tag">Thermal Comfort · UTCI</div>
-            <div class="mio-title">UTCI Analysis Map</div>
-            <div class="mio-divider"></div>
-            <div class="mio-row"><span class="mio-label">Mean UTCI</span><span class="mio-val" style="color:var(--red);">39°C</span></div>
-            <div class="mio-row"><span class="mio-label">Extreme stress (&gt;46°C)</span><span class="mio-val" style="color:var(--red);">18%</span></div>
-            <div class="mio-row"><span class="mio-label">Very strong stress</span><span class="mio-val" style="color:var(--amber);">44%</span></div>
-            <div class="mio-row"><span class="mio-label">Moderate / No stress</span><span class="mio-val" style="color:var(--green);">38%</span></div>
-            <div class="mio-divider"></div>
-            <div class="mio-finding"><strong>UTCI scale:</strong> &lt;9°C No stress · 9–26 Moderate · 26–32 Strong · 32–38 Very Strong · &gt;38 Extreme. <strong>Junction core midday = Extreme stress zone.</strong></div>
-            <span class="mio-btn" onclick="toggleMapInfo(this,event)">✕ Close</span>
-          </div>
           <img src="images/utci.png" alt="UTCI" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
           <div class="map-card-info">
             <div class="map-card-tag">Thermal Comfort</div>
@@ -1156,6 +1115,34 @@ body {
 </div>
 
 <script>
+/* ======== THEME TOGGLE ======== */
+(function(){
+  const html = document.documentElement;
+  const btn  = document.getElementById('theme-toggle');
+  const icon = document.getElementById('tt-icon');
+  const lbl  = document.getElementById('tt-label');
+  let isDark = true;
+
+  // Persist preference
+  if(localStorage.getItem('theme')==='light'){ isDark=false; html.classList.add('light'); icon.textContent='☀️'; lbl.textContent='Light'; }
+
+  btn.addEventListener('click',()=>{
+    isDark = !isDark;
+    if(isDark){
+      html.classList.remove('light');
+      icon.textContent='🌙'; lbl.textContent='Dark';
+      localStorage.setItem('theme','dark');
+    } else {
+      html.classList.add('light');
+      icon.textContent='☀️'; lbl.textContent='Light';
+      localStorage.setItem('theme','light');
+    }
+    // bounce animation on click
+    btn.style.transform='scale(0.92)';
+    setTimeout(()=>btn.style.transform='',180);
+  });
+})();
+
 /* ======== CLOCK ======== */
 function updateClock(){
   const now = new Date();
@@ -1662,7 +1649,7 @@ function openLightbox(src,title){
 }
 function closeLightbox(){lb.classList.remove('open'); lbImg.src='';}
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox(); document.querySelectorAll('.map-card.info-open').forEach(c=>c.classList.remove('info-open'));}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeLightbox();});
 
 /* ======== IMAGE ERROR FALLBACK ======== */
 document.addEventListener('error',e=>{
@@ -1686,28 +1673,17 @@ document.querySelectorAll('.nav-item').forEach(item=>{
   item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
 });
 
-/* ======== MAP INFO OVERLAY TOGGLE ======== */
-function toggleMapInfo(el, e){
-  e.stopPropagation();
-  const card = el.closest('.map-card');
-  const isOpen = card.classList.contains('info-open');
-  // close all others
-  document.querySelectorAll('.map-card.info-open').forEach(c=>c.classList.remove('info-open'));
-  if(!isOpen) card.classList.add('info-open');
-}
-// Prevent lightbox from opening when info overlay is open
+/* ======== LIGHTBOX CLICK ======== */
 document.addEventListener('click',e=>{
   if(e.target===lb||e.target.id==='lb-close'){closeLightbox();return;}
   let el=e.target;
   while(el&&el!==document.body){
-    if(el.classList&&el.classList.contains('map-info-overlay')) return;
-    if(el.classList&&el.classList.contains('map-card-toggle')) return;
-    if(el.classList&&el.classList.contains('map-card')&&el.dataset.src&&!el.classList.contains('info-open')){
+    if(el.classList&&el.classList.contains('map-card')&&el.dataset.src){
       openLightbox(el.dataset.src,el.dataset.title); return;
     }
     el=el.parentElement;
   }
-},true);
+});
 
 /* ======== POPULATION DONUT CHART ======== */
 const popColors=['#63b3ed','#4fd1c5','#f6ad55','#fc8181','#b794f4','#68d391','#e2e8f0','#f687b3','#76e4f7','#fbd38d','#9ae6b4'];
