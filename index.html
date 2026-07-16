@@ -170,30 +170,32 @@ body {
 
 /* Content wrapper */
 .content {
-  flex: 1; position: relative; overflow: hidden;
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
 }
 
-/* Pages — slide+fade transitions */
-.page-wrap { position: relative; flex: 1; overflow: hidden; }
+/* Pages — fade+slide transitions */
+.page-wrap { flex: 1; overflow-y: auto; position: relative; }
+.page-wrap::-webkit-scrollbar { width: 5px; }
+.page-wrap::-webkit-scrollbar-track { background: transparent; }
+.page-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 .page {
-  position: absolute; inset: 0;
+  display: none;
   padding: 24px 28px 40px;
-  overflow-y: auto;
-  opacity: 0;
-  transform: translateX(18px);
-  pointer-events: none;
-  transition: opacity 0.32s cubic-bezier(0.4,0,0.2,1),
-              transform 0.32s cubic-bezier(0.4,0,0.2,1);
-  will-change: opacity, transform;
+  animation: pageIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
 }
-.page::-webkit-scrollbar { width: 5px; }
-.page::-webkit-scrollbar-track { background: transparent; }
-.page::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-.page.active {
-  opacity: 1; transform: translateX(0); pointer-events: all;
-}
+.page.active { display: block; }
 .page.exit {
-  opacity: 0; transform: translateX(-14px); pointer-events: none;
+  display: block;
+  animation: pageOut 0.22s cubic-bezier(0.4,0,0.2,1) both;
+  pointer-events: none;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-12px); }
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
 
@@ -366,10 +368,10 @@ body {
 .aqi-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 
 /* ====== SYNTHESIS NETWORK ====== */
-#synthesis-canvas { width: 100%; height: 340px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); display: block; }
-.synth-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
-.synth-leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
-.synth-leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+.synth-legend { display: flex; gap: 10px; flex-wrap: wrap; }
+.synth-leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); cursor:pointer; padding:3px 8px; border-radius:20px; border:1px solid transparent; transition:all 0.18s; }
+.synth-leg-item:hover,.synth-leg-item.active { border-color:var(--border2); color:var(--text); background:var(--bg3); }
+.synth-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink:0; }
 
 /* ====== SCROLLBAR ====== */
 .sidebar::-webkit-scrollbar { width: 4px; }
@@ -679,17 +681,45 @@ body {
     <div class="page" id="page-synthesis">
       <div class="section-header mb16">
         <div class="section-title"><span class="dot" style="background:var(--purple)"></span> Synthesis — Key Findings Network</div>
-        <div class="section-sub">Relationships between urban form, mobility, environment and land use</div>
+        <div class="section-sub">Click any node to explore · Drag to reposition · Edges show causal relationships</div>
       </div>
-      <div class="panel mb20">
-        <div class="panel-title"><span class="accent">▸</span> Finding Relationships · Hover to explore</div>
-        <canvas id="synthesis-canvas"></canvas>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
         <div class="synth-legend">
-          <div class="synth-leg-item"><div class="synth-leg-dot" style="background:#f6ad55"></div> Morphology</div>
-          <div class="synth-leg-item"><div class="synth-leg-dot" style="background:#fc8181"></div> Thermal</div>
-          <div class="synth-leg-item"><div class="synth-leg-dot" style="background:#63b3ed"></div> Mobility</div>
-          <div class="synth-leg-item"><div class="synth-leg-dot" style="background:#68d391"></div> Land Use</div>
-          <div class="synth-leg-item"><div class="synth-leg-dot" style="background:#b794f4"></div> Density</div>
+          <div class="synth-leg-item synth-filter active" data-cat="all"><div class="synth-leg-dot" style="background:#566070"></div> All</div>
+          <div class="synth-leg-item synth-filter" data-cat="Morphology"><div class="synth-leg-dot" style="background:#f6ad55"></div> Morphology</div>
+          <div class="synth-leg-item synth-filter" data-cat="Thermal"><div class="synth-leg-dot" style="background:#fc8181"></div> Thermal</div>
+          <div class="synth-leg-item synth-filter" data-cat="Mobility"><div class="synth-leg-dot" style="background:#63b3ed"></div> Mobility</div>
+          <div class="synth-leg-item synth-filter" data-cat="Land Use"><div class="synth-leg-dot" style="background:#68d391"></div> Land Use</div>
+          <div class="synth-leg-item synth-filter" data-cat="Density"><div class="synth-leg-dot" style="background:#b794f4"></div> Density</div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">
+          <span style="color:#fc8181">—</span> Amplifies &nbsp;
+          <span style="color:#68d391">—</span> Mitigates &nbsp;
+          <span style="color:#566070">- -</span> Co-located
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">
+        <div class="panel" style="padding:0;overflow:hidden;position:relative;">
+          <canvas id="synthesis-canvas" style="width:100%;height:460px;display:block;cursor:grab;"></canvas>
+          <div id="synth-hint" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);background:rgba(13,17,23,0.75);padding:5px 14px;border-radius:20px;pointer-events:none;white-space:nowrap;">Click a node · Drag to reposition</div>
+        </div>
+        <div id="synth-detail" class="panel" style="min-height:460px;">
+          <div id="synth-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:420px;text-align:center;gap:12px;">
+            <div style="font-size:40px;opacity:0.15;">⧆</div>
+            <div style="font-size:13px;color:var(--text3);line-height:1.7;">Select a node<br>in the network<br>to see details</div>
+          </div>
+          <div id="synth-content" style="display:none;">
+            <div id="sd-tag" style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:6px;"></div>
+            <div id="sd-title" style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.2;"></div>
+            <div id="sd-cat" style="font-size:11px;color:var(--text3);margin-bottom:14px;"></div>
+            <div style="height:1px;background:var(--border);margin-bottom:14px;"></div>
+            <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:7px;">OBSERVATION</div>
+            <div id="sd-obs" style="font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:14px;"></div>
+            <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:7px;">IMPLICATION</div>
+            <div id="sd-imp" style="font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:14px;"></div>
+            <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:7px;">CONNECTED TO</div>
+            <div id="sd-links" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -771,20 +801,24 @@ function switchPage(page, item) {
   const prevPage = document.getElementById('page-' + currentPage);
   const nextPage = document.getElementById('page-' + page);
   const topbarLeft = document.querySelector('.topbar-left');
+  const pageWrap = document.querySelector('.page-wrap');
 
-  // Exit current page
+  // Scroll back to top
+  pageWrap.scrollTop = 0;
+
+  // Exit current page with animation, then hide
   if (prevPage) {
     prevPage.classList.remove('active');
     prevPage.classList.add('exit');
-    setTimeout(() => prevPage.classList.remove('exit'), 350);
+    setTimeout(() => prevPage.classList.remove('exit'), 230);
   }
 
-  // Enter next page (slight delay for overlap feel)
+  // Enter next page after brief delay
   setTimeout(() => {
     nextPage.classList.add('active');
-  }, 60);
+  }, 80);
 
-  // Animate topbar text out then in
+  // Topbar text swap animation
   topbarLeft.classList.add('topbar-animating');
   setTimeout(() => {
     const m = PAGE_META[page];
@@ -990,55 +1024,237 @@ new Chart(document.getElementById('popChart'),{
 function buildSynthesis(){
   const canvas=document.getElementById('synthesis-canvas');
   const ctx=canvas.getContext('2d');
-  canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight;
-  const W=canvas.width, H=canvas.height;
+  function resize(){
+    const rect=canvas.parentElement.getBoundingClientRect();
+    canvas.width=rect.width||700; canvas.height=460;
+  }
+  resize();
+  const W=()=>canvas.width, H=()=>canvas.height;
 
-  const nodes=[
-    {id:0,label:'High Betweenness',x:0.5,y:0.18,r:18,color:'#63b3ed',cat:'Mobility'},
-    {id:1,label:'Low OSR',x:0.22,y:0.38,r:14,color:'#b794f4',cat:'Density'},
-    {id:2,label:'High FSI',x:0.78,y:0.38,r:16,color:'#f6ad55',cat:'Morphology'},
-    {id:3,label:'UTCI Stress',x:0.15,y:0.65,r:15,color:'#fc8181',cat:'Thermal'},
-    {id:4,label:'High Entropy',x:0.5,y:0.55,r:13,color:'#68d391',cat:'Land Use'},
-    {id:5,label:'UMI Core',x:0.80,y:0.65,r:16,color:'#f6ad55',cat:'Morphology'},
-    {id:6,label:'TOD Potential',x:0.5,y:0.82,r:14,color:'#68d391',cat:'Land Use'},
-    {id:7,label:'Congestion',x:0.28,y:0.78,r:13,color:'#fc8181',cat:'Thermal'},
+  const NODES=[
+    {id:0,label:'High Betweenness',short:'Betweenness',color:'#63b3ed',cat:'Mobility',
+     obs:'sDNA shows very high betweenness along the Galle Road corridor, concentrating all movement through a single narrow axis.',
+     imp:'Traffic management and road diet strategies are essential — the junction cannot absorb further vehicle growth without modal shift interventions.'},
+    {id:1,label:'Low OSR',short:'Low OSR',color:'#b794f4',cat:'Density',
+     obs:'Open Space Ratio in the commercial core falls below 0.05 — among the lowest in the study area. Open space is fragmented and inaccessible.',
+     imp:'Any redevelopment brief must mandate minimum green setbacks and pocket parks. The current figure makes thermal comfort gains nearly impossible.'},
+    {id:2,label:'High FSI',short:'High FSI',color:'#f6ad55',cat:'Morphology',
+     obs:'Floor Space Index exceeds 2.1 along Galle Road — very intense vertical development relative to plot area, a hallmark of mature urban cores.',
+     imp:'Height limits without FAR bonuses will stall regeneration. Transferable development rights could fund public realm improvements.'},
+    {id:3,label:'UTCI Heat Stress',short:'Heat Stress',color:'#fc8181',cat:'Thermal',
+     obs:'Mean UTCI reaches 39°C at the junction core during midday. Paved surfaces and lack of shade amplify radiant load significantly.',
+     imp:'Tree canopy planting, cool pavements, and shaded pedestrian arcades are urgently needed. Heat stress reduces dwell time and economic activity.'},
+    {id:4,label:'High Entropy',short:'Land Mix',color:'#68d391',cat:'Land Use',
+     obs:'Shannon entropy is high near the station (0.72/1.0), reflecting a genuine mix of residential, commercial, civic and informal uses.',
+     imp:'This diversity is the area\'s strongest planning asset. Mixed-use zoning should protect this mix rather than allowing single-use intensification.'},
+    {id:5,label:'UMI Core',short:'UMI Core',color:'#f6ad55',cat:'Morphology',
+     obs:'The Urban Maturation Index (centrality+FSI+GSI+OSR+entropy) shows a highly mature core score of 0.78, with a sharp gradient toward the edge.',
+     imp:'The core is approaching saturation. Future investment should focus on quality. Edge GN divisions have headroom for planned densification.'},
+    {id:6,label:'TOD Potential',short:'TOD',color:'#68d391',cat:'Land Use',
+     obs:'Dehiwala station sits within 200m of the highest closeness centrality zone, yet current development does not exploit this proximity.',
+     imp:'A transit-oriented development overlay centred on the station could unlock mixed-use residential above commercial ground floors.'},
+    {id:7,label:'Congestion',short:'Congestion',color:'#fc8181',cat:'Thermal',
+     obs:'Vehicle congestion peaks at the five-way junction, with queues extending onto Galle Road during both morning and evening peaks.',
+     imp:'Junction re-geometry, pedestrian priority signals, and a shared surface treatment on the forecourt could reduce peak delay by 30-40%.'},
+    {id:8,label:'High GSI',short:'High GSI',color:'#f6ad55',cat:'Morphology',
+     obs:'Ground Space Index averages 0.72 in the core — buildings cover nearly three-quarters of the ground plane, leaving minimal permeable surface.',
+     imp:'SuDS retrofits on remaining open plots are critical. This level of impermeable coverage significantly increases flash flood risk.'},
+    {id:9,label:'Regional Reach',short:'Regional',color:'#63b3ed',cat:'Mobility',
+     obs:'5000m betweenness places Dehiwala Junction as one of the top-ranked nodes in the broader southern Colombo network.',
+     imp:'Regional connectivity justifies higher-order land uses — hospitals, higher education — provided local access conflicts are resolved first.'},
   ];
-  const edges=[
-    {a:0,b:7,label:'Causes',color:'#fc8181'},{a:0,b:4,label:'Co-located',color:'#566070'},
-    {a:1,b:3,label:'Amplifies',color:'#fc8181'},{a:2,b:5,label:'Drives',color:'#f6ad55'},
-    {a:4,b:6,label:'Enables',color:'#68d391'},{a:3,b:6,label:'Mitigates',color:'#68d391'},
-    {a:2,b:3,label:'Amplifies',color:'#fc8181'},{a:0,b:2,label:'Co-located',color:'#566070'},
+
+  const EDGES=[
+    {a:0,b:7,type:'amplifies',label:'causes congestion'},
+    {a:0,b:4,type:'colocated',label:'co-located with'},
+    {a:0,b:9,type:'amplifies',label:'drives regional reach'},
+    {a:1,b:3,type:'amplifies',label:'worsens heat stress'},
+    {a:1,b:8,type:'colocated',label:'linked to GSI'},
+    {a:2,b:5,type:'amplifies',label:'drives maturation'},
+    {a:2,b:3,type:'amplifies',label:'amplifies heat'},
+    {a:2,b:8,type:'amplifies',label:'causes ground cover'},
+    {a:4,b:6,type:'mitigates',label:'enables TOD'},
+    {a:3,b:7,type:'amplifies',label:'amplifies congestion'},
+    {a:5,b:6,type:'mitigates',label:'supports TOD'},
+    {a:9,b:6,type:'mitigates',label:'enables TOD'},
+    {a:8,b:3,type:'amplifies',label:'worsens heat'},
+    {a:7,b:1,type:'colocated',label:'linked to OSR'},
   ];
-  let hovered=null;
-  function px(n){return{x:n.x*W, y:n.y*H};}
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    edges.forEach(e=>{
-      const a=px(nodes[e.a]),b=px(nodes[e.b]);
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-      ctx.strokeStyle=e.color+'88'; ctx.lineWidth=1.5; ctx.stroke();
+
+  const EC={amplifies:'#fc8181',mitigates:'#68d391',colocated:'#566070'};
+
+  // Initial positions — circle layout
+  NODES.forEach((n,i)=>{
+    const angle=(i/NODES.length)*Math.PI*2-Math.PI/2;
+    const r=Math.min(W(),H())*0.32;
+    n.x=W()/2+Math.cos(angle)*r;
+    n.y=H()/2+Math.sin(angle)*r;
+    n.vx=0; n.vy=0; n.r=22; n.dragging=false;
+  });
+
+  let selected=null, hovered=null, filterCat='all';
+  let dragNode=null, dragStart=null;
+  let physFrames=120;
+
+  function forces(){
+    if(physFrames<=0) return;
+    physFrames--;
+    const repulse=6000, spring=85, damp=0.75;
+    for(let i=0;i<NODES.length;i++){
+      for(let j=i+1;j<NODES.length;j++){
+        const dx=NODES[j].x-NODES[i].x,dy=NODES[j].y-NODES[i].y;
+        const d=Math.max(Math.sqrt(dx*dx+dy*dy),1);
+        const f=repulse/(d*d);
+        NODES[i].vx-=f*dx/d; NODES[i].vy-=f*dy/d;
+        NODES[j].vx+=f*dx/d; NODES[j].vy+=f*dy/d;
+      }
+    }
+    EDGES.forEach(e=>{
+      const a=NODES[e.a],b=NODES[e.b];
+      const dx=b.x-a.x,dy=b.y-a.y;
+      const d=Math.max(Math.sqrt(dx*dx+dy*dy),1);
+      const f=(d-spring)*0.045;
+      if(!a.dragging){a.vx+=f*dx/d; a.vy+=f*dy/d;}
+      if(!b.dragging){b.vx-=f*dx/d; b.vy-=f*dy/d;}
     });
-    nodes.forEach((n,i)=>{
-      const p=px(n);
-      const glow = hovered===i;
-      if(glow){ctx.beginPath();ctx.arc(p.x,p.y,n.r+8,0,Math.PI*2);ctx.fillStyle=n.color+'22';ctx.fill();}
-      ctx.beginPath();ctx.arc(p.x,p.y,n.r,0,Math.PI*2);
-      ctx.fillStyle=n.color+(glow?'':'99');ctx.fill();
-      ctx.strokeStyle=n.color;ctx.lineWidth=glow?2:1;ctx.stroke();
-      ctx.fillStyle='#e2e8f0'; ctx.font=`${glow?12:10}px Inter`; ctx.textAlign='center';
-      ctx.fillText(n.label,p.x,p.y+n.r+14);
+    NODES.forEach(n=>{
+      if(n.dragging) return;
+      n.vx+=(W()/2-n.x)*0.009; n.vy+=(H()/2-n.y)*0.011;
+      n.vx*=damp; n.vy*=damp;
+      n.x+=n.vx; n.y+=n.vy;
+      n.x=Math.max(n.r+8,Math.min(W()-n.r-8,n.x));
+      n.y=Math.max(n.r+22,Math.min(H()-n.r-22,n.y));
     });
   }
-  canvas.addEventListener('mousemove',e=>{
+
+  function draw(){
+    ctx.clearRect(0,0,W(),H());
+    EDGES.forEach(e=>{
+      const a=NODES[e.a],b=NODES[e.b];
+      const hi=selected!==null&&(e.a===selected||e.b===selected);
+      const vis=filterCat==='all'||(NODES[e.a].cat===filterCat||NODES[e.b].cat===filterCat);
+      const dim=(selected!==null&&!hi)||(filterCat!=='all'&&!vis);
+      ctx.save();
+      ctx.globalAlpha=dim?0.05:hi?1:0.3;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.setLineDash(e.type==='colocated'?[5,5]:[]);
+      ctx.strokeStyle=EC[e.type]; ctx.lineWidth=hi?2.5:1.5; ctx.stroke();
+      if(hi){
+        ctx.setLineDash([]);
+        const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+        ctx.font='500 9px Inter'; ctx.textAlign='center';
+        ctx.fillStyle=EC[e.type]; ctx.fillText(e.label,mx,my-7);
+      }
+      ctx.restore();
+    });
+
+    NODES.forEach((n,i)=>{
+      const isSel=selected===i, isHov=hovered===i;
+      const conn=selected!==null&&EDGES.some(e=>(e.a===selected&&e.b===i)||(e.b===selected&&e.a===i));
+      const dim=(filterCat!=='all'&&n.cat!==filterCat)||(selected!==null&&!isSel&&!conn);
+      ctx.save(); ctx.globalAlpha=dim?0.12:1;
+      if(isSel||isHov){
+        const g=ctx.createRadialGradient(n.x,n.y,n.r,n.x,n.y,n.r+20);
+        g.addColorStop(0,n.color+'55'); g.addColorStop(1,n.color+'00');
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+20,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+      }
+      if(isSel){
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+6,0,Math.PI*2);
+        ctx.strokeStyle=n.color+'bb'; ctx.lineWidth=2;
+        ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+      }
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=isSel?n.color:isHov?n.color+'cc':n.color+'77'; ctx.fill();
+      ctx.strokeStyle=isSel||isHov?'#ffffffcc':n.color+'aa'; ctx.lineWidth=isSel?2:1; ctx.stroke();
+      ctx.font='700 9px Inter'; ctx.textAlign='center'; ctx.fillStyle='#fff';
+      ctx.fillText(n.short,n.x,n.y+3);
+      ctx.font=(isSel?'600':'400')+' 10px Inter';
+      ctx.fillStyle=isSel?'#e2e8f0':'#8892a4';
+      ctx.fillText(n.label,n.x,n.y+n.r+15);
+      ctx.restore();
+    });
+  }
+
+  function loop(){ forces(); draw(); requestAnimationFrame(loop); }
+  loop();
+
+  function hitTest(mx,my){
+    for(let i=NODES.length-1;i>=0;i--){
+      if(Math.hypot(mx-NODES[i].x,my-NODES[i].y)<NODES[i].r+7) return i;
+    } return null;
+  }
+
+  function showDetail(i){
+    const n=NODES[i];
+    document.getElementById('synth-empty').style.display='none';
+    const c=document.getElementById('synth-content');
+    c.style.display='block'; c.style.animation='pageIn 0.3s ease both';
+    document.getElementById('sd-tag').textContent=n.cat.toUpperCase();
+    document.getElementById('sd-tag').style.color=n.color;
+    document.getElementById('sd-title').textContent=n.label;
+    document.getElementById('sd-cat').textContent='Category: '+n.cat;
+    document.getElementById('sd-obs').innerHTML=n.obs.split('. ').filter(Boolean)
+      .map(s=>'<div style="display:flex;gap:6px;margin-bottom:5px;"><span style="color:'+n.color+';margin-top:3px;">&#9658;</span><span>'+s.trim()+'.</span></div>').join('');
+    document.getElementById('sd-imp').innerHTML=
+      '<div style="background:'+n.color+'18;border-left:3px solid '+n.color+';padding:10px 12px;border-radius:0 6px 6px 0;font-size:12px;line-height:1.65;">'+n.imp+'</div>';
+    const links=EDGES.filter(e=>e.a===i||e.b===i).map(e=>{
+      const o=NODES[e.a===i?e.b:e.a];
+      return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;border:1px solid '+o.color+'44;color:'+o.color+';font-size:10px;font-weight:600;margin-bottom:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+o.color+';display:inline-block;"></span>'+o.short+'</span>';
+    });
+    document.getElementById('sd-links').innerHTML=links.join('');
+    document.getElementById('synth-hint').style.opacity='0';
+  }
+
+  function coord(e){
     const rect=canvas.getBoundingClientRect();
-    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    hovered=null;
-    nodes.forEach((n,i)=>{const p=px(n);if(Math.hypot(mx-p.x,my-p.y)<n.r+6)hovered=i;});
-    draw();
+    const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+    return {x:(e.clientX-rect.left)*sx, y:(e.clientY-rect.top)*sy};
+  }
+
+  canvas.addEventListener('mousemove',e=>{
+    const {x,y}=coord(e);
+    if(dragNode!==null){
+      NODES[dragNode].x=x; NODES[dragNode].y=y;
+      NODES[dragNode].vx=0; NODES[dragNode].vy=0; return;
+    }
+    hovered=hitTest(x,y);
+    canvas.style.cursor=hovered!==null?'pointer':'grab';
   });
-  draw();
+
+  canvas.addEventListener('mousedown',e=>{
+    const {x,y}=coord(e);
+    const idx=hitTest(x,y);
+    if(idx!==null){ dragNode=idx; NODES[idx].dragging=true; dragStart={x,y}; physFrames=80; }
+  });
+
+  canvas.addEventListener('mouseup',e=>{
+    if(dragNode!==null){
+      const {x,y}=coord(e);
+      NODES[dragNode].dragging=false;
+      if(dragStart&&Math.hypot(x-dragStart.x,y-dragStart.y)<6){
+        selected=(selected===dragNode)?null:dragNode;
+        if(selected!==null) showDetail(selected);
+        else{ document.getElementById('synth-empty').style.display='flex'; document.getElementById('synth-content').style.display='none'; document.getElementById('synth-hint').style.opacity='1'; }
+      }
+      dragNode=null; dragStart=null;
+    }
+  });
+  canvas.addEventListener('mouseleave',()=>{ hovered=null; if(dragNode){NODES[dragNode].dragging=false;dragNode=null;} });
+
+  document.querySelectorAll('.synth-filter').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.synth-filter').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); filterCat=btn.dataset.cat;
+      selected=null;
+      document.getElementById('synth-empty').style.display='flex';
+      document.getElementById('synth-content').style.display='none';
+    });
+  });
+
+  window.addEventListener('resize',()=>{ resize(); });
   window._synthBuilt=true;
 }
+
 
 /* ======== LIGHTBOX ======== */
 const lb=document.getElementById('lightbox');
