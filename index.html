@@ -542,6 +542,152 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
 .mb20 { margin-bottom: 20px; }
 .glow { text-shadow: 0 0 18px rgba(99,179,237,0.45); }
 .tag-chip { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: rgba(99,179,237,0.1); color: var(--cyan); border: 1px solid rgba(99,179,237,0.2); }
+/* ====== ISSUES & POTENTIALS ====== */
+.ip-summary-strip {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+}
+.ip-sum-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; text-align: center;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.ip-sum-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow); }
+.ip-sum-num { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; line-height: 1; }
+.ip-sum-label { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.07em; }
+
+.ip-section-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.ip-label-prob { color: var(--red); }
+.ip-label-pot  { color: var(--green); }
+
+.ip-accordion { display: flex; flex-direction: column; gap: 8px; }
+.mb24 { margin-bottom: 24px; }
+.mt12 { margin-top: 12px; }
+
+/* Card base */
+.ip-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.ip-card:hover { border-color: rgba(252,129,129,0.35); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.ip-pot:hover  { border-color: rgba(104,211,145,0.35); }
+.ip-card.open  { border-color: rgba(252,129,129,0.4); box-shadow: 0 8px 32px rgba(252,129,129,0.1); }
+.ip-pot.open   { border-color: rgba(104,211,145,0.4); box-shadow: 0 8px 32px rgba(104,211,145,0.1); }
+
+/* Header row */
+.ip-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; cursor: pointer;
+  user-select: none;
+  transition: background 0.22s ease;
+}
+.ip-card-header:hover { background: rgba(255,255,255,0.025); }
+.ip-card.open .ip-card-header { background: rgba(255,255,255,0.03); }
+
+.ip-badge {
+  min-width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+  background: rgba(252,129,129,0.12); color: var(--red); border: 1px solid rgba(252,129,129,0.25);
+  transition: transform 0.22s ease;
+}
+.ip-card-header:hover .ip-badge { transform: scale(1.08); }
+.ip-badge.pot { background: rgba(104,211,145,0.12); color: var(--green); border-color: rgba(104,211,145,0.25); }
+
+.ip-severity-bar {
+  width: 50px; height: 4px; background: var(--bg4); border-radius: 2px;
+  flex-shrink: 0; overflow: hidden;
+}
+.ip-sev-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+.ip-card-title {
+  flex: 1; font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3;
+}
+.ip-card-meta { display: flex; gap: 6px; flex-shrink: 0; }
+.ip-chip {
+  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  letter-spacing: 0.05em; white-space: nowrap;
+}
+
+.ip-chevron {
+  flex-shrink: 0; color: var(--text3);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), color 0.22s ease;
+}
+.ip-card.open .ip-chevron { transform: rotate(180deg); color: var(--cyan); }
+
+/* Expandable body */
+.ip-card-body {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.4,0,0.2,1);
+  border-top: 1px solid transparent;
+  transition: grid-template-rows 0.38s cubic-bezier(0.4,0,0.2,1), border-color 0.38s ease;
+}
+.ip-card.open .ip-card-body {
+  grid-template-rows: 1fr;
+  border-color: var(--border);
+}
+.ip-body-inner { overflow: hidden; }
+.ip-two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  padding: 18px 18px 20px;
+}
+
+.ip-body-section {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.ip-evidence-list { display: flex; flex-direction: column; gap: 8px; }
+.ip-evidence-item {
+  display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.55;
+  padding: 6px 10px; background: var(--bg3); border-radius: 6px;
+}
+.ip-ev-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+.ip-rec-list { display: flex; flex-direction: column; gap: 10px; }
+.ip-rec-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 12px; color: var(--text2); line-height: 1.55;
+}
+.ip-rec-num {
+  min-width: 24px; height: 24px; border-radius: 6px; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 10px; font-weight: 700;
+  background: rgba(252,129,129,0.1); color: var(--red);
+}
+
+.ip-tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.ip-ana-tag {
+  font-size: 10px; padding: 3px 9px; border-radius: 20px; font-weight: 600;
+  background: rgba(99,179,237,0.1); color: var(--cyan);
+  border: 1px solid rgba(99,179,237,0.2);
+  transition: background 0.2s, transform 0.2s;
+  cursor: default;
+}
+.ip-ana-tag:hover { background: rgba(99,179,237,0.2); transform: translateY(-1px); }
+
+.ip-impact-strip {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 10px 12px; background: var(--bg3); border-radius: 8px;
+}
+.ip-impact-item { flex: 1; min-width: 60px; }
+.ip-impact-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.ip-impact-val { font-size: 12px; font-weight: 700; }
+
+@media(max-width:900px){
+  .ip-summary-strip { grid-template-columns: repeat(2,1fr); }
+  .ip-two-col { grid-template-columns: 1fr; }
+  .ip-card-meta { display: none; }
+}
+@media(max-width:480px){
+  .ip-summary-strip { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .ip-card-header { padding: 12px 14px; gap: 8px; }
+  .ip-severity-bar { display: none; }
+}
 </style>
 </head>
 <body>
@@ -932,28 +1078,498 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
     <div class="page" id="page-issues">
       <div class="section-header mb16">
         <div class="section-title"><span class="dot" style="background:var(--red)"></span> Issues &amp; Potentials</div>
-        <div class="section-sub">Key problems and opportunities identified through contextual analysis</div>
+        <div class="section-sub">Click any card to expand full analysis details, evidence, and planning recommendations</div>
       </div>
-      <div class="two-col">
-        <div>
-          <div class="panel-title mb16" style="color:var(--red)">⚠ Problems</div>
-          <div class="finding-list">
-            <div class="finding-item"><div class="finding-badge prob">P1</div><div class="finding-text"><strong>Junction congestion.</strong> High betweenness along Galle Road means through-traffic and local access compete for the same narrow carriageway.</div></div>
-            <div class="finding-item"><div class="finding-badge prob">P2</div><div class="finding-text"><strong>Fragmented open space.</strong> OSR is critically low in the commercial core — what little exists clusters at the periphery.</div></div>
-            <div class="finding-item"><div class="finding-badge prob">P3</div><div class="finding-text"><strong>Thermal stress.</strong> UTCI peaks at ~39°C over the paved commercial strip where FSI is highest and tree canopy is absent.</div></div>
-            <div class="finding-item"><div class="finding-badge prob">P4</div><div class="finding-text"><strong>Uneven urban maturity.</strong> UMI shows a highly mature core against a rapidly transitioning residential edge — pressuring infrastructure.</div></div>
+
+      <!-- Summary strip -->
+      <div class="ip-summary-strip mb20">
+        <div class="ip-sum-card" style="border-color:rgba(252,129,129,0.35);">
+          <div class="ip-sum-num" style="color:var(--red);">6</div>
+          <div class="ip-sum-label">Critical Issues</div>
+        </div>
+        <div class="ip-sum-card" style="border-color:rgba(246,173,85,0.35);">
+          <div class="ip-sum-num" style="color:var(--amber);">3</div>
+          <div class="ip-sum-label">Moderate Issues</div>
+        </div>
+        <div class="ip-sum-card" style="border-color:rgba(104,211,145,0.35);">
+          <div class="ip-sum-num" style="color:var(--green);">5</div>
+          <div class="ip-sum-label">Key Potentials</div>
+        </div>
+        <div class="ip-sum-card" style="border-color:rgba(99,179,237,0.35);">
+          <div class="ip-sum-num" style="color:var(--cyan);">8</div>
+          <div class="ip-sum-label">Recommendations</div>
+        </div>
+      </div>
+
+      <!-- ISSUES SECTION -->
+      <div class="ip-section-label ip-label-prob mb12">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Problems Identified
+      </div>
+
+      <div class="ip-accordion mb24" id="issues-accordion">
+
+        <div class="ip-card" data-id="P1">
+          <div class="ip-card-header">
+            <div class="ip-badge prob">P1</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:95%;background:var(--red);"></div></div>
+            <div class="ip-card-title">Urban Heat Island Effect</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(252,129,129,0.12);color:var(--red);">Critical</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Thermal</span>
+            </div>
+            <div class="ip-chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>Peak surface temperature <strong>47°C</strong> recorded over Galle Road pavement (Landsat 8 thermal band)</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>UTCI mean of <strong>39°C</strong> — classified as <em>Very Strong Heat Stress</em> zone during midday</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span><strong>62%</strong> of the study area classified as high heat stress zone</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>OSR critically low at <strong>0.05</strong> in commercial core — near-zero permeable ground surface</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>FSI peaks of <strong>2.1</strong> along Galle Road block coastal sea breeze penetration</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">🌡 UTCI Map</span>
+                    <span class="ip-ana-tag">🗺 Heat Map</span>
+                    <span class="ip-ana-tag">📐 FSI Analysis</span>
+                    <span class="ip-ana-tag">📊 OSR Grid</span>
+                    <span class="ip-ana-tag">💨 Wind Simulation</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Green corridor along Galle Road</strong> — mandate street tree planting every 8m, continuous canopy to reduce surface temp by est. 4–6°C</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Cool roof incentive programme</strong> — retrofit high-albedo roofing on commercial buildings with FSI &gt; 1.8</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">03</span><div><strong>Permeable paving requirement</strong> — all new developments in high-GSI zones must dedicate ≥30% permeable surface</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--red);">Critical</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--red);">Immediate</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--amber);">Area-wide</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <div class="panel-title mb16" style="color:var(--green)">✦ Potentials</div>
-          <div class="finding-list">
-            <div class="finding-item"><div class="finding-badge pot">K1</div><div class="finding-text"><strong>Strong local closeness.</strong> 500m closeness centrality is high — the junction already works as a walkable centre if reclaimed from vehicle dominance.</div></div>
-            <div class="finding-item"><div class="finding-badge pot">K2</div><div class="finding-text"><strong>Mixed land-use base.</strong> Shannon entropy is comparatively high near the station — a foundation for transit-oriented intensification.</div></div>
-            <div class="finding-item"><div class="finding-badge pot">K3</div><div class="finding-text"><strong>Regional connectivity.</strong> 5000m betweenness links Dehiwala to the broader Colombo south corridor — potential for higher-order services.</div></div>
-            <div class="finding-item"><div class="finding-badge pot">K4</div><div class="finding-text"><strong>Rail proximity.</strong> The Dehiwala station anchors a transit catchment that is currently under-utilised for TOD-style planning.</div></div>
+
+        <div class="ip-card" data-id="P2">
+          <div class="ip-card-header">
+            <div class="ip-badge prob">P2</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:90%;background:var(--red);"></div></div>
+            <div class="ip-card-title">Severe Junction Traffic Congestion</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(252,129,129,0.12);color:var(--red);">Critical</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Mobility</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>Highest betweenness centrality at <strong>5000m radius</strong> along Galle Road — regional through-traffic dominates local streets</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>Closeness at <strong>500m</strong> shows the junction as the most accessible local node — but pedestrian access is blocked by vehicle lanes</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>No grade-separated pedestrian crossings at the main junction intersection</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Conflict between rail-level crossing, bus stops, and private vehicles at a single chokepoint</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">📍 Betweenness 5000m</span>
+                    <span class="ip-ana-tag">📍 Closeness 500m</span>
+                    <span class="ip-ana-tag">🗺 Land Use Map</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Junction redesign</strong> — introduce dedicated pedestrian phase and bus priority lane at the Galle Road / Station Road intersection</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Through-traffic diversion</strong> — create alternative parallel route to offload regional traffic from Galle Road within the study area</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--red);">Critical</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--red);">Immediate</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--cyan);">Junction</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="ip-card" data-id="P3">
+          <div class="ip-card-header">
+            <div class="ip-badge prob">P3</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:85%;background:var(--red);"></div></div>
+            <div class="ip-card-title">Critically Fragmented Open Space</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(252,129,129,0.12);color:var(--red);">Critical</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Liveability</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>OSR in commercial core as low as <strong>0.05</strong> — one of the lowest recorded in Sri Lankan urban contexts</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>Only <strong>13.3 ha</strong> of public space across the entire 538 ha study area (2.5%)</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Existing open space clusters only at the south-eastern wetland edge — inaccessible from the main junction</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>GSI of <strong>0.72</strong> in the core means buildings cover 72% of the ground plane</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">📐 OSR Grid</span>
+                    <span class="ip-ana-tag">📐 GSI Map</span>
+                    <span class="ip-ana-tag">🗺 Land Use Map</span>
+                    <span class="ip-ana-tag">📊 UMI Index</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Mandatory OSR standard</strong> — require minimum OSR of 0.25 for all new commercial developments &gt; 500m²</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Pocket parks network</strong> — convert underutilised parcels and setbacks into a connected green network linking station to seafront</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--red);">Critical</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--amber);">Short-term</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--amber);">Area-wide</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card" data-id="P4">
+          <div class="ip-card-header">
+            <div class="ip-badge prob">P4</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:78%;background:var(--red);"></div></div>
+            <div class="ip-card-title">Uneven Urban Maturation Pressure</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(252,129,129,0.12);color:var(--red);">Critical</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Urban Form</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>UMI of <strong>0.78</strong> in commercial core vs <strong>0.41</strong> in residential edge — a steep transition gradient</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--red)"></span>High FSI (2.1) and GSI (0.72) in the core vs low OSR (0.05) indicates over-development without amenity</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Residential edges undergoing rapid infill without infrastructure upgrade — mismatch with UMI gradient</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Sri Saranankara GN: density <strong>17,019 persons/km²</strong> — highest in study area with minimal public space</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">📊 UMI Map</span>
+                    <span class="ip-ana-tag">📐 FSI Analysis</span>
+                    <span class="ip-ana-tag">👥 Population Density</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Graduated density zoning</strong> — introduce transition zones with stepped FSI limits between core and edge to manage maturation gradient</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Infrastructure-first infill policy</strong> — require infrastructure capacity assessment before approving residential densification in edge GN divisions</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--red);">Critical</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--amber);">Short-term</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--amber);">Area-wide</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card" data-id="P5">
+          <div class="ip-card-header">
+            <div class="ip-badge prob" style="background:rgba(246,173,85,0.15);color:var(--amber);border-color:rgba(246,173,85,0.3);">P5</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:62%;background:var(--amber);"></div></div>
+            <div class="ip-card-title">Poor Pedestrian Connectivity</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(246,173,85,0.12);color:var(--amber);">Moderate</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Mobility</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>High 500m closeness centrality shows strong walkable potential — but discontinuous footpaths prevent realisation</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Street-level wind simulation shows heat stress worsens at ground level where pedestrian activity is highest</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--text3)"></span>Jayathilaka GN (density 10,970/km²) has lowest closeness — residents must route through congested junction</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">📍 Closeness 500m</span>
+                    <span class="ip-ana-tag">💨 Wind Simulation</span>
+                    <span class="ip-ana-tag">👥 Population Map</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Shaded pedestrian network</strong> — design shaded walkways connecting station to Galle Road with canopy coverage ≥70%</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Block-level connectivity audit</strong> — identify and open pedestrian shortcuts through blocks to reduce walking distances</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--amber);">Moderate</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--amber);">Short-term</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--cyan);">Junction</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card" data-id="P6">
+          <div class="ip-card-header">
+            <div class="ip-badge prob" style="background:rgba(246,173,85,0.15);color:var(--amber);border-color:rgba(246,173,85,0.3);">P6</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:55%;background:var(--amber);"></div></div>
+            <div class="ip-card-title">Inadequate Sanitation in Dense GN Zones</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(246,173,85,0.12);color:var(--amber);">Moderate</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Infrastructure</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence from Analysis</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Galwala GN: <strong>9 households</strong> with no toilet facilities — highest in study area at density 12,278/km²</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--amber)"></span>Jayathilaka GN: <strong>54 households</strong> using kerosene — infrastructure gap in otherwise electrified area</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--text3)"></span>Shared toilet usage concentrated in Nedimala (65 hh) and Vilawala (64 hh) — high-density zones</div>
+                  </div>
+                  <div class="ip-body-section mt12">Linked Analyses</div>
+                  <div class="ip-tag-row">
+                    <span class="ip-ana-tag">👥 Census Data</span>
+                    <span class="ip-ana-tag">👥 Population Density</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">Planning Recommendations</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num">01</span><div><strong>Targeted sanitation upgrade</strong> — prioritise Galwala and Jayathilaka GNs for subsidised toilet and utility connections</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num">02</span><div><strong>Community facility mapping</strong> — identify locations for shared sanitation blocks in high-density low-income clusters</div></div>
+                  </div>
+                  <div class="ip-impact-strip mt12">
+                    <div class="ip-impact-item"><div class="ip-impact-label">Severity</div><div class="ip-impact-val" style="color:var(--amber);">Moderate</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Urgency</div><div class="ip-impact-val" style="color:var(--amber);">Short-term</div></div>
+                    <div class="ip-impact-item"><div class="ip-impact-label">Scale</div><div class="ip-impact-val" style="color:var(--green);">GN-level</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /issues accordion -->
+
+      <!-- POTENTIALS SECTION -->
+      <div class="ip-section-label ip-label-pot mb12">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Key Potentials &amp; Opportunities
       </div>
+
+      <div class="ip-accordion" id="potentials-accordion">
+
+        <div class="ip-card ip-pot" data-id="K1">
+          <div class="ip-card-header">
+            <div class="ip-badge pot">K1</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:88%;background:var(--green);"></div></div>
+            <div class="ip-card-title">Strong Walkable Local Accessibility</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(104,211,145,0.12);color:var(--green);">High Value</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Mobility</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>500m closeness centrality ranks Dehiwala Junction as the <strong>highest accessibility node</strong> in the study area</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>Dense mixed-use base within walkable radius means most daily needs can theoretically be met on foot</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>High Shannon Entropy near the station shows existing variety of land uses supporting active frontages</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">How to Leverage</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div>Reclaim pavement from parked vehicles and widen footpaths along the top 3 closeness streets to create a walkable commercial spine</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div>Market Dehiwala as a 15-minute neighbourhood — low car-dependency model within existing urban structure</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card ip-pot" data-id="K2">
+          <div class="ip-card-header">
+            <div class="ip-badge pot">K2</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:82%;background:var(--green);"></div></div>
+            <div class="ip-card-title">Transit-Ready Mixed Land Use Base</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(104,211,145,0.12);color:var(--green);">High Value</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Land Use</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>Shannon Entropy Index of <strong>0.72</strong> near the station — among the highest in the study area, indicating genuine land use diversity</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>12 distinct land use categories present within a 500m radius of Dehiwala station</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>Commercial, residential, institutional and cultural uses all within walkable distance of the rail stop</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">How to Leverage</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div>Develop a <strong>Transit-Oriented Development (TOD) masterplan</strong> centred on Dehiwala station — protect land use mix while enabling vertical densification</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div>Designate a 400m TOD zone with mixed-use zoning overlays protecting ground-floor retail and active uses</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card ip-pot" data-id="K3">
+          <div class="ip-card-header">
+            <div class="ip-badge pot">K3</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:75%;background:var(--cyan);"></div></div>
+            <div class="ip-card-title">Regional Connectivity Asset</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(99,179,237,0.12);color:var(--cyan);">Strategic</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Connectivity</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>5000m betweenness centrality identifies Dehiwala as a <strong>key node on the Colombo–South Coast corridor</strong></div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>Rail connection provides direct access to Colombo Fort, Mount Lavinia and Kalutara</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--text3)"></span>2000m betweenness shows secondary connections to Nugegoda and Kohuwala commercial nodes</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">How to Leverage</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(99,179,237,0.15);color:var(--cyan);">→</span><div>Position Dehiwala as a <strong>sub-regional service centre</strong> — attract higher-order commercial, health and education facilities enabled by regional accessibility</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(99,179,237,0.15);color:var(--cyan);">→</span><div>Coordinate with Western Province transport planning to designate Dehiwala as a bus-rail interchange node</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card ip-pot" data-id="K4">
+          <div class="ip-card-header">
+            <div class="ip-badge pot">K4</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:70%;background:var(--cyan);"></div></div>
+            <div class="ip-card-title">Under-Utilised Rail Catchment for TOD</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(99,179,237,0.12);color:var(--cyan);">Strategic</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Transit</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>Dehiwala station is on the mainline Colombo–Galle railway — high-frequency service, central location</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>Current station forecourt is dominated by informal parking — not utilised as a transit-oriented public space</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--text3)"></span>800m walking catchment covers majority of the study area — effectively the entire population is within rail access</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">How to Leverage</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(99,179,237,0.15);color:var(--cyan);">→</span><div><strong>Station forecourt redesign</strong> — convert informal parking to an active public plaza with shade, seating and last-mile connectivity (cycling, tuk-tuks)</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(99,179,237,0.15);color:var(--cyan);">→</span><div>Enable mixed-use intensification within 400m of station entrance — residential above ground-floor commercial to increase ridership and housing supply</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-card ip-pot" data-id="K5">
+          <div class="ip-card-header">
+            <div class="ip-badge pot">K5</div>
+            <div class="ip-severity-bar"><div class="ip-sev-fill" style="width:65%;background:var(--green);"></div></div>
+            <div class="ip-card-title">Southeastern Wetland as Cooling Anchor</div>
+            <div class="ip-card-meta">
+              <span class="ip-chip" style="background:rgba(104,211,145,0.12);color:var(--green);">Environmental</span>
+              <span class="ip-chip" style="background:rgba(255,255,255,0.06);color:var(--text3);">Green Infra</span>
+            </div>
+            <div class="ip-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="ip-card-body">
+            <div class="ip-body-inner">
+              <div class="ip-two-col">
+                <div>
+                  <div class="ip-body-section">Evidence</div>
+                  <div class="ip-evidence-list">
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>OSR of <strong>0.65</strong> in the southeastern wetland zone — the only major open permeable surface in the study area</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--green)"></span>Surface temperatures in coastal/wetland zone approx <strong>32°C</strong> vs 47°C at Galle Road — 15°C differential</div>
+                    <div class="ip-evidence-item"><span class="ip-ev-dot" style="background:var(--cyan)"></span>Sea breeze corridor from the southwest identified in wind simulation — wetland acts as cooling relay point</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="ip-body-section">How to Leverage</div>
+                  <div class="ip-rec-list">
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div><strong>Protect and extend wetland edge</strong> — designate buffer zone with no-build setback and native planting to enhance evapotranspiration and air cooling</div></div>
+                    <div class="ip-rec-item"><span class="ip-rec-num" style="background:rgba(104,211,145,0.15);color:var(--green);">→</span><div>Design a <strong>green breeze corridor</strong> connecting wetland to the station via a tree-lined public path — channelling cool air into the urban core</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /potentials accordion -->
     </div>
 
     <!-- ======== DOWNLOADS PAGE ======== -->
@@ -2289,6 +2905,33 @@ new Chart(document.getElementById('builtupBarChart'),{
     }
   }
 });
+
+/* ======== ISSUES ACCORDION ======== */
+document.querySelectorAll('.ip-card-header').forEach(header=>{
+  header.addEventListener('click',()=>{
+    const card = header.closest('.ip-card');
+    const isOpen = card.classList.contains('open');
+    const accordion = card.closest('.ip-accordion');
+    accordion.querySelectorAll('.ip-card.open').forEach(c=>{
+      if(c!==card) c.classList.remove('open');
+    });
+    card.classList.toggle('open', !isOpen);
+    if(!isOpen){
+      setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+    }
+  });
+});
+// Animate severity bars when accordion scrolls into view
+const ipObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.ip-sev-fill').forEach(bar=>{
+        const w=bar.style.width; bar.style.width='0%';
+        requestAnimationFrame(()=>{ bar.style.width=w; });
+      });
+      ipObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.ip-accordion').forEach(el=>ipObserver.observe(el));
 </script>
-</body>
-</html>
