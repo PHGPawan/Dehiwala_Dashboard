@@ -604,6 +604,11 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     <span class="nav-label">Downloads</span>
   </div>
+  <div class="nav-item" data-page="livedata">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span class="nav-label">Live Data</span>
+    <span class="nav-badge" style="background:rgba(104,211,145,0.2);color:#68d391;">LIVE</span>
+  </div>
 
   </div><!-- /nav-list -->
   <div class="sidebar-footer">
@@ -665,46 +670,25 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
         </div>
         <div>
           <div class="section-header">
-            <div class="section-title"><span class="dot" style="background:var(--green)"></span> Real-Time Environmental Conditions</div>
-            <div class="section-sub" id="weather-ts">Fetching live data…</div>
+            <div class="section-title"><span class="dot" style="background:var(--green)"></span> Live Conditions — Dehiwala</div>
+            <div class="section-sub" id="weather-ts">Fetching…</div>
           </div>
           <div class="env-grid mb16">
-            <div class="env-metric">
-              <div class="e-label">🌡 Temperature</div>
-              <div class="e-val"><span id="w-temp">—</span><span class="eu">°C</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">🤔 Feels Like</div>
-              <div class="e-val"><span id="w-feels">—</span><span class="eu">°C</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">💧 Humidity</div>
-              <div class="e-val"><span id="w-hum">—</span><span class="eu">%</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">💨 Wind</div>
-              <div class="e-val"><span id="w-wind">—</span><span class="eu">km/h</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">🌧 Rainfall</div>
-              <div class="e-val"><span id="w-rain">—</span><span class="eu">mm</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">☀️ UV Index</div>
-              <div class="e-val"><span id="w-uv">—</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">🌫 AQI</div>
-              <div class="e-val"><span id="w-aqi">—</span></div>
-            </div>
-            <div class="env-metric">
-              <div class="e-label">💨 PM2.5</div>
-              <div class="e-val"><span id="w-pm25">—</span><span class="eu">µg</span></div>
-            </div>
+            <div class="env-metric"><div class="e-label">🌡 Temp</div><div class="e-val"><span id="w-temp">—</span><span class="eu">°C</span></div></div>
+            <div class="env-metric"><div class="e-label">🤔 Feels</div><div class="e-val"><span id="w-feels">—</span><span class="eu">°C</span></div></div>
+            <div class="env-metric"><div class="e-label">💧 Humidity</div><div class="e-val"><span id="w-hum">—</span><span class="eu">%</span></div></div>
+            <div class="env-metric"><div class="e-label">💨 Wind</div><div class="e-val"><span id="w-wind">—</span><span class="eu">km/h</span></div></div>
+            <div class="env-metric"><div class="e-label">🌧 Rain</div><div class="e-val"><span id="w-rain">—</span><span class="eu">mm</span></div></div>
+            <div class="env-metric"><div class="e-label">☀️ UV</div><div class="e-val"><span id="w-uv">—</span></div></div>
+            <div class="env-metric"><div class="e-label">🌫 AQI</div><div class="e-val"><span id="w-aqi">—</span></div></div>
+            <div class="env-metric"><div class="e-label">💨 PM2.5</div><div class="e-val"><span id="w-pm25">—</span><span class="eu">µg</span></div></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><span class="accent">▸</span> Next 24 Hours — Temperature Forecast</div>
+            <div class="panel-title"><span class="accent">▸</span> 24h Temperature Forecast</div>
             <div class="chart-box"><canvas id="forecastChart"></canvas></div>
+          </div>
+          <div style="margin-top:10px;text-align:center;">
+            <span onclick="document.querySelector('[data-page=livedata]').click()" style="font-size:11px;color:var(--cyan);cursor:pointer;text-decoration:underline;text-underline-offset:3px;">→ View full Live Data dashboard</span>
           </div>
         </div>
       </div>
@@ -797,34 +781,27 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
     <div class="page" id="page-environment">
       <div class="section-header mb16">
         <div class="section-title"><span class="dot" style="background:var(--red)"></span> Environmental Analysis</div>
-        <div class="section-sub">Surface heat and UTCI thermal comfort mapping</div>
+        <div class="section-sub">Surface temperature · Land surface heat distribution · Built-up thermal analysis</div>
       </div>
-      <div class="two-col mb20">
+      <div class="mb20">
         <div class="map-card" data-src="images/heatmap.jpg" data-title="Urban Heat Map" style="cursor:pointer;">
-          <img src="images/heatmap.jpg" alt="Heat Map" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
+          <img src="images/heatmap.jpg" alt="Heat Map" loading="lazy" style="width:100%;aspect-ratio:21/8;object-fit:cover;">
           <div class="map-card-info">
             <div class="map-card-tag">Thermal</div>
-            <div class="map-card-title">Urban Heat Map</div>
-            <div class="map-card-desc">Surface temperature peaks over the paved commercial strip where canopy is thinnest.</div>
-          </div>
-        </div>
-        <div class="map-card" data-src="images/utci.png" data-title="UTCI Analysis" style="cursor:pointer;">
-          <img src="images/utci.png" alt="UTCI" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%;">
-          <div class="map-card-info">
-            <div class="map-card-tag">Thermal Comfort</div>
-            <div class="map-card-title">UTCI Analysis Map</div>
-            <div class="map-card-desc">Universal Thermal Climate Index — strong heat stress at the junction core during midday.</div>
+            <div class="map-card-title">Urban Heat Map — Dehiwala Junction</div>
+            <div class="map-card-desc">Surface temperature peaks over the paved commercial strip where canopy is thinnest. High FSI zones correlate strongly with elevated land surface temperatures.</div>
           </div>
         </div>
       </div>
-      <div class="stat-grid mb16" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-card"><div class="stat-label">Mean UTCI</div><div class="stat-value">39<span class="unit">°C</span></div></div>
+      <div class="stat-grid mb16" style="grid-template-columns:repeat(4,1fr)">
         <div class="stat-card"><div class="stat-label">Peak Surface Temp</div><div class="stat-value">47<span class="unit">°C</span></div></div>
+        <div class="stat-card"><div class="stat-label">Mean Surface Temp</div><div class="stat-value">34<span class="unit">°C</span></div></div>
         <div class="stat-card"><div class="stat-label">Heat Stress Zone</div><div class="stat-value">62<span class="unit">%</span></div></div>
+        <div class="stat-card"><div class="stat-label">Cool Green Cover</div><div class="stat-value">8<span class="unit">%</span></div></div>
       </div>
       <div class="two-col mb20">
         <div class="panel">
-          <div class="panel-title"><span class="accent">▸</span> UTCI Thermal Comfort Zone Distribution</div>
+          <div class="panel-title"><span class="accent">▸</span> Surface Temperature Zone Distribution</div>
           <div class="chart-box" style="height:240px;"><canvas id="utciDonutChart"></canvas></div>
         </div>
         <div class="panel">
@@ -1103,6 +1080,113 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
       </div>
     </div>
 
+
+    <!-- ======== LIVE DATA PAGE ======== -->
+    <div class="page" id="page-livedata">
+      <div class="section-header mb16">
+        <div class="section-title">
+          <span class="dot" style="background:var(--green);box-shadow:0 0 8px var(--green);animation:livepulse 1.8s infinite;"></span>
+          Real-Time Weather &amp; Air Quality
+        </div>
+        <div class="section-sub" id="live-ts">Fetching live data for Dehiwala Junction (6.852°N, 79.868°E)…</div>
+      </div>
+
+      <!-- Current conditions big cards -->
+      <div class="stat-grid mb20" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card" style="border-color:rgba(99,179,237,0.3);">
+          <div class="stat-label">🌡 Air Temperature</div>
+          <div class="stat-value"><span id="ld-temp">—</span><span class="unit">°C</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Feels like <span id="ld-feels" style="color:var(--text2)">—</span>°C</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(104,211,145,0.3);">
+          <div class="stat-label">💧 Humidity</div>
+          <div class="stat-value"><span id="ld-hum">—</span><span class="unit">%</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Dew point <span id="ld-dew" style="color:var(--text2)">—</span>°C</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(246,173,85,0.3);">
+          <div class="stat-label">💨 Wind Speed</div>
+          <div class="stat-value"><span id="ld-wind">—</span><span class="unit">km/h</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Gusts <span id="ld-gust" style="color:var(--text2)">—</span> km/h</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(183,148,244,0.3);">
+          <div class="stat-label">☀️ UV Index</div>
+          <div class="stat-value"><span id="ld-uv">—</span></div>
+          <div style="font-size:11px;margin-top:6px;"><span id="ld-uv-label" style="color:var(--text2)">—</span></div>
+        </div>
+      </div>
+
+      <div class="stat-grid mb20" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card" style="border-color:rgba(252,129,129,0.3);">
+          <div class="stat-label">🌫 Air Quality Index</div>
+          <div class="stat-value"><span id="ld-aqi">—</span></div>
+          <div style="font-size:11px;margin-top:6px;"><span id="ld-aqi-label">—</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">💨 PM2.5</div>
+          <div class="stat-value"><span id="ld-pm25">—</span><span class="unit">µg/m³</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Fine particles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🌧 Precipitation</div>
+          <div class="stat-value"><span id="ld-rain">—</span><span class="unit">mm</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Last hour</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">☁️ Cloud Cover</div>
+          <div class="stat-value"><span id="ld-cloud">—</span><span class="unit">%</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;"><span id="ld-weather-desc">—</span></div>
+        </div>
+      </div>
+
+      <!-- Charts row 1 -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 48-Hour Temperature &amp; Feels Like</div>
+          <div class="chart-box" style="height:220px;"><canvas id="ld-tempChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 48-Hour Humidity &amp; Precipitation</div>
+          <div class="chart-box" style="height:220px;"><canvas id="ld-humChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Charts row 2 -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 48-Hour Wind Speed &amp; Gusts</div>
+          <div class="chart-box" style="height:220px;"><canvas id="ld-windChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 48-Hour UV Index</div>
+          <div class="chart-box" style="height:220px;"><canvas id="ld-uvChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Air quality row -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 48-Hour Air Quality Index (European AQI)</div>
+          <div class="chart-box" style="height:220px;"><canvas id="ld-aqiChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> AQI Category Breakdown</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;" id="ld-aqi-breakdown">
+            <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:40px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-day outlook -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> 7-Day Temperature Outlook</div>
+        <div class="chart-box" style="height:200px;"><canvas id="ld-7dayChart"></canvas></div>
+      </div>
+
+      <div style="font-size:11px;color:var(--text3);text-align:center;padding-bottom:20px;">
+        Data source: Open-Meteo API (open-meteo.com) · Auto-refreshes on page load · Coordinates: 6.852°N 79.868°E
+      </div>
+    </div>
+
   </div><!-- /page-wrap -->
   </div><!-- /content -->
 </div><!-- /main -->
@@ -1217,6 +1301,7 @@ function switchPage(page, item) {
   // Lazy builds
   if (page === 'centrality' && !window._centralityBuilt) buildCentralityGrid('all');
   if (page === 'synthesis' && !window._synthBuilt) buildSynthesis();
+  if (page === 'livedata') buildLiveData();
 }
 
 // Init indicator position on load
@@ -1305,6 +1390,141 @@ fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&lon
   document.getElementById('w-aqi').textContent=c.european_aqi;
   document.getElementById('w-pm25').textContent=c.pm2_5.toFixed(1);
 }).catch(()=>{});
+
+/* ======== LIVE DATA PAGE ======== */
+let _liveBuilt=false;
+function buildLiveData(){
+  if(_liveBuilt)return; _liveBuilt=true;
+
+  const uvLabel=v=>v<=2?['Low','#68d391']:v<=5?['Moderate','#f6ad55']:v<=7?['High','#fc8181']:v<=10?['Very High','#b794f4']:['Extreme','#fc8181'];
+  const aqiLabel=v=>v<=20?['Good','#68d391']:v<=40?['Fair','#a8d16f']:v<=60?['Moderate','#f6ad55']:v<=80?['Poor','#fc8181']:['Very Poor','#b794f4'];
+  const wxLabel=code=>{const m={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',61:'Light rain',63:'Moderate rain',65:'Heavy rain',80:'Rain showers',95:'Thunderstorm'};return m[code]||'Conditions vary';};
+
+  // Weather + hourly
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation,uv_index,cloud_cover,weather_code&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,uv_index,precipitation&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`)
+  .then(r=>r.json()).then(d=>{
+    const c=d.current;
+    // Update overview widgets too
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+
+    // Dew point approx
+    const T=c.temperature_2m, RH=c.relative_humidity_2m;
+    const dew=(T-(100-RH)/5).toFixed(1);
+
+    set('ld-temp',  T.toFixed(1));
+    set('ld-feels', c.apparent_temperature.toFixed(1));
+    set('ld-hum',   RH);
+    set('ld-dew',   dew);
+    set('ld-wind',  c.wind_speed_10m.toFixed(1));
+    set('ld-gust',  (c.wind_gusts_10m||0).toFixed(1));
+    set('ld-rain',  (c.precipitation||0).toFixed(1));
+    set('ld-cloud', c.cloud_cover||'—');
+    set('ld-weather-desc', wxLabel(c.weather_code));
+
+    const uv=c.uv_index||0;
+    set('ld-uv', uv.toFixed(1));
+    const [uvl,uvc]=uvLabel(uv);
+    const uvEl=document.getElementById('ld-uv-label');
+    if(uvEl){uvEl.textContent=uvl; uvEl.style.color=uvc;}
+
+    document.getElementById('live-ts').textContent=
+      'Updated '+new Date(c.time).toLocaleString('en-GB',{timeZone:'Asia/Colombo'})+' LKT · Auto-refresh on load';
+
+    // 48h hourly labels
+    const now=new Date(c.time);
+    const nowIdx=d.hourly.time.findIndex(t=>new Date(t)>=now);
+    const hrs48=d.hourly.time.slice(nowIdx,nowIdx+48);
+    const lbl48=hrs48.map(t=>{const dt=new Date(t);return dt.getHours()===0?dt.toLocaleDateString('en-GB',{weekday:'short'}):dt.getHours()+'h';});
+
+    const chartOpts=(yLabel)=>({responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},title:{display:!!yLabel,text:yLabel,color:'#566070',font:{size:9}}}}});
+
+    // Temp chart
+    new Chart(document.getElementById('ld-tempChart'),{type:'line',data:{labels:lbl48,datasets:[
+      {label:'Air Temp °C',data:d.hourly.temperature_2m.slice(nowIdx,nowIdx+48),borderColor:'#63b3ed',backgroundColor:'rgba(99,179,237,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
+      {label:'Feels Like °C',data:d.hourly.apparent_temperature.slice(nowIdx,nowIdx+48),borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.05)',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[5,4],fill:false}
+    ]},options:chartOpts('°C')});
+
+    // Humidity + precip
+    new Chart(document.getElementById('ld-humChart'),{type:'line',data:{labels:lbl48,datasets:[
+      {label:'Humidity %',data:d.hourly.relative_humidity_2m.slice(nowIdx,nowIdx+48),borderColor:'#4fd1c5',backgroundColor:'rgba(79,209,197,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
+      {label:'Precip mm',data:d.hourly.precipitation.slice(nowIdx,nowIdx+48),type:'bar',backgroundColor:'rgba(99,179,237,0.45)',yAxisID:'y1',maxBarThickness:6}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y1:{position:'right',ticks:{color:'#566070',font:{size:9}},grid:{display:false}}}}});
+
+    // Wind chart
+    new Chart(document.getElementById('ld-windChart'),{type:'line',data:{labels:lbl48,datasets:[
+      {label:'Wind km/h',data:d.hourly.wind_speed_10m.slice(nowIdx,nowIdx+48),borderColor:'#68d391',backgroundColor:'rgba(104,211,145,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
+      {label:'Gusts km/h',data:d.hourly.wind_gusts_10m.slice(nowIdx,nowIdx+48),borderColor:'#fc8181',backgroundColor:'rgba(252,129,129,0.05)',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3],fill:false}
+    ]},options:chartOpts('km/h')});
+
+    // UV chart
+    new Chart(document.getElementById('ld-uvChart'),{type:'line',data:{labels:lbl48,datasets:[
+      {label:'UV Index',data:d.hourly.uv_index.slice(nowIdx,nowIdx+48),borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.12)',tension:0.4,pointRadius:0,borderWidth:2,fill:true}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{min:0,max:12,ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+
+    // 7-day chart
+    const dayLabels=d.daily.time.map(t=>new Date(t).toLocaleDateString('en-GB',{weekday:'short',day:'numeric'}));
+    new Chart(document.getElementById('ld-7dayChart'),{type:'bar',data:{labels:dayLabels,datasets:[
+      {label:'Max °C',data:d.daily.temperature_2m_max,backgroundColor:'rgba(252,129,129,0.6)',borderRadius:4,maxBarThickness:32},
+      {label:'Min °C',data:d.daily.temperature_2m_min,backgroundColor:'rgba(99,179,237,0.5)',borderRadius:4,maxBarThickness:32}
+    ]},options:chartOpts('°C')});
+
+  }).catch(e=>{ document.getElementById('live-ts').textContent='Weather data unavailable — '+e.message; });
+
+  // Air quality hourly
+  fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=european_aqi,pm2_5&hourly=european_aqi,pm2_5&timezone=auto&forecast_days=2`)
+  .then(r=>r.json()).then(d=>{
+    const c=d.current;
+    set('ld-pm25', c.pm2_5.toFixed(1));
+    set('ld-aqi',  c.european_aqi);
+    const [al,ac]=aqiLabel(c.european_aqi);
+    const aqiEl=document.getElementById('ld-aqi-label');
+    if(aqiEl){aqiEl.textContent=al; aqiEl.style.color=ac;}
+
+    // AQI chart
+    const now2=new Date();
+    const aqiIdx=d.hourly.time.findIndex(t=>new Date(t)>=now2);
+    const aqiSlice=d.hourly.european_aqi.slice(aqiIdx,aqiIdx+48);
+    const pm25Slice=d.hourly.pm2_5.slice(aqiIdx,aqiIdx+48);
+    const lbl2=d.hourly.time.slice(aqiIdx,aqiIdx+48).map(t=>{const dt=new Date(t);return dt.getHours()===0?dt.toLocaleDateString('en-GB',{weekday:'short'}):dt.getHours()+'h';});
+
+    new Chart(document.getElementById('ld-aqiChart'),{type:'line',data:{labels:lbl2,datasets:[
+      {label:'European AQI',data:aqiSlice,borderColor:'#b794f4',backgroundColor:'rgba(183,148,244,0.1)',tension:0.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
+      {label:'PM2.5 µg/m³',data:pm25Slice,borderColor:'#fc8181',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3],fill:false,yAxisID:'y1'}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y1:{position:'right',ticks:{color:'#566070',font:{size:9}},grid:{display:false}}}}});
+
+    // AQI category breakdown bar
+    const cats=[{label:'Good (0–20)',color:'#68d391'},{label:'Fair (21–40)',color:'#a8d16f'},{label:'Moderate (41–60)',color:'#f6ad55'},{label:'Poor (61–80)',color:'#fc8181'},{label:'Very Poor (81+)',color:'#b794f4'}];
+    const counts=[0,0,0,0,0];
+    aqiSlice.forEach(v=>{ if(v<=20)counts[0]++; else if(v<=40)counts[1]++; else if(v<=60)counts[2]++; else if(v<=80)counts[3]++; else counts[4]++; });
+    const total=counts.reduce((a,b)=>a+b,1);
+    const bkEl=document.getElementById('ld-aqi-breakdown');
+    if(bkEl){ bkEl.innerHTML=cats.map((c,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;color:var(--text2);">${c.label}</div>
+        <div style="width:${Math.round((counts[i]/total)*140)}px;height:6px;background:${c.color};border-radius:3px;min-width:2px;"></div>
+        <div style="font-size:11px;color:var(--text3);min-width:28px;text-align:right;">${counts[i]}h</div>
+      </div>`).join(''); }
+  }).catch(()=>{});
+}
+
+// Trigger livedata build when that page is opened
+const _origSwitchPage=switchPage;
+function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
 /* ======== CENTRALITY GRID ======== */
 const centralityMaps = {
