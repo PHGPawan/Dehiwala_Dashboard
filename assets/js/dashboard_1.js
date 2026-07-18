@@ -226,6 +226,42 @@ mapStyle.textContent = `
 .leg-row{display:flex;align-items:center;gap:7px;padding:2px 0;}
 .leg-line{width:22px;height:3px;border-radius:2px;flex-shrink:0;}
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.legend-mobile-toggle{display:none;}
+.legend-content{display:block;}
+
+/* Compact, collapsible Leaflet legend on phones */
+@media(max-width:700px){
+  #map-legend{
+    bottom:8px;left:8px;min-width:0;width:auto;max-width:calc(100% - 16px);
+    padding:0;border-radius:10px;overflow:hidden;
+    background:rgba(13,17,23,.92);box-shadow:0 7px 22px rgba(0,0,0,.32);
+  }
+  #map-legend .legend-mobile-toggle{
+    display:flex;width:100%;min-width:92px;height:34px;padding:0 10px;
+    align-items:center;justify-content:space-between;gap:10px;
+    border:0;background:transparent;color:#e2e8f0;cursor:pointer;
+    font:700 9px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  }
+  #map-legend .legend-toggle-icon{
+    color:#63b3ed;font-size:15px;line-height:1;transition:transform .2s ease;
+  }
+  #map-legend .legend-content{
+    display:none;max-height:min(42vh,210px);overflow-y:auto;overscroll-behavior:contain;
+    padding:6px 9px 9px;border-top:1px solid rgba(99,179,237,.14);
+    scrollbar-width:thin;
+  }
+  #map-legend.expanded{width:min(184px,calc(100% - 16px));}
+  #map-legend.expanded .legend-content{display:block;}
+  #map-legend.expanded .legend-toggle-icon{transform:rotate(45deg);}
+  #map-legend .leg-title{font-size:8px;margin-bottom:4px;letter-spacing:.08em;}
+  #map-legend .leg-title[style]{margin-top:6px !important;}
+  #map-legend .leg-row{font-size:8.5px;gap:5px;padding:1px 0;line-height:1.25;}
+  #map-legend .leg-line{width:15px;}
+  #map-legend .leg-dot{width:7px;height:7px;}
+  #map-infobar{top:6px;left:6px;right:6px;gap:4px;}
+  .map-badge{padding:3px 7px;font-size:8px;gap:3px;}
+  html.light #map-legend .legend-mobile-toggle{color:#1a202c;}
+}
 
 /* mini info bar */
 #map-infobar{
@@ -340,11 +376,27 @@ const gnLegend = [
   {color:'#63b3ed', label:'8–11k/km²'},
   {color:'#68d391', label:'<8,000/km²'},
 ];
-legendEl.innerHTML = `<div class="leg-title">Roads</div>`
+legendEl.innerHTML = `<button type="button" class="legend-mobile-toggle" aria-expanded="false" aria-label="Show map legend"><span>🗺 Legend</span><span class="legend-toggle-icon">＋</span></button><div class="legend-content"><div class="leg-title">Roads</div>`
   + legendItems.map(i=>`<div class="leg-row"><div class="leg-line" style="background:${i.color};height:${i.w}px"></div>${i.label}</div>`).join('')
   + `<div class="leg-title" style="margin-top:8px;">GN Density</div>`
-  + gnLegend.map(i=>`<div class="leg-row"><div class="leg-dot" style="background:${i.color}"></div>${i.label}</div>`).join('');
+  + gnLegend.map(i=>`<div class="leg-row"><div class="leg-dot" style="background:${i.color}"></div>${i.label}</div>`).join('')
+  + `</div>`;
 mapWrap.appendChild(legendEl);
+
+const legendToggle = legendEl.querySelector('.legend-mobile-toggle');
+function setLegendExpanded(expanded){
+  legendEl.classList.toggle('expanded', expanded);
+  legendToggle.setAttribute('aria-expanded', String(expanded));
+  legendToggle.setAttribute('aria-label', expanded ? 'Hide map legend' : 'Show map legend');
+}
+legendToggle.addEventListener('click', event=>{
+  event.preventDefault();
+  event.stopPropagation();
+  setLegendExpanded(!legendEl.classList.contains('expanded'));
+});
+map.on('click',()=>{
+  if(window.matchMedia('(max-width:700px)').matches) setLegendExpanded(false);
+});
 
 /* ---------- Fit map to roads extent ---------- */
 map.fitBounds([[6.841, 79.860],[6.865, 79.878]], {padding:[10,10]});
