@@ -1,0 +1,198 @@
+/* Dashboard-wide mobile card and grid corrections */
+
+/* Grid children must be allowed to shrink inside narrow columns. */
+.stat-grid > *,
+.env-grid > *,
+.ip-summary-strip > *,
+.synth-summary-grid > *,
+.model3d-profile-grid > *,
+.page [style*="grid-template-columns"] > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.stat-card,
+.env-metric,
+.ip-sum-card,
+.synth-kpi {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.stat-value,
+.env-metric .e-val,
+.ip-sum-num,
+.synth-kpi-value {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+@media (max-width: 900px) {
+  /* Override inline desktop grids across every dashboard page. */
+  .stat-grid,
+  .stat-grid[style],
+  .page [style*="grid-template-columns:repeat(6"],
+  .page [style*="grid-template-columns: repeat(6"],
+  .page [style*="grid-template-columns:repeat(5"],
+  .page [style*="grid-template-columns: repeat(5"],
+  .page [style*="grid-template-columns:repeat(4"],
+  .page [style*="grid-template-columns: repeat(4"],
+  .page [style*="grid-template-columns:repeat(3"],
+  .page [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* Three-column inline content areas become one readable column. */
+  .page [style*="grid-template-columns:1fr 1fr 1fr"],
+  .page [style*="grid-template-columns: 1fr 1fr 1fr"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .stat-card {
+    width: 100%;
+    padding: 15px 14px;
+    min-height: 104px;
+  }
+
+  .stat-label {
+    min-width: 0;
+    line-height: 1.35;
+    letter-spacing: .08em;
+    white-space: normal;
+    flex-wrap: wrap;
+  }
+
+  .stat-label svg {
+    flex: 0 0 auto;
+  }
+
+  .stat-value {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px;
+    width: 100%;
+    font-size: clamp(21px, 5.8vw, 27px);
+    line-height: 1.12;
+    white-space: normal;
+  }
+
+  .stat-value .unit {
+    display: inline;
+    max-width: 100%;
+    margin-left: 1px;
+    font-size: clamp(10px, 3.1vw, 13px);
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .env-metric {
+    min-height: 86px;
+    padding: 12px 8px;
+  }
+
+  .env-metric .e-label {
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .env-metric .e-val {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px;
+    font-size: clamp(18px, 5.2vw, 22px);
+    line-height: 1.1;
+  }
+
+  .env-metric .e-val .eu {
+    margin-left: 0;
+    white-space: normal;
+  }
+
+  .ip-sum-card,
+  .synth-kpi {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .ip-sum-num,
+  .synth-kpi-value {
+    font-size: clamp(19px, 5.5vw, 27px);
+    line-height: 1.1;
+  }
+
+  /* Prevent any page/card content from forcing horizontal overflow. */
+  .page,
+  .page-wrap,
+  .content,
+  .panel,
+  .model3d-control-card,
+  .dl-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    overflow-x: hidden;
+  }
+
+  .stat-grid,
+  .stat-grid[style],
+  .page [style*="grid-template-columns:repeat(6"],
+  .page [style*="grid-template-columns: repeat(6"],
+  .page [style*="grid-template-columns:repeat(5"],
+  .page [style*="grid-template-columns: repeat(5"],
+  .page [style*="grid-template-columns:repeat(4"],
+  .page [style*="grid-template-columns: repeat(4"],
+  .page [style*="grid-template-columns:repeat(3"],
+  .page [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .stat-card {
+    padding: 13px 11px;
+    min-height: 98px;
+    border-radius: 9px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: .055em;
+    gap: 4px;
+  }
+
+  .stat-value {
+    margin-top: 8px;
+    font-size: clamp(20px, 7.2vw, 25px);
+  }
+
+  .stat-value .unit {
+    font-size: clamp(9px, 3.5vw, 12px);
+  }
+
+  .panel {
+    padding: 14px 12px;
+  }
+
+  .ip-summary-strip,
+  .synth-summary-grid,
+  .env-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  /* Very narrow phones use one column to guarantee full values. */
+  .stat-grid,
+  .stat-grid[style] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
