@@ -934,10 +934,10 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
 
         <!-- 1: Urban Heat Map -->
         <div class="map-card" data-src="images/heatmap.jpg" data-title="Urban Heat Map" style="cursor:pointer;display:flex;flex-direction:column;">
-          <div style="width:100%;aspect-ratio:4/3;flex-shrink:0;position:relative;overflow:hidden;border-radius:6px 6px 0 0;background:linear-gradient(135deg,#1a0a00 0%,#3d1a00 20%,#7a2e00 35%,#c45200 50%,#e87c3e 65%,#f5a06b 80%,#fdd5b5 100%);">
+          <div style="width:100%;aspect-ratio:4/3;flex-shrink:0;position:relative;overflow:hidden;border-radius:6px 6px 0 0;background:#0d1117;">
             <img src="images/heatmap.jpg" alt="Heat Map" loading="lazy"
-                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"
-                 onerror="this.style.display='none'">
+                 style="width:100%;height:100%;object-fit:contain;position:absolute;top:0;left:0;"
+                 onerror="this.style.background='linear-gradient(135deg,#1a0a00,#c45200,#fdd5b5)'">
 
           </div>
           <div class="map-card-info" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
