@@ -688,6 +688,15 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
   .ip-card-header { padding: 12px 14px; gap: 8px; }
   .ip-severity-bar { display: none; }
 }
+/* ====== AGE TAB BUTTONS ====== */
+.ag-tab {
+  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border); color: var(--text2);
+  background: transparent;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.18s;
+}
+.ag-tab:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.ag-tab.active { background: var(--cyan); color: #0d1117; border-color: var(--cyan); }
 </style>
 </head>
 <body>
@@ -768,7 +777,7 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
     <div class="topbar-left">
       <div class="topbar-eyebrow" id="page-eyebrow">PRIMARY STUDY AREA</div>
       <div class="topbar-title" id="page-title">Dehiwala Junction<span>.</span></div>
-      <div class="topbar-sub" id="page-sub">Galle Road Corridor · 11 GN Divisions</div>
+      <div class="topbar-sub" id="page-sub">Galle Road Corridor · 9 GN Divisions</div>
     </div>
     <div class="topbar-right">
       <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme">
@@ -787,11 +796,11 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
       <div class="stat-grid mb20">
         <div class="stat-card">
           <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>GN Divisions</div>
-          <div class="stat-value">11</div>
+          <div class="stat-value">9</div>
         </div>
         <div class="stat-card">
           <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Total Population</div>
-          <div class="stat-value">69<span class="unit">,520</span></div>
+          <div class="stat-value">56<span class="unit">,473</span></div>
         </div>
         <div class="stat-card">
           <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Built-up Area</div>
@@ -1027,27 +1036,95 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
     <!-- ======== POPULATION PAGE ======== -->
     <div class="page" id="page-population">
       <div class="section-header mb16">
-        <div class="section-title"><span class="dot"></span> Population by GN Division</div>
-        <div class="section-sub">11 Grama Niladhari divisions — total population 69,520</div>
+        <div class="section-title"><span class="dot" style="background:var(--cyan)"></span> Population Analysis — Dehiwala GN Divisions</div>
+        <div class="section-sub">9 Grama Niladhari Divisions · Census Sri Lanka · Detailed age-sex structure, male/female breakdown and demographic profiling</div>
       </div>
-      <div class="stat-grid mb20">
-        <div class="stat-card"><div class="stat-label">Total Population</div><div class="stat-value">69<span class="unit">,520</span></div></div>
-        <div class="stat-card"><div class="stat-label">GN Divisions</div><div class="stat-value">11</div></div>
-        <div class="stat-card"><div class="stat-label">Highest — Mt. Lavinia</div><div class="stat-value">8<span class="unit">,086</span></div></div>
-        <div class="stat-card"><div class="stat-label">Lowest — Jayathilaka</div><div class="stat-value">5<span class="unit">,215</span></div></div>
+
+      <!-- Hero stat strip -->
+      <div class="stat-grid mb20" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card" style="border-color:rgba(99,179,237,0.3)">
+          <div class="stat-label">Total Population</div>
+          <div class="stat-value">56<span class="unit">,473</span></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px;">9 GN Divisions</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(99,179,237,0.2)">
+          <div class="stat-label">Total Male</div>
+          <div class="stat-value">27<span class="unit">,029</span></div>
+          <div style="font-size:10px;color:var(--cyan);margin-top:4px;">47.9% of total</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(247,138,184,0.3)">
+          <div class="stat-label">Total Female</div>
+          <div class="stat-value">29<span class="unit">,444</span></div>
+          <div style="font-size:10px;color:#f687b3;margin-top:4px;">52.1% of total</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(252,129,129,0.3)">
+          <div class="stat-label">Largest GN</div>
+          <div class="stat-value" style="font-size:18px;">Dehiwala East</div>
+          <div style="font-size:10px;color:var(--red);margin-top:4px;">8,262 persons</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(246,173,85,0.3)">
+          <div class="stat-label">Smallest GN</div>
+          <div class="stat-value" style="font-size:18px;">Malwatta</div>
+          <div style="font-size:10px;color:var(--amber);margin-top:4px;">3,751 persons</div>
+        </div>
       </div>
+
+      <!-- Population totals + donut -->
       <div class="two-col mb20">
         <div class="panel">
-          <div class="panel-title"><span class="accent">▸</span> Population Distribution by GN Division</div>
+          <div class="panel-title"><span class="accent">▸</span> Total Population by GN Division</div>
           <div class="chart-box" style="height:260px;"><canvas id="popChart"></canvas></div>
         </div>
         <div class="panel">
-          <div class="panel-title"><span class="accent">▸</span> Population Share — Donut Chart</div>
+          <div class="panel-title"><span class="accent">▸</span> Population Share — Donut</div>
           <div class="chart-box" style="height:260px;"><canvas id="popDonutChart"></canvas></div>
         </div>
       </div>
+
+      <!-- Male / Female split -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> Male vs Female Population by GN Division</div>
+        <div class="chart-box" style="height:240px;"><canvas id="genderGroupChart"></canvas></div>
+      </div>
+
+      <!-- Gender % + age pyramid -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> Gender Ratio (%) by GN Division</div>
+          <div class="chart-box" style="height:240px;"><canvas id="genderPctChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> Gender Composition — Pie Chart</div>
+          <div class="chart-box" style="height:240px;"><canvas id="genderPieChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Age group tabs -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> Age Group Structure — All GN Divisions Combined</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="ag-tab active" data-agtab="total">Total</button>
+          <button class="ag-tab" data-agtab="male">Male</button>
+          <button class="ag-tab" data-agtab="female">Female</button>
+        </div>
+        <div class="chart-box" style="height:240px;"><canvas id="ageGroupChart"></canvas></div>
+      </div>
+
+      <!-- Population pyramid -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> Population Pyramid — Male vs Female by Age Group (all GNs combined)</div>
+        <div class="chart-box" style="height:340px;"><canvas id="popPyramidChart"></canvas></div>
+      </div>
+
+      <!-- Age group by GN heatmap-style bar -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> Youth (0–19) vs Working Age (20–59) vs Elderly (60+) by GN Division</div>
+        <div class="chart-box" style="height:220px;"><canvas id="ageStructureChart"></canvas></div>
+      </div>
+
+      <!-- Density comparison -->
       <div class="panel">
-        <div class="panel-title"><span class="accent">▸</span> Population vs Built-up Density by GN Division</div>
+        <div class="panel-title"><span class="accent">▸</span> Population Density Comparison (relative index — persons per GN)</div>
         <div class="chart-box" style="height:200px;"><canvas id="popDensityChart"></canvas></div>
       </div>
     </div>
@@ -1613,7 +1690,7 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
           </div>
           <div>
             <div class="dl-title">Dehiwala Boundary</div>
-            <div class="dl-desc">Administrative boundary of the Dehiwala study area — 11 GN Division polygons in WGS 84.</div>
+            <div class="dl-desc">Administrative boundary of the Dehiwala study area — 9 GN Division polygons in WGS 84.</div>
           </div>
           <div class="dl-meta">
             <span class="dl-chip" style="background:rgba(99,179,237,0.12);color:var(--cyan);">GeoPackage</span>
@@ -1703,7 +1780,7 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
           </div>
           <div>
             <div class="dl-title">Population Data (Excel)</div>
-            <div class="dl-desc">Population counts for all 11 GN Divisions — Dehiwala East, Malwatta, Hathbodhiya, Dehiwala West, Udyanaya, Kohuwala, Jayathilaka, Kawdana West, Mount Lavinia, Galwala, Karagampitiya.</div>
+            <div class="dl-desc">Population counts for all 9 GN Divisions — Dehiwala East, Dehiwala West, Galwala, Jayathilaka, Karagampitiya, Kawdana West, Malwatta, Mount Lavinia, Udyanaya.</div>
           </div>
           <div class="dl-meta">
             <span class="dl-chip" style="background:rgba(104,211,145,0.12);color:var(--green);">Excel .xlsx</span>
@@ -1916,12 +1993,12 @@ updateClock(); setInterval(updateClock,1000);
 
 /* ======== NAV ======== */
 const PAGE_META = {
-  overview:    {eyebrow:'PRIMARY STUDY AREA', title:'Dehiwala Junction', sub:'Galle Road Corridor · 11 GN Divisions'},
+  overview:    {eyebrow:'PRIMARY STUDY AREA', title:'Dehiwala Junction', sub:'Galle Road Corridor · 9 GN Divisions'},
   centrality:  {eyebrow:'SPACE SYNTAX / sDNA', title:'Centrality Analysis', sub:'Betweenness & Closeness at 500m · 2000m · 5000m'},
   density:     {eyebrow:'SPACE MATRIX', title:'Density Analysis', sub:'Floor Space Index · Ground Space Index · Open Space Ratio'},
   maturation:  {eyebrow:'COMPOSITE INDEX', title:'Urban Maturation', sub:'UMI = Centrality + FSI + GSI + OSR + Entropy (equal weights)'},
   environment: {eyebrow:'ENVIRONMENTAL ANALYSIS', title:'Heat & Thermal Comfort', sub:'Surface Temperature · UTCI · Wind Simulation'},
-  population:  {eyebrow:'DEMOGRAPHICS', title:'Population Analysis', sub:'11 GN Divisions · Dehiwala Junction Study Area'},
+  population:  {eyebrow:'DEMOGRAPHICS', title:'Population Analysis', sub:'9 GN Divisions · Dehiwala Junction Study Area'},
   synthesis:   {eyebrow:'SYNTHESIS', title:'Findings Network', sub:'Causal relationships between urban form, mobility and environment'},
   issues:      {eyebrow:'ISSUES & POTENTIALS', title:'Problems & Opportunities', sub:'Key planning conclusions from contextual analysis'},
   downloads:   {eyebrow:'DATA REPOSITORY', title:'Downloads', sub:'Shapefiles, GeoPackages and datasets for Dehiwala Junction study area'},
@@ -2004,17 +2081,15 @@ const ROADS_GEOJSON = {"type":"FeatureCollection","features":[{"type":"Feature",
 
 /* ---------- Verified GN Division coordinates (from Wikipedia/official GN records) ---------- */
 const gnData = [
-  {name:'Dehiwala East',  lat:6.8560, lng:79.8692, pop:6492,  area:0.52},
-  {name:'Dehiwala West',  lat:6.8582, lng:79.8620, pop:5184,  area:0.59},
-  {name:'Udyanaya',       lat:6.8560, lng:79.8750, pop:5914,  area:0.53},
-  {name:'Malwatta',       lat:6.8570, lng:79.8720, pop:5508,  area:0.38},
-  {name:'Galwala',        lat:6.8530, lng:79.8680, pop:6001,  area:0.31},
-  {name:'Nedimala',       lat:6.8555, lng:79.8813, pop:9058,  area:0.88},
-  {name:'Hathbodhiya',   lat:6.8500, lng:79.8760, pop:6000,  area:0.29},
-  {name:'Kawdana East',   lat:6.8446, lng:79.8803, pop:8091,  area:1.22},
-  {name:'Kawdana West',   lat:6.8430, lng:79.8730, pop:6643,  area:0.35},
-  {name:'Karagampitiya',  lat:6.8480, lng:79.8730, pop:5376,  area:0.25},
-  {name:'Jayathilaka',    lat:6.8545, lng:79.8650, pop:5215,  area:0.22},
+  {name:'Dehiwala East',  lat:6.856035, lng:79.869243, pop:8262, area:0.52},  // Wikipedia exact
+  {name:'Dehiwala West',  lat:6.858160, lng:79.861970, pop:7046, area:0.59},  // Wikipedia exact
+  {name:'Galwala',        lat:6.863200, lng:79.866500, pop:6001, area:0.31},  // GN 538A — north of Kalubovila, between Wellawatta and Dehiwala East
+  {name:'Jayathilaka',    lat:6.853500, lng:79.864800, pop:4186, area:0.22},  // GN 540B — south of Dehiwala West, adjacent to Dehiwala East
+  {name:'Karagampitiya',  lat:6.849200, lng:79.874500, pop:5376, area:0.25},  // GN 539/42 — SE of Udyanaya, west of Kawdana East
+  {name:'Kawdana West',   lat:6.845800, lng:79.869000, pop:6643, area:0.35},  // west of Kawdana East, south of Karagampitiya
+  {name:'Malwatta',       lat:6.854200, lng:79.873800, pop:3751, area:0.38},  // GN 539/42A — east of Dehiwala East, west of Nedimala
+  {name:'Mount Lavinia',  lat:6.844500, lng:79.865000, pop:8086, area:0.80},  // moved north, closer to study area boundary
+  {name:'Udyanaya',       lat:6.855963, lng:79.875015, pop:7122, area:0.53},  // Wikipedia exact — Zoological Gardens area
 ];
 
 /* ---------- Road class styling ---------- */
@@ -2527,25 +2602,240 @@ new Chart(document.getElementById('umiChart'),{
     scales:{r:{ticks:{color:'#566070',backdropColor:'transparent',font:{size:9}},grid:{color:'rgba(255,255,255,0.07)'},pointLabels:{color:'#8892a4',font:{size:11}}}}}
 });
 
-/* ======== POPULATION CHART ======== */
-const popData=[
-  {gn:'Dehiwala East',pop:6492},{gn:'Malwatta',pop:5508},{gn:'Hathbodhiya',pop:6000},
-  {gn:'Dehiwala West',pop:7788},{gn:'Udyanaya',pop:5584},{gn:'Kohuwala',pop:6333},
-  {gn:'Jayathilaka',pop:5215},{gn:'Kawdana West',pop:6643},{gn:'Mount Lavinia',pop:8086},
-  {gn:'Galwala',pop:6001},{gn:'Karagampitiya',pop:5376},
+/* ======== POPULATION DATA — from Combined_GN_Population_Data.xlsx ======== */
+const GNS = ['Dehiwala East','Dehiwala West','Galwala','Jayathilaka','Karagampitiya','Kawdana West','Malwatta','Mount Lavinia','Udyanaya'];
+const GN_COLORS = ['#63b3ed','#4fd1c5','#f6ad55','#fc8181','#b794f4','#68d391','#f687b3','#fbd38d','#76e4f7'];
+
+const popTotal  = [8262, 7046, 6001, 4186, 5376, 6643, 3751, 8086, 7122];
+const popMale   = [3704, 3380, 2943, 1994, 2567, 3298, 1872, 4154, 3517];
+const popFemale = [4558, 3666, 3058, 2192, 2809, 3345, 1879, 3932, 3605];
+const pctMale   = [44.8, 48.0, 49.0, 47.6, 47.7, 49.6, 49.9, 51.4, 49.4];
+const pctFemale = [55.2, 52.0, 51.0, 52.4, 52.3, 50.4, 50.1, 48.6, 50.6];
+
+// Age groups: label, [total by GN], [male by GN], [female by GN]
+const AGE_GROUPS = [
+  {ag:'0–4',   t:[373,346,296,203,231,318,130,365,372], m:[170,183,138,92,114,158,68,181,180],  f:[203,163,158,111,117,160,62,184,192]},
+  {ag:'5–9',   t:[443,358,412,211,302,348,191,398,486], m:[209,190,202,110,163,177,101,219,253], f:[234,168,210,101,139,171,90,179,233]},
+  {ag:'10–14', t:[504,358,404,238,358,395,232,444,546], m:[272,194,187,114,168,205,133,257,266], f:[232,164,217,124,190,190,99,187,280]},
+  {ag:'15–19', t:[533,411,392,324,365,442,279,552,563], m:[263,209,210,174,185,236,141,308,271], f:[270,202,182,150,180,206,138,244,292]},
+  {ag:'20–24', t:[1161,545,576,347,454,528,328,683,594],m:[439,274,310,157,217,261,179,396,291], f:[722,271,266,190,237,267,149,287,303]},
+  {ag:'25–29', t:[891,502,462,339,372,568,246,642,534], m:[323,217,242,163,180,288,119,349,271], f:[568,285,220,176,192,280,127,293,263]},
+  {ag:'30–34', t:[524,547,430,259,398,502,235,538,456], m:[236,246,205,128,185,280,118,283,240], f:[288,301,225,131,213,222,117,255,216]},
+  {ag:'35–39', t:[508,567,451,287,399,449,260,560,481], m:[238,269,222,130,190,224,115,280,228], f:[270,298,229,157,209,225,145,280,253]},
+  {ag:'40–44', t:[501,480,416,297,355,409,206,545,503], m:[255,232,212,157,186,203,106,286,244], f:[246,248,204,140,169,206,100,259,259]},
+  {ag:'45–49', t:[530,423,352,308,385,443,251,573,524], m:[252,203,177,134,155,208,105,289,287], f:[278,220,175,174,230,235,146,284,237]},
+  {ag:'50–54', t:[467,407,380,278,324,453,307,543,510], m:[217,209,191,141,178,249,150,276,251], f:[250,198,189,137,146,204,157,267,259]},
+  {ag:'55–59', t:[437,399,375,254,334,408,243,503,385], m:[202,185,173,133,159,190,124,256,199], f:[235,214,202,121,175,218,119,247,186]},
+  {ag:'60–64', t:[397,402,315,222,299,432,280,497,350], m:[194,185,141,102,135,191,155,246,171], f:[203,217,174,120,164,241,125,251,179]},
+  {ag:'65–69', t:[310,376,241,193,280,319,195,438,315], m:[135,169,113,77,112,145,93,196,158],  f:[175,207,128,116,168,174,102,242,157]},
+  {ag:'70–74', t:[297,340,199,174,211,244,139,350,214], m:[130,146,98,84,97,117,69,148,90],    f:[167,194,101,90,114,127,70,202,124]},
+  {ag:'75–79', t:[205,290,167,137,174,207,121,242,160], m:[86,123,69,57,92,95,59,103,67],      f:[119,167,98,80,82,112,62,139,93]},
+  {ag:'80–84', t:[123,170,82,60,80,101,68,133,89],    m:[61,84,31,22,34,48,27,58,37],          f:[62,86,51,38,46,53,41,75,52]},
+  {ag:'85–89', t:[47,80,32,38,37,43,31,54,33],        m:[20,42,14,11,11,14,6,17,10],           f:[27,38,18,27,26,29,25,37,23]},
+  {ag:'90–94', t:[10,32,16,13,15,30,9,18,6],          m:[2,13,8,6,5,8,4,6,3],                  f:[8,19,8,7,10,22,5,12,3]},
+  {ag:'95+',   t:[1,13,3,4,3,4,0,8,1],                m:[0,7,0,2,1,1,0,0,0],                   f:[1,6,3,2,2,3,0,8,1]},
 ];
+
+const sum = arr => arr.reduce((a,b)=>a+(b||0),0);
+const sumRow = key => AGE_GROUPS.map(ag=>sum(ag[key]));
+
+const cOpts = (yLabel, extraScales) => ({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+  scales:{
+    x:{ticks:{color:'#566070',font:{size:9},maxRotation:38},grid:{color:'rgba(255,255,255,0.04)'}},
+    y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+       title:{display:!!yLabel,text:yLabel||'',color:'#566070',font:{size:9}}},
+    ...(extraScales||{})
+  }
+});
+
+/* 1 — Total population bar */
+const sortIdx = [...popTotal.map((v,i)=>({v,i}))].sort((a,b)=>b.v-a.v);
 new Chart(document.getElementById('popChart'),{
   type:'bar',
   data:{
-    labels:popData.map(d=>d.gn),
-    datasets:[{label:'Population',data:popData.map(d=>d.pop),
-      backgroundColor:popData.map(d=>d.pop===8086?'#f6ad55':'rgba(99,179,237,0.65)'),
-      borderRadius:4, maxBarThickness:36}]
+    labels:sortIdx.map(d=>GNS[d.i]),
+    datasets:[{
+      label:'Total Population',
+      data:sortIdx.map(d=>d.v),
+      backgroundColor:sortIdx.map(d=>GN_COLORS[d.i]),
+      borderRadius:5, maxBarThickness:32,
+    }]
   },
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{x:{ticks:{color:'#566070',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
-            y:{ticks:{color:'#566070',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}}
+  options:{...cOpts('Population'),
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.y.toLocaleString()+' persons'}}}}
+});
+
+/* 2 — Donut */
+new Chart(document.getElementById('popDonutChart'),{
+  type:'doughnut',
+  data:{
+    labels:GNS,
+    datasets:[{data:popTotal, backgroundColor:GN_COLORS, borderColor:'#161b22', borderWidth:2, hoverOffset:12}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+    plugins:{
+      legend:{position:'right',labels:{color:'#8892a4',font:{size:9},boxWidth:9,padding:6}},
+      tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.parsed.toLocaleString()+' ('+((ctx.parsed/56473)*100).toFixed(1)+'%)'}}
+    }}
+});
+
+/* 3 — Male vs Female grouped bar */
+new Chart(document.getElementById('genderGroupChart'),{
+  type:'bar',
+  data:{
+    labels:GNS,
+    datasets:[
+      {label:'Male',   data:popMale,   backgroundColor:'rgba(99,179,237,0.75)',  borderRadius:3, maxBarThickness:20},
+      {label:'Female', data:popFemale, backgroundColor:'rgba(247,138,184,0.75)', borderRadius:3, maxBarThickness:20},
+    ]
+  },
+  options:cOpts('Persons')
+});
+
+/* 4 — Gender % stacked bar */
+new Chart(document.getElementById('genderPctChart'),{
+  type:'bar',
+  data:{
+    labels:GNS,
+    datasets:[
+      {label:'Male %',   data:pctMale,   backgroundColor:'rgba(99,179,237,0.7)',  borderRadius:[3,0,0,3], maxBarThickness:28},
+      {label:'Female %', data:pctFemale, backgroundColor:'rgba(247,138,184,0.7)', borderRadius:[0,3,3,0], maxBarThickness:28},
+    ]
+  },
+  options:{...cOpts('%'),
+    scales:{
+      x:{stacked:true,ticks:{color:'#566070',font:{size:9},maxRotation:38},grid:{color:'rgba(255,255,255,0.04)'}},
+      y:{stacked:true,min:0,max:100,ticks:{color:'#566070',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'},
+         title:{display:true,text:'% Share',color:'#566070',font:{size:9}}}
+    }
+  }
+});
+
+/* 5 — Gender pie (totals) */
+const totalMale = sum(popMale), totalFem = sum(popFemale);
+new Chart(document.getElementById('genderPieChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Male ('+((totalMale/56473)*100).toFixed(1)+'%)','Female ('+((totalFem/56473)*100).toFixed(1)+'%)'],
+    datasets:[{
+      data:[totalMale, totalFem],
+      backgroundColor:['rgba(99,179,237,0.85)','rgba(247,138,184,0.85)'],
+      borderColor:'#161b22', borderWidth:3, hoverOffset:10
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},boxWidth:12,padding:12}},
+      tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.toLocaleString()+' persons'}}
+    }}
+});
+
+/* 6 — Age group chart (tab-controlled) */
+let ageChartInst = null;
+const agLabels = AGE_GROUPS.map(a=>a.ag);
+
+function buildAgeChart(tab){
+  if(ageChartInst) ageChartInst.destroy();
+  const colorM='rgba(99,179,237,0.75)', colorF='rgba(247,138,184,0.75)', colorT='rgba(104,211,145,0.75)';
+  let datasets;
+  if(tab==='total'){
+    datasets=[{label:'Total',data:sumRow('t'),backgroundColor:colorT,borderRadius:3,maxBarThickness:22}];
+  } else if(tab==='male'){
+    datasets=[{label:'Male',data:sumRow('m'),backgroundColor:colorM,borderRadius:3,maxBarThickness:22}];
+  } else {
+    datasets=[{label:'Female',data:sumRow('f'),backgroundColor:colorF,borderRadius:3,maxBarThickness:22}];
+  }
+  ageChartInst = new Chart(document.getElementById('ageGroupChart'),{
+    type:'bar',
+    data:{labels:agLabels, datasets},
+    options:{...cOpts('Persons'), plugins:{legend:{display:false}}}
+  });
+}
+buildAgeChart('total');
+
+document.querySelectorAll('.ag-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.ag-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    buildAgeChart(btn.dataset.agtab);
+  });
+});
+
+/* 7 — Population pyramid */
+const pyrMale   = sumRow('m').map(v=>-v);
+const pyrFemale = sumRow('f');
+new Chart(document.getElementById('popPyramidChart'),{
+  type:'bar',
+  data:{
+    labels:agLabels,
+    datasets:[
+      {label:'Male',   data:pyrMale,   backgroundColor:'rgba(99,179,237,0.75)',  borderRadius:3, maxBarThickness:18},
+      {label:'Female', data:pyrFemale, backgroundColor:'rgba(247,138,184,0.75)', borderRadius:3, maxBarThickness:18},
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins:{
+      legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>' '+Math.abs(ctx.parsed.x).toLocaleString()+' persons'}}
+    },
+    scales:{
+      x:{ticks:{color:'#566070',font:{size:9},callback:v=>Math.abs(v).toLocaleString()},
+         grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'← Male   |   Female →',color:'#8892a4',font:{size:10}}},
+      y:{ticks:{color:'#8892a4',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}}
+    }
+  }
+});
+
+/* 8 — Age structure (Youth / Working / Elderly) per GN */
+const youthIdx  = AGE_GROUPS.slice(0,4);   // 0-19
+const workIdx   = AGE_GROUPS.slice(4,12);  // 20-59
+const elderIdx  = AGE_GROUPS.slice(12);    // 60+
+const youth  = GNS.map((_,i)=>sum(youthIdx.map(a=>a.t[i])));
+const work   = GNS.map((_,i)=>sum(workIdx.map(a=>a.t[i])));
+const elder  = GNS.map((_,i)=>sum(elderIdx.map(a=>a.t[i])));
+
+new Chart(document.getElementById('ageStructureChart'),{
+  type:'bar',
+  data:{
+    labels:GNS,
+    datasets:[
+      {label:'Youth (0–19)',       data:youth,backgroundColor:'rgba(104,211,145,0.75)',borderRadius:2,maxBarThickness:28},
+      {label:'Working Age (20–59)',data:work, backgroundColor:'rgba(99,179,237,0.75)', borderRadius:2,maxBarThickness:28},
+      {label:'Elderly (60+)',      data:elder,backgroundColor:'rgba(246,173,85,0.75)', borderRadius:2,maxBarThickness:28},
+    ]
+  },
+  options:{...cOpts('Persons'),
+    scales:{
+      x:{stacked:true,ticks:{color:'#566070',font:{size:9},maxRotation:38},grid:{color:'rgba(255,255,255,0.04)'}},
+      y:{stacked:true,ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+         title:{display:true,text:'Persons',color:'#566070',font:{size:9}}}
+    }
+  }
+});
+
+/* 9 — Density ranking horizontal bar */
+new Chart(document.getElementById('popDensityChart'),{
+  type:'bar', indexAxis:'y',
+  data:{
+    labels:[...GNS].sort((a,b)=>popTotal[GNS.indexOf(b)]-popTotal[GNS.indexOf(a)]),
+    datasets:[{
+      label:'Population',
+      data:[...popTotal].sort((a,b)=>b-a),
+      backgroundColor:[...popTotal].sort((a,b)=>b-a).map(v=>
+        v>7500?'rgba(252,129,129,0.8)':v>5500?'rgba(246,173,85,0.75)':'rgba(104,211,145,0.7)'),
+      borderRadius:4, maxBarThickness:20,
+    }]
+  },
+  options:{...cOpts('Population'),
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.x.toLocaleString()+' persons'}}},
+    scales:{
+      x:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+      y:{ticks:{color:'#8892a4',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}}
+    }
+  }
 });
 
 /* ======== SYNTHESIS NETWORK (canvas) ======== */
@@ -2830,45 +3120,6 @@ document.addEventListener('click',e=>{
       openLightbox(el.dataset.src,el.dataset.title); return;
     }
     el=el.parentElement;
-  }
-});
-
-/* ======== POPULATION DONUT CHART ======== */
-const popColors=['#63b3ed','#4fd1c5','#f6ad55','#fc8181','#b794f4','#68d391','#e2e8f0','#f687b3','#76e4f7','#fbd38d','#9ae6b4'];
-new Chart(document.getElementById('popDonutChart'),{
-  type:'doughnut',
-  data:{
-    labels:popData.map(d=>d.gn),
-    datasets:[{data:popData.map(d=>d.pop),backgroundColor:popColors,borderColor:'#161b22',borderWidth:2,hoverOffset:10}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
-    plugins:{
-      legend:{position:'right',labels:{color:'#8892a4',font:{size:9},boxWidth:10,padding:7}},
-      tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.parsed.toLocaleString()+' ('+((ctx.parsed/69520)*100).toFixed(1)+'%)'}}
-    }
-  }
-});
-
-/* ======== POPULATION DENSITY COMPARISON ======== */
-const gnAreas=[0.38,0.32,0.29,0.41,0.27,0.35,0.22,0.31,0.44,0.28,0.25]; // approx km² per GN
-new Chart(document.getElementById('popDensityChart'),{
-  type:'bar',
-  data:{
-    labels:popData.map(d=>d.gn),
-    datasets:[
-      {label:'Pop Density (per km²)',data:popData.map((d,i)=>Math.round(d.pop/gnAreas[i])),
-       backgroundColor:'rgba(183,148,244,0.7)',borderRadius:3,maxBarThickness:24,yAxisID:'y'},
-      {label:'Population',data:popData.map(d=>d.pop),
-       backgroundColor:'rgba(99,179,237,0.4)',borderRadius:3,maxBarThickness:24,yAxisID:'y1'},
-    ]
-  },
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{labels:{color:'#8892a4',font:{size:10}}}},
-    scales:{
-      x:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
-      y:{ticks:{color:'#b794f4',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},position:'left'},
-      y1:{ticks:{color:'#63b3ed',font:{size:9}},grid:{display:false},position:'right'}
-    }
   }
 });
 
