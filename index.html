@@ -793,35 +793,43 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
 
     <!-- ======== OVERVIEW PAGE ======== -->
     <div class="page active" id="page-overview">
-      <div class="stat-grid mb20">
+
+      <!-- ── HERO STATS ── -->
+      <div class="stat-grid mb20" style="grid-template-columns:repeat(6,1fr);">
         <div class="stat-card">
-          <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>GN Divisions</div>
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> GN Divisions</div>
           <div class="stat-value">9</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Total Population</div>
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Total Population</div>
           <div class="stat-value">56<span class="unit">,473</span></div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Built-up Area</div>
-          <div class="stat-value">88<span class="unit">%</span></div>
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Study Area</div>
+          <div class="stat-value">5.76<span class="unit"> km²</span></div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Mean FSI</div>
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Mean FSI</div>
           <div class="stat-value">1.8</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pop Density</div>
+          <div class="stat-value">9<span class="unit">,804/km²</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Built-up Area</div>
+          <div class="stat-value">88<span class="unit">%</span></div>
         </div>
       </div>
 
-      <!-- Map + live weather -->
+      <!-- ── MAP + WEATHER ── -->
       <div class="two-col mb20">
         <div>
           <div class="section-header">
             <div class="section-title"><span class="dot"></span> Interactive Study Area Map</div>
-            <div class="section-sub">Click a GN division for stats</div>
+            <div class="section-sub">Click a GN division for population stats</div>
           </div>
-          <div class="map-wrap">
-            <div id="leaflet-map"></div>
-          </div>
+          <div class="map-wrap"><div id="leaflet-map"></div></div>
         </div>
         <div>
           <div class="section-header">
@@ -847,8 +855,154 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
           </div>
         </div>
       </div>
-    </div>
 
+      <!-- ── STUDY AREA PROFILE ── -->
+      <div class="section-header mb12">
+        <div class="section-title"><span class="dot" style="background:var(--amber)"></span> Study Area Profile</div>
+        <div class="section-sub">Dehiwala Junction — key urban characteristics</div>
+      </div>
+      <div class="two-col mb20">
+        <!-- Land Use Breakdown -->
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> Land Use Composition</div>
+          <div class="chart-box" style="height:220px;"><canvas id="landUseChart"></canvas></div>
+        </div>
+        <!-- GN Population Mini-bar -->
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> Population by GN Division (quick view)</div>
+          <div class="chart-box" style="height:220px;"><canvas id="overviewPopChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ── KEY INDICATORS TABLE + UMI RADAR ── -->
+      <div class="two-col mb20">
+        <!-- Key Indicators -->
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> Key Urban Indicators</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;">
+            <thead><tr style="border-bottom:1px solid var(--border);">
+              <th style="padding:6px 8px;text-align:left;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Indicator</th>
+              <th style="padding:6px 8px;text-align:right;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Value</th>
+              <th style="padding:6px 8px;text-align:left;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Remark</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Study Area</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--cyan);font-weight:600;">5.76 km²</td>
+                <td style="padding:7px 8px;color:var(--text3);">9 GN Divisions</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Total Population</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--cyan);font-weight:600;">56,473</td>
+                <td style="padding:7px 8px;color:var(--text3);">Census 2012</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Pop. Density</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--amber);font-weight:600;">9,804 / km²</td>
+                <td style="padding:7px 8px;color:var(--text3);">High-density urban</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Mean FSI</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--green);font-weight:600;">1.8</td>
+                <td style="padding:7px 8px;color:var(--text3);">High along Galle Rd</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Mean GSI</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--green);font-weight:600;">0.42</td>
+                <td style="padding:7px 8px;color:var(--text3);">Moderate coverage</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Mean OSR</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--red);font-weight:600;">0.19</td>
+                <td style="padding:7px 8px;color:var(--text3);">Very low open space</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Shannon Entropy</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--purple);font-weight:600;">0.61</td>
+                <td style="padding:7px 8px;color:var(--text3);">Mixed-use core</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Mean UMI Score</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--amber);font-weight:600;">0.68</td>
+                <td style="padding:7px 8px;color:var(--text3);">Maturing urban area</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);" onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Road Network</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--cyan);font-weight:600;">485 segments</td>
+                <td style="padding:7px 8px;color:var(--text3);">OSM · Primary–tertiary</td>
+              </tr>
+              <tr onmouseenter="this.style.background='rgba(99,179,237,0.04)'" onmouseleave="this.style.background=''">
+                <td style="padding:7px 8px;color:var(--text2);">Dominant Land Use</td>
+                <td style="padding:7px 8px;text-align:right;color:var(--text);font-weight:600;">Residential</td>
+                <td style="padding:7px 8px;color:var(--text3);">~62% of area · UDA</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- UMI Radar -->
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> UMI Component Scores — Study Area Average</div>
+          <div class="chart-box" style="height:260px;"><canvas id="overviewRadar"></canvas></div>
+          <div style="margin-top:16px;">
+            <div class="panel-title" style="margin-bottom:10px;"><span class="accent">▸</span> Quick Navigation</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div onclick="document.querySelector('[data-page=centrality]').click()" style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;" onmouseenter="this.style.borderColor='var(--cyan)';this.style.background='rgba(99,179,237,0.06)'" onmouseleave="this.style.borderColor='var(--border)';this.style.background=''">
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Tab</div>
+                <div style="font-size:12px;color:var(--cyan);font-weight:600;">→ Centrality</div>
+              </div>
+              <div onclick="document.querySelector('[data-page=density]').click()" style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;" onmouseenter="this.style.borderColor='var(--amber)';this.style.background='rgba(246,173,85,0.06)'" onmouseleave="this.style.borderColor='var(--border)';this.style.background=''">
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Tab</div>
+                <div style="font-size:12px;color:var(--amber);font-weight:600;">→ Density</div>
+              </div>
+              <div onclick="document.querySelector('[data-page=maturation]').click()" style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;" onmouseenter="this.style.borderColor='var(--purple)';this.style.background='rgba(183,148,244,0.06)'" onmouseleave="this.style.borderColor='var(--border)';this.style.background=''">
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Tab</div>
+                <div style="font-size:12px;color:var(--purple);font-weight:600;">→ UMI</div>
+              </div>
+              <div onclick="document.querySelector('[data-page=population]').click()" style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;" onmouseenter="this.style.borderColor='var(--green)';this.style.background='rgba(104,211,145,0.06)'" onmouseleave="this.style.borderColor='var(--border)';this.style.background=''">
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Tab</div>
+                <div style="font-size:12px;color:var(--green);font-weight:600;">→ Population</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LOCATION CONTEXT ── -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> Location Context — Dehiwala Junction</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:12px;">
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Administrative</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Province</span><span style="color:var(--text);font-weight:500;">Western</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">District</span><span style="color:var(--text);font-weight:500;">Colombo</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">DS Division</span><span style="color:var(--text);font-weight:500;">Dehiwala</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding-bottom:5px;"><span style="color:var(--text3);">GN Divisions</span><span style="color:var(--cyan);font-weight:600;">9</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Geographic</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Latitude</span><span style="color:var(--text);font-weight:500;">6.852° N</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Longitude</span><span style="color:var(--text);font-weight:500;">79.868° E</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Coastline</span><span style="color:var(--text);font-weight:500;">Western boundary</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding-bottom:5px;"><span style="color:var(--text3);">Dist. from CMC</span><span style="color:var(--cyan);font-weight:600;">~11 km S</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Key Infrastructure</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Galle Road (A2)</span><span style="color:var(--amber);font-weight:500;">N–S spine</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Railway Station</span><span style="color:var(--amber);font-weight:500;">Coastal line</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:5px;"><span style="color:var(--text3);">Zoo (Mt. Lavinia)</span><span style="color:var(--green);font-weight:500;">Major landmark</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding-bottom:5px;"><span style="color:var(--text3);">Road Segments</span><span style="color:var(--cyan);font-weight:600;">485 (OSM)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
     <!-- ======== CENTRALITY PAGE ======== -->
     <div class="page" id="page-centrality">
       <div class="section-header mb16">
@@ -1938,8 +2092,102 @@ html.light .scale-tab.active { box-shadow: 0 0 20px rgba(43,108,178,0.3); }
         <div class="chart-box" style="height:200px;"><canvas id="ld-7dayChart"></canvas></div>
       </div>
 
+
+      <!-- Row 3: Sunrise/Sunset + Coastal -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 🌅 Sun Schedule — Today</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;">
+            <div class="stat-card" style="border-color:rgba(246,173,85,.3);">
+              <div class="stat-label">🌅 Sunrise</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-sunrise">—</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(246,173,85,.3);">
+              <div class="stat-label">🌇 Sunset</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-sunset">—</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(79,209,197,.3);">
+              <div class="stat-label">☀️ Daylight</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-daylight">—</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px;">hours today</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(183,148,244,.3);">
+              <div class="stat-label">🌞 Solar Noon</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-solarnoon">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 🌊 Coastal Conditions</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;">
+            <div class="stat-card" style="border-color:rgba(99,179,237,.3);">
+              <div class="stat-label">🌊 Wave Height</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-wave">—<span class="unit"> m</span></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px;" id="ld-wave-label">Sea state</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(104,211,145,.3);">
+              <div class="stat-label">🌡 Sea Temp</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-sst">—<span class="unit">°C</span></div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(246,173,85,.3);">
+              <div class="stat-label">💨 Wind Dir.</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-winddir">—<span class="unit">°</span></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px;" id="ld-winddir-label">—</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(183,148,244,.3);">
+              <div class="stat-label">☁️ Cloud Base</div>
+              <div class="stat-value" style="font-size:22px;" id="ld-cloudbase">—<span class="unit"> m</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Environmental comfort indices -->
+      <div class="panel mb20">
+        <div class="panel-title"><span class="accent">▸</span> 🌿 Environmental Comfort Indices — Live</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:8px 0;">
+          <div class="stat-card" style="border-color:rgba(104,211,145,.3);text-align:center;">
+            <div class="stat-label">🌿 UTCI</div>
+            <div class="stat-value" style="font-size:20px;" id="ld-utci">—<span class="unit">°C</span></div>
+            <div id="ld-utci-label" style="font-size:10px;margin-top:5px;color:var(--text3);">Heat stress</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(246,173,85,.3);text-align:center;">
+            <div class="stat-label">💧 Heat Index</div>
+            <div class="stat-value" style="font-size:20px;" id="ld-hi">—<span class="unit">°C</span></div>
+            <div style="font-size:10px;margin-top:5px;color:var(--text3);">Apparent heat</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(99,179,237,.3);text-align:center;">
+            <div class="stat-label">💦 Dew Point</div>
+            <div class="stat-value" style="font-size:20px;" id="ld-dew2">—<span class="unit">°C</span></div>
+            <div style="font-size:10px;margin-top:5px;color:var(--text3);">Humidity comfort</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(183,148,244,.3);text-align:center;">
+            <div class="stat-label">🌬 Wind Chill</div>
+            <div class="stat-value" style="font-size:20px;" id="ld-wc">—<span class="unit">°C</span></div>
+            <div style="font-size:10px;margin-top:5px;color:var(--text3);">Perceived temp</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(252,129,129,.3);text-align:center;">
+            <div class="stat-label">🔥 THI</div>
+            <div class="stat-value" style="font-size:20px;" id="ld-thi">—</div>
+            <div id="ld-thi-label" style="font-size:10px;margin-top:5px;color:var(--text3);">Discomfort index</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: Solar radiation + Precipitation probability -->
+      <div class="two-col mb20">
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> ☀️ 48-Hour Solar Radiation</div>
+          <div class="chart-box" style="height:200px;"><canvas id="ld-radChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="accent">▸</span> 🌧 48-Hour Precipitation Probability</div>
+          <div class="chart-box" style="height:200px;"><canvas id="ld-precipChart"></canvas></div>
+        </div>
+      </div>
+
       <div style="font-size:11px;color:var(--text3);text-align:center;padding-bottom:20px;">
-        Data source: Open-Meteo API (open-meteo.com) · Auto-refreshes on page load · Coordinates: 6.852°N 79.868°E
+        APIs: <strong style="color:var(--text2)">Open-Meteo Weather</strong> · <strong style="color:var(--text2)">Open-Meteo Marine</strong> · <strong style="color:var(--text2)">Open-Meteo Air Quality</strong> · All free, no API key · 6.852°N, 79.868°E · Auto-refreshes on page load
       </div>
     </div>
 
@@ -2355,179 +2603,228 @@ if(themeBtn){
 
 })();
 
-/* ======== WEATHER ======== */
-const LAT=6.852, LON=79.868;
+/* ======== WEATHER & LIVE DATA APIs ======== */
+const LAT = 6.852, LON = 79.868;
+
+/* helpers */
+const $s = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+const uvLabel  = v => v<=2?['Low','#68d391']:v<=5?['Moderate','#f6ad55']:v<=7?['High','#fc8181']:v<=10?['Very High','#b794f4']:['Extreme','#fc8181'];
+const aqiLabel = v => v<=20?['Good','#68d391']:v<=40?['Fair','#a8d16f']:v<=60?['Moderate','#f6ad55']:v<=80?['Poor','#fc8181']:['Very Poor','#b794f4'];
+const wxLabel  = code => ({0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',61:'Light rain',63:'Moderate rain',65:'Heavy rain',80:'Rain showers',95:'Thunderstorm'})[code]||'Variable';
+const dirLabel = d => ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(d/22.5)%16];
+const fmt12    = iso => { const d=new Date(iso); let h=d.getHours(),m=d.getMinutes(),a='AM'; if(h>=12){a='PM';h-=12;} if(!h)h=12; return h+':'+(m<10?'0'+m:m)+' '+a; };
+const chartCfg = (yLbl) => ({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+  scales:{
+    x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+    y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+       title:{display:!!yLbl,text:yLbl||'',color:'#566070',font:{size:9}}}
+  }
+});
+
+/* ── Overview tab quick weather ── */
 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,precipitation,uv_index,weather_code&hourly=temperature_2m,apparent_temperature&timezone=auto&forecast_days=2`)
 .then(r=>r.json()).then(d=>{
-  const c=d.current;
-  document.getElementById('w-temp').textContent=c.temperature_2m.toFixed(1);
-  document.getElementById('w-feels').textContent=c.apparent_temperature.toFixed(1);
-  document.getElementById('w-hum').textContent=c.relative_humidity_2m;
-  document.getElementById('w-wind').textContent=c.wind_speed_10m.toFixed(1);
-  document.getElementById('w-rain').textContent=(c.precipitation||0).toFixed(1);
-  document.getElementById('w-uv').textContent=(c.uv_index||0).toFixed(0);
-  document.getElementById('weather-ts').textContent='Showing conditions at study area centre · '+new Date(c.time).toLocaleString();
-
-  // 24h forecast chart
-  const hrs=d.hourly;
-  const now=new Date(c.time);
-  const idx=hrs.time.findIndex(t=>new Date(t)>=now);
-  const labels=hrs.time.slice(idx,idx+24).map(t=>new Date(t).getHours()+'h');
-  const temps=hrs.temperature_2m.slice(idx,idx+24);
-  const feels=hrs.apparent_temperature.slice(idx,idx+24);
-  new Chart(document.getElementById('forecastChart'),{
-    type:'line',
-    data:{labels,datasets:[
-      {label:'Air Temp °C',data:temps,borderColor:'#63b3ed',backgroundColor:'rgba(99,179,237,0.08)',tension:0.45,pointRadius:0,borderWidth:2,fill:true},
-      {label:'Feels Like °C',data:feels,borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.06)',tension:0.45,pointRadius:0,borderWidth:1.5,borderDash:[5,4],fill:true}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8892a4',font:{size:11}}}},
-      scales:{x:{ticks:{color:'#566070',maxTicksLimit:8,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
-              y:{ticks:{color:'#566070',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}}
-  });
-}).catch(()=>{document.getElementById('weather-ts').textContent='Live weather unavailable';});
+  const c = d.current;
+  $s('w-temp',  c.temperature_2m.toFixed(1));
+  $s('w-feels', c.apparent_temperature.toFixed(1));
+  $s('w-hum',   c.relative_humidity_2m);
+  $s('w-wind',  c.wind_speed_10m.toFixed(1));
+  $s('w-rain',  (c.precipitation||0).toFixed(1));
+  $s('w-uv',    (c.uv_index||0).toFixed(0));
+  const tsEl = document.getElementById('weather-ts');
+  if(tsEl) tsEl.textContent = 'Live · Updated ' + new Date(c.time).toLocaleString('en-GB',{timeZone:'Asia/Colombo'}) + ' LKT';
+  const hrs = d.hourly, now = new Date(c.time);
+  const idx = hrs.time.findIndex(t => new Date(t) >= now);
+  const lbl = hrs.time.slice(idx,idx+24).map(t => new Date(t).getHours()+'h');
+  const fc  = document.getElementById('forecastChart');
+  if(fc) new Chart(fc,{type:'line',data:{labels:lbl,datasets:[
+    {label:'Temp °C',data:hrs.temperature_2m.slice(idx,idx+24),borderColor:'#63b3ed',backgroundColor:'rgba(99,179,237,0.08)',tension:0.45,pointRadius:0,borderWidth:2,fill:true},
+    {label:'Feels °C',data:hrs.apparent_temperature.slice(idx,idx+24),borderColor:'#f6ad55',tension:0.45,pointRadius:0,borderWidth:1.5,borderDash:[5,4]}
+  ]},options:chartCfg('°C')});
+}).catch(()=>{});
 
 fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=european_aqi,pm2_5&timezone=auto`)
 .then(r=>r.json()).then(d=>{
-  const c=d.current;
-  document.getElementById('w-aqi').textContent=c.european_aqi;
-  document.getElementById('w-pm25').textContent=c.pm2_5.toFixed(1);
+  $s('w-aqi',  d.current.european_aqi);
+  $s('w-pm25', d.current.pm2_5.toFixed(1));
 }).catch(()=>{});
 
-/* ======== LIVE DATA PAGE ======== */
-let _liveBuilt=false;
+/* ── Live Data tab — full dashboard ── */
+let _liveBuilt = false;
 function buildLiveData(){
-  if(_liveBuilt)return; _liveBuilt=true;
+  if(_liveBuilt) return; _liveBuilt = true;
 
-  const uvLabel=v=>v<=2?['Low','#68d391']:v<=5?['Moderate','#f6ad55']:v<=7?['High','#fc8181']:v<=10?['Very High','#b794f4']:['Extreme','#fc8181'];
-  const aqiLabel=v=>v<=20?['Good','#68d391']:v<=40?['Fair','#a8d16f']:v<=60?['Moderate','#f6ad55']:v<=80?['Poor','#fc8181']:['Very Poor','#b794f4'];
-  const wxLabel=code=>{const m={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',61:'Light rain',63:'Moderate rain',65:'Heavy rain',80:'Rain showers',95:'Thunderstorm'};return m[code]||'Conditions vary';};
-
-  // Weather + hourly
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,precipitation,uv_index,cloud_cover,weather_code&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,uv_index,precipitation&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`)
+  /* 1. Main weather + all hourly/daily charts */
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,wind_direction_10m,precipitation,uv_index,cloud_cover,weather_code&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,uv_index,precipitation,precipitation_probability,shortwave_radiation&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=7`)
   .then(r=>r.json()).then(d=>{
-    const c=d.current;
-    // Update overview widgets too
-    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    const c = d.current;
+    const T = c.temperature_2m, RH = c.relative_humidity_2m, W = c.wind_speed_10m;
 
-    // Dew point approx
-    const T=c.temperature_2m, RH=c.relative_humidity_2m;
-    const dew=(T-(100-RH)/5).toFixed(1);
+    /* computed indices */
+    const dew  = +(T - (100-RH)/5).toFixed(1);
+    let hi = -8.78+1.61*T+2.34*RH-0.146*T*RH-0.0123*T*T-0.0164*RH*RH+0.00222*T*T*RH+0.00723*T*RH*RH;
+    hi = +Math.max(T,hi).toFixed(1);
+    const utci = +(T+0.33*((RH/100)*6.105*Math.exp(17.27*T/(237.7+T)))-0.7*W-4.0).toFixed(1);
+    const wc   = W>4.8 ? +(13.12+0.6215*T-11.37*Math.pow(W,0.16)+0.3965*T*Math.pow(W,0.16)).toFixed(1) : +T.toFixed(1);
+    const thi  = +(T-0.55*(1-0.01*RH)*(T-14.5)).toFixed(1);
 
-    set('ld-temp',  T.toFixed(1));
-    set('ld-feels', c.apparent_temperature.toFixed(1));
-    set('ld-hum',   RH);
-    set('ld-dew',   dew);
-    set('ld-wind',  c.wind_speed_10m.toFixed(1));
-    set('ld-gust',  (c.wind_gusts_10m||0).toFixed(1));
-    set('ld-rain',  (c.precipitation||0).toFixed(1));
-    set('ld-cloud', c.cloud_cover||'—');
-    set('ld-weather-desc', wxLabel(c.weather_code));
+    $s('ld-temp',  T.toFixed(1));   $s('ld-feels', c.apparent_temperature.toFixed(1));
+    $s('ld-hum',   RH);             $s('ld-dew',   dew);   $s('ld-dew2', dew);
+    $s('ld-wind',  W.toFixed(1));   $s('ld-gust',  (c.wind_gusts_10m||0).toFixed(1));
+    $s('ld-rain',  (c.precipitation||0).toFixed(1));
+    $s('ld-cloud', c.cloud_cover!=null ? c.cloud_cover : '—');
+    $s('ld-weather-desc', wxLabel(c.weather_code));
+    $s('ld-winddir',       (c.wind_direction_10m||0).toFixed(0));
+    $s('ld-winddir-label', dirLabel(c.wind_direction_10m||0));
+    $s('ld-cloudbase', Math.max(0,Math.round((T-dew)/8*1000)));
+    $s('ld-utci',utci); $s('ld-hi',hi); $s('ld-wc',wc); $s('ld-thi',thi);
 
-    const uv=c.uv_index||0;
-    set('ld-uv', uv.toFixed(1));
-    const [uvl,uvc]=uvLabel(uv);
-    const uvEl=document.getElementById('ld-uv-label');
-    if(uvEl){uvEl.textContent=uvl; uvEl.style.color=uvc;}
+    /* UV */
+    const uv = c.uv_index||0; $s('ld-uv',uv.toFixed(1));
+    const [uvl,uvc] = uvLabel(uv);
+    const uvEl = document.getElementById('ld-uv-label');
+    if(uvEl){ uvEl.textContent=uvl; uvEl.style.color=uvc; }
 
-    document.getElementById('live-ts').textContent=
-      'Updated '+new Date(c.time).toLocaleString('en-GB',{timeZone:'Asia/Colombo'})+' LKT · Auto-refresh on load';
+    /* UTCI label */
+    const utciEl = document.getElementById('ld-utci-label');
+    if(utciEl){
+      const [ul,uc] = utci>46?['Extreme stress','#fc8181']:utci>38?['Very strong','#f6ad55']:utci>32?['Strong stress','#fbd38d']:['Moderate','#68d391'];
+      utciEl.textContent=ul; utciEl.style.color=uc;
+    }
+    /* THI label */
+    const thiEl = document.getElementById('ld-thi-label');
+    if(thiEl) thiEl.textContent = thi>80?'Very uncomfortable':thi>75?'Uncomfortable':thi>70?'Slightly uncomfortable':'Comfortable';
 
-    // 48h hourly labels
-    const now=new Date(c.time);
-    const nowIdx=d.hourly.time.findIndex(t=>new Date(t)>=now);
-    const hrs48=d.hourly.time.slice(nowIdx,nowIdx+48);
-    const lbl48=hrs48.map(t=>{const dt=new Date(t);return dt.getHours()===0?dt.toLocaleDateString('en-GB',{weekday:'short'}):dt.getHours()+'h';});
+    document.getElementById('live-ts').textContent =
+      'Updated '+new Date(c.time).toLocaleString('en-GB',{timeZone:'Asia/Colombo'})+' LKT · Open-Meteo API';
 
-    const chartOpts=(yLabel)=>({responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
-      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
-              y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},title:{display:!!yLabel,text:yLabel,color:'#566070',font:{size:9}}}}});
+    /* Sunrise/Sunset from daily */
+    if(d.daily?.sunrise?.[0]){
+      $s('ld-sunrise', fmt12(d.daily.sunrise[0]));
+      $s('ld-sunset',  fmt12(d.daily.sunset[0]));
+      const rMs = new Date(d.daily.sunrise[0]).getTime();
+      const sMs = new Date(d.daily.sunset[0]).getTime();
+      $s('ld-daylight', ((sMs-rMs)/3600000).toFixed(1));
+      $s('ld-solarnoon', fmt12(new Date((rMs+sMs)/2).toISOString()));
+    }
 
-    // Temp chart
+    /* 48h slices */
+    const nowIdx = d.hourly.time.findIndex(t => new Date(t) >= new Date(c.time));
+    const sl = arr => arr.slice(nowIdx,nowIdx+48);
+    const lbl48 = d.hourly.time.slice(nowIdx,nowIdx+48).map(t => {
+      const dt=new Date(t);
+      return dt.getHours()===0 ? dt.toLocaleDateString('en-GB',{weekday:'short'}) : dt.getHours()+'h';
+    });
+
+    /* Temperature */
     new Chart(document.getElementById('ld-tempChart'),{type:'line',data:{labels:lbl48,datasets:[
-      {label:'Air Temp °C',data:d.hourly.temperature_2m.slice(nowIdx,nowIdx+48),borderColor:'#63b3ed',backgroundColor:'rgba(99,179,237,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
-      {label:'Feels Like °C',data:d.hourly.apparent_temperature.slice(nowIdx,nowIdx+48),borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.05)',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[5,4],fill:false}
-    ]},options:chartOpts('°C')});
+      {label:'Air Temp °C',data:sl(d.hourly.temperature_2m),borderColor:'#63b3ed',backgroundColor:'rgba(99,179,237,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
+      {label:'Feels Like °C',data:sl(d.hourly.apparent_temperature),borderColor:'#f6ad55',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[5,4]}
+    ]},options:chartCfg('°C')});
 
-    // Humidity + precip
+    /* Humidity + precip bar */
     new Chart(document.getElementById('ld-humChart'),{type:'line',data:{labels:lbl48,datasets:[
-      {label:'Humidity %',data:d.hourly.relative_humidity_2m.slice(nowIdx,nowIdx+48),borderColor:'#4fd1c5',backgroundColor:'rgba(79,209,197,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
-      {label:'Precip mm',data:d.hourly.precipitation.slice(nowIdx,nowIdx+48),type:'bar',backgroundColor:'rgba(99,179,237,0.45)',yAxisID:'y1',maxBarThickness:6}
+      {label:'Humidity %',data:sl(d.hourly.relative_humidity_2m),borderColor:'#4fd1c5',backgroundColor:'rgba(79,209,197,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
+      {label:'Precip mm',type:'bar',data:sl(d.hourly.precipitation),backgroundColor:'rgba(99,179,237,0.45)',yAxisID:'y1',maxBarThickness:5}
     ]},options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
       scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
               y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
               y1:{position:'right',ticks:{color:'#566070',font:{size:9}},grid:{display:false}}}}});
 
-    // Wind chart
+    /* Wind */
     new Chart(document.getElementById('ld-windChart'),{type:'line',data:{labels:lbl48,datasets:[
-      {label:'Wind km/h',data:d.hourly.wind_speed_10m.slice(nowIdx,nowIdx+48),borderColor:'#68d391',backgroundColor:'rgba(104,211,145,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
-      {label:'Gusts km/h',data:d.hourly.wind_gusts_10m.slice(nowIdx,nowIdx+48),borderColor:'#fc8181',backgroundColor:'rgba(252,129,129,0.05)',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3],fill:false}
-    ]},options:chartOpts('km/h')});
+      {label:'Wind km/h',data:sl(d.hourly.wind_speed_10m),borderColor:'#68d391',backgroundColor:'rgba(104,211,145,0.08)',tension:0.4,pointRadius:0,borderWidth:2,fill:true},
+      {label:'Gusts km/h',data:sl(d.hourly.wind_gusts_10m),borderColor:'#fc8181',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3]}
+    ]},options:chartCfg('km/h')});
 
-    // UV chart
+    /* UV */
     new Chart(document.getElementById('ld-uvChart'),{type:'line',data:{labels:lbl48,datasets:[
-      {label:'UV Index',data:d.hourly.uv_index.slice(nowIdx,nowIdx+48),borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.12)',tension:0.4,pointRadius:0,borderWidth:2,fill:true}
+      {label:'UV Index',data:sl(d.hourly.uv_index),borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.12)',tension:0.4,pointRadius:0,borderWidth:2,fill:true}
     ]},options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
       scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
-              y:{min:0,max:12,ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+              y:{min:0,ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}}); 
 
-    // 7-day chart
-    const dayLabels=d.daily.time.map(t=>new Date(t).toLocaleDateString('en-GB',{weekday:'short',day:'numeric'}));
-    new Chart(document.getElementById('ld-7dayChart'),{type:'bar',data:{labels:dayLabels,datasets:[
-      {label:'Max °C',data:d.daily.temperature_2m_max,backgroundColor:'rgba(252,129,129,0.6)',borderRadius:4,maxBarThickness:32},
-      {label:'Min °C',data:d.daily.temperature_2m_min,backgroundColor:'rgba(99,179,237,0.5)',borderRadius:4,maxBarThickness:32}
-    ]},options:chartOpts('°C')});
+    /* Solar radiation */
+    const radEl = document.getElementById('ld-radChart');
+    if(radEl) new Chart(radEl,{type:'line',data:{labels:lbl48,datasets:[
+      {label:'Shortwave W/m²',data:sl(d.hourly.shortwave_radiation),borderColor:'#fbd38d',backgroundColor:'rgba(251,211,141,0.15)',tension:0.4,pointRadius:0,borderWidth:2,fill:true}
+    ]},options:chartCfg('W/m²')});
 
-  }).catch(e=>{ document.getElementById('live-ts').textContent='Weather data unavailable — '+e.message; });
+    /* Precipitation probability */
+    const ppEl = document.getElementById('ld-precipChart');
+    if(ppEl) new Chart(ppEl,{type:'bar',data:{labels:lbl48,datasets:[
+      {label:'Precip Probability %',data:sl(d.hourly.precipitation_probability),
+       backgroundColor:sl(d.hourly.precipitation_probability).map(v=>v>70?'rgba(99,179,237,0.85)':v>40?'rgba(79,209,197,0.65)':'rgba(99,179,237,0.35)'),
+       borderRadius:2,maxBarThickness:10}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
+      scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{min:0,max:100,ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
 
-  // Air quality hourly
+    /* 7-day outlook */
+    const dayLbl = d.daily.time.map(t => new Date(t).toLocaleDateString('en-GB',{weekday:'short',day:'numeric'}));
+    new Chart(document.getElementById('ld-7dayChart'),{type:'bar',data:{labels:dayLbl,datasets:[
+      {label:'Max °C',data:d.daily.temperature_2m_max,backgroundColor:'rgba(252,129,129,0.65)',borderRadius:4,maxBarThickness:32},
+      {label:'Min °C',data:d.daily.temperature_2m_min,backgroundColor:'rgba(99,179,237,0.55)',borderRadius:4,maxBarThickness:32}
+    ]},options:chartCfg('°C')});
+
+  }).catch(e => { document.getElementById('live-ts').textContent='Weather unavailable — '+e.message; });
+
+  /* 2. Air quality */
   fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=european_aqi,pm2_5&hourly=european_aqi,pm2_5&timezone=auto&forecast_days=2`)
   .then(r=>r.json()).then(d=>{
-    const c=d.current;
-    set('ld-pm25', c.pm2_5.toFixed(1));
-    set('ld-aqi',  c.european_aqi);
-    const [al,ac]=aqiLabel(c.european_aqi);
-    const aqiEl=document.getElementById('ld-aqi-label');
-    if(aqiEl){aqiEl.textContent=al; aqiEl.style.color=ac;}
+    const c = d.current;
+    $s('ld-pm25',c.pm2_5.toFixed(1));
+    $s('ld-aqi', c.european_aqi);
+    const [al,ac] = aqiLabel(c.european_aqi);
+    const aqiEl = document.getElementById('ld-aqi-label');
+    if(aqiEl){ aqiEl.textContent=al; aqiEl.style.color=ac; }
 
-    // AQI chart
-    const now2=new Date();
-    const aqiIdx=d.hourly.time.findIndex(t=>new Date(t)>=now2);
-    const aqiSlice=d.hourly.european_aqi.slice(aqiIdx,aqiIdx+48);
-    const pm25Slice=d.hourly.pm2_5.slice(aqiIdx,aqiIdx+48);
-    const lbl2=d.hourly.time.slice(aqiIdx,aqiIdx+48).map(t=>{const dt=new Date(t);return dt.getHours()===0?dt.toLocaleDateString('en-GB',{weekday:'short'}):dt.getHours()+'h';});
-
+    const nowIdx2   = d.hourly.time.findIndex(t => new Date(t) >= new Date());
+    const aqiSlice  = d.hourly.european_aqi.slice(nowIdx2,nowIdx2+48);
+    const pm25Slice = d.hourly.pm2_5.slice(nowIdx2,nowIdx2+48);
+    const lbl2 = d.hourly.time.slice(nowIdx2,nowIdx2+48).map(t => {
+      const dt=new Date(t);
+      return dt.getHours()===0 ? dt.toLocaleDateString('en-GB',{weekday:'short'}) : dt.getHours()+'h';
+    });
     new Chart(document.getElementById('ld-aqiChart'),{type:'line',data:{labels:lbl2,datasets:[
       {label:'European AQI',data:aqiSlice,borderColor:'#b794f4',backgroundColor:'rgba(183,148,244,0.1)',tension:0.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
-      {label:'PM2.5 µg/m³',data:pm25Slice,borderColor:'#fc8181',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3],fill:false,yAxisID:'y1'}
+      {label:'PM2.5 µg/m³',data:pm25Slice,borderColor:'#fc8181',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,3],yAxisID:'y1'}
     ]},options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{labels:{color:'#8892a4',font:{size:10},boxWidth:10}}},
       scales:{x:{ticks:{color:'#566070',maxTicksLimit:12,font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
               y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
               y1:{position:'right',ticks:{color:'#566070',font:{size:9}},grid:{display:false}}}}});
 
-    // AQI category breakdown bar
-    const cats=[{label:'Good (0–20)',color:'#68d391'},{label:'Fair (21–40)',color:'#a8d16f'},{label:'Moderate (41–60)',color:'#f6ad55'},{label:'Poor (61–80)',color:'#fc8181'},{label:'Very Poor (81+)',color:'#b794f4'}];
+    const cats=[{l:'Good (0–20)',c:'#68d391'},{l:'Fair (21–40)',c:'#a8d16f'},{l:'Moderate (41–60)',c:'#f6ad55'},{l:'Poor (61–80)',c:'#fc8181'},{l:'Very Poor (81+)',c:'#b794f4'}];
     const counts=[0,0,0,0,0];
-    aqiSlice.forEach(v=>{ if(v<=20)counts[0]++; else if(v<=40)counts[1]++; else if(v<=60)counts[2]++; else if(v<=80)counts[3]++; else counts[4]++; });
-    const total=counts.reduce((a,b)=>a+b,1);
+    aqiSlice.forEach(v=>{if(v<=20)counts[0]++;else if(v<=40)counts[1]++;else if(v<=60)counts[2]++;else if(v<=80)counts[3]++;else counts[4]++;});
+    const tot=counts.reduce((a,b)=>a+b,1);
     const bkEl=document.getElementById('ld-aqi-breakdown');
-    if(bkEl){ bkEl.innerHTML=cats.map((c,i)=>`
+    if(bkEl) bkEl.innerHTML=cats.map((ct,i)=>`
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;"></div>
-        <div style="flex:1;font-size:12px;color:var(--text2);">${c.label}</div>
-        <div style="width:${Math.round((counts[i]/total)*140)}px;height:6px;background:${c.color};border-radius:3px;min-width:2px;"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:${ct.c};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;color:var(--text2);">${ct.l}</div>
+        <div style="width:${Math.round((counts[i]/tot)*140)}px;height:6px;background:${ct.c};border-radius:3px;min-width:2px;"></div>
         <div style="font-size:11px;color:var(--text3);min-width:28px;text-align:right;">${counts[i]}h</div>
-      </div>`).join(''); }
+      </div>`).join('');
   }).catch(()=>{});
+
+  /* 3. Marine / coastal */
+  fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&current=wave_height,sea_surface_temperature&timezone=auto`)
+  .then(r=>r.json()).then(d=>{
+    const c=d.current;
+    $s('ld-wave',(c.wave_height||0).toFixed(1));
+    $s('ld-sst', (c.sea_surface_temperature||0).toFixed(1));
+    $s('ld-wave-label', c.wave_height<0.5?'Calm':c.wave_height<1.5?'Slight':c.wave_height<2.5?'Moderate':'Rough');
+  }).catch(()=>{ $s('ld-wave','N/A'); $s('ld-sst','N/A'); });
+
 }
 
-// Trigger livedata build when that page is opened
-const _origSwitchPage=switchPage;
-function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
 /* ======== CENTRALITY GRID ======== */
 const centralityMaps = {
@@ -2575,6 +2872,72 @@ document.getElementById('scale-tabs').addEventListener('click',e=>{
 const spaceLabels=['Dehiwala E','Malwatta','Hathbodhiya','Dehiwala W','Udyanaya','Kohuwala','Jayathilaka','Kawdana W','Mt. Lavinia','Galwala','Karagampitiya'];
 const fsiVals=[1.9,1.5,1.7,2.1,1.4,1.8,1.3,1.6,2.0,1.5,1.4];
 const osiVals=[0.12,0.18,0.15,0.08,0.22,0.14,0.25,0.17,0.10,0.19,0.21];
+/* ======== OVERVIEW TAB CHARTS ======== */
+/* Land Use donut */
+new Chart(document.getElementById('landUseChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Residential','Commercial','Institutional','Public Space','Water','Transport','Industrial','Cultural','Agriculture','Other'],
+    datasets:[{
+      data:[62,14,7,5,4,3,2,2,0.5,0.5],
+      backgroundColor:['#fc8181','#f6ad55','#90cdf4','#68d391','#63b3ed','#718096','#b794f4','#fbd38d','#9ae6b4','#e2e8f0'],
+      borderColor:'#161b22',borderWidth:2,hoverOffset:8
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+    plugins:{legend:{position:'right',labels:{color:'#8892a4',font:{size:9},boxWidth:8,padding:5}},
+             tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw}%`}}}}
+});
+
+/* Overview population horizontal bar */
+(function(){
+  const ovData=[
+    {gn:'Dehiwala East',pop:8262},{gn:'Mount Lavinia',pop:8086},{gn:'Udyanaya',pop:7122},
+    {gn:'Dehiwala West',pop:7046},{gn:'Kawdana West',pop:6643},{gn:'Galwala',pop:6001},
+    {gn:'Karagampitiya',pop:5376},{gn:'Jayathilaka',pop:4186},{gn:'Malwatta',pop:3751}
+  ];
+  const maxOv=8262;
+  new Chart(document.getElementById('overviewPopChart'),{
+    type:'bar',
+    data:{
+      labels:ovData.map(d=>d.gn),
+      datasets:[{label:'Population',data:ovData.map(d=>d.pop),
+        backgroundColor:ovData.map(d=>d.pop===maxOv?'#f6ad55':'rgba(99,179,237,0.6)'),
+        borderRadius:3,maxBarThickness:20}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw.toLocaleString()}`}}},
+      scales:{x:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#8892a4',font:{size:9}},grid:{display:false}}}}
+  });
+})();
+
+/* Overview UMI Radar */
+new Chart(document.getElementById('overviewRadar'),{
+  type:'radar',
+  data:{
+    labels:['Centrality','FSI','GSI','OSR','Entropy'],
+    datasets:[{
+      label:'Study Area Avg',
+      data:[0.62,0.58,0.42,0.19,0.61],
+      backgroundColor:'rgba(99,179,237,0.15)',
+      borderColor:'#63b3ed',
+      pointBackgroundColor:'#63b3ed',
+      pointRadius:4,
+      borderWidth:2
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8892a4',font:{size:11},boxWidth:8}}},
+    scales:{r:{
+      angleLines:{color:'rgba(255,255,255,0.08)'},
+      grid:{color:'rgba(255,255,255,0.08)'},
+      pointLabels:{color:'#8892a4',font:{size:11}},
+      ticks:{color:'#566070',font:{size:8},backdropColor:'transparent',stepSize:0.2},
+      min:0,max:1
+    }}}
+});
+
 new Chart(document.getElementById('spaceChart'),{
   type:'bar',
   data:{labels:spaceLabels,datasets:[
