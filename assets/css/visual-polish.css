@@ -1,0 +1,72 @@
+/* ===== Overview interaction, map explanations and light-mode refinement ===== */
+.overview-map-explorer{margin-top:42px!important;margin-left:10px!important;padding:8px!important;width:206px;background:rgba(13,17,23,.9)!important;border:1px solid rgba(99,179,237,.22)!important;border-radius:10px!important;box-shadow:0 12px 30px rgba(0,0,0,.3)!important;backdrop-filter:blur(10px)}
+.overview-map-explorer-title{margin:0 0 6px;color:#e2e8f0;font:700 10px 'Space Grotesk',sans-serif;letter-spacing:.03em}
+.overview-map-explorer select{width:100%;height:31px;border:1px solid rgba(255,255,255,.13);border-radius:7px;background:#172033;color:#dbeafe;padding:0 8px;font:600 9px Inter,sans-serif;outline:none}
+.overview-map-explorer select:focus{border-color:#63b3ed;box-shadow:0 0 0 3px rgba(99,179,237,.12)}
+.overview-map-explorer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+.overview-map-explorer-actions button{height:29px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.06);color:#cbd5e1;font:700 8px Inter,sans-serif;cursor:pointer;transition:.18s}
+.overview-map-explorer-actions button:hover{background:rgba(99,179,237,.18);border-color:rgba(99,179,237,.55);color:#fff;transform:translateY(-1px)}
+.overview-selection-card{position:absolute;left:50%;bottom:10px;z-index:810;width:min(390px,calc(100% - 300px));transform:translate(-50%,12px);opacity:0;visibility:hidden;pointer-events:none;padding:10px 13px;border-radius:10px;border:1px solid rgba(99,179,237,.28);background:rgba(13,17,23,.9);box-shadow:0 14px 34px rgba(0,0,0,.35);backdrop-filter:blur(12px);transition:.2s}
+.overview-selection-card.visible{opacity:1;visibility:visible;transform:translate(-50%,0);pointer-events:auto}
+.overview-selection-kicker{color:#63b3ed;font:700 8px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.overview-selection-name{margin-top:2px;color:#fff;font:700 14px 'Space Grotesk',sans-serif}
+.overview-selection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.overview-selection-grid span{padding:6px 7px;border-radius:7px;background:rgba(255,255,255,.055);color:#94a3b8;font-size:8px;text-transform:uppercase;letter-spacing:.04em}
+.overview-selection-grid b{display:block;margin-bottom:2px;color:#e2e8f0;font-size:10px;text-transform:none;letter-spacing:0}
+.overview-selection-close{position:absolute;top:7px;right:8px;width:23px;height:23px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#cbd5e1;cursor:pointer}
+#page-overview .map-wrap:fullscreen,#page-overview .map-wrap:-webkit-full-screen{width:100vw;height:100vh;background:#0b1119;border-radius:0}
+#page-overview .map-wrap:fullscreen #leaflet-map,#page-overview .map-wrap:-webkit-full-screen #leaflet-map{width:100%;height:100vh!important;max-height:none!important;min-height:0!important}
+
+.map-explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
+.map-explain-card{position:relative;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:linear-gradient(145deg,var(--bg2),color-mix(in srgb,var(--bg3) 62%,transparent));overflow:hidden}
+.map-explain-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--explain-accent,var(--cyan));opacity:.9}
+.map-explain-label{color:var(--explain-accent,var(--cyan));font:700 8px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.map-explain-title{margin-top:4px;color:var(--text);font:700 11px 'Space Grotesk',sans-serif}
+.map-explain-copy{margin-top:4px;color:var(--text3);font-size:9.5px;line-height:1.55}
+.map-explain-copy strong{color:var(--text2)}
+#environment-map-explanation .map-explain-card[data-env-card]{display:none}
+#environment-map-explanation[data-mode="elevation"] .map-explain-card[data-env-card="elevation"],
+#environment-map-explanation[data-mode="landuse"] .map-explain-card[data-env-card="landuse"]{display:block}
+
+/* Brighter, cleaner light mode across interface and maps. */
+html.light body{background:#edf2f7}
+html.light .sidebar{background:#f8fafc;border-right-color:#d7e0ea}
+html.light .topbar{background:rgba(248,250,252,.96);border-bottom-color:#d7e0ea;box-shadow:0 5px 18px rgba(15,23,42,.045)}
+html.light .stat-card,html.light .panel,html.light .dl-card,html.light .model3d-control-card,html.light .synth-kpi,html.light .synth-toolbar,html.light .synth-canvas-panel,html.light .synth-detail-panel{background:#fff;border-color:#d7e0ea;box-shadow:0 7px 22px rgba(15,23,42,.055)}
+html.light .stat-card:hover,html.light .panel:hover{border-color:#b7c8da;box-shadow:0 10px 28px rgba(15,23,42,.085)}
+html.light .nav-item:hover{background:#edf4fb}
+html.light .nav-item.active{background:linear-gradient(90deg,rgba(37,99,235,.12),rgba(14,116,144,.05));color:#1d4ed8}
+html.light .analysis-toolbar,html.light .real-map-toolbar,html.light .ip-summary-strip{background:#f8fafc;border-color:#d7e0ea}
+html.light .analysis-toolbar-pill,html.light .synth-meta-chip{background:#f1f5f9;border-color:#cbd5e1;color:#475569}
+html.light .real-layer-btn,html.light .scale-tab,html.light .model3d-btn,html.light .synth-btn,html.light .synth-icon-btn,html.light .synth-select{background:#f8fafc;border-color:#cbd5e1;color:#475569}
+html.light .real-layer-btn:hover,html.light .scale-tab:hover,html.light .model3d-btn:hover,html.light .synth-btn:hover{background:#eef6ff;border-color:#60a5fa;color:#1d4ed8}
+html.light .real-map-panel{border-color:#cbd5e1;box-shadow:0 12px 30px rgba(15,23,42,.12)}
+html.light .real-map-panel::after{box-shadow:inset 0 0 0 1px rgba(15,23,42,.06),inset 0 -36px 65px rgba(15,23,42,.025)}
+html.light .real-map-legend{background:rgba(255,255,255,.95);border-color:rgba(15,23,42,.16);color:#334155;box-shadow:0 12px 30px rgba(15,23,42,.18)}
+html.light .real-map-legend-title{color:#0f172a;border-bottom-color:#d7e0ea}
+html.light .real-map-legend-swatch{border-color:rgba(15,23,42,.18);box-shadow:none}
+html.light .leaflet-popup-content-wrapper,html.light .leaflet-popup-tip{background:#fff;color:#334155}
+html.light .real-popup-title{color:#0f172a}
+html.light .real-popup-row{border-top-color:#e2e8f0}
+html.light .real-popup-row span{color:#64748b}
+html.light .real-popup-row b{color:#1e293b}
+html.light .real-map-summary-card{background:linear-gradient(145deg,#fff,#f4f7fb);border-color:#d7e0ea}
+html.light .real-map-note{color:#64748b}
+html.light .map-explain-card{background:linear-gradient(145deg,#fff,#f4f7fb);border-color:#d7e0ea;box-shadow:0 7px 18px rgba(15,23,42,.045)}
+html.light .overview-map-explorer{background:rgba(255,255,255,.96)!important;border-color:#cbd5e1!important;box-shadow:0 12px 26px rgba(15,23,42,.16)!important}
+html.light .overview-map-explorer-title{color:#0f172a}
+html.light .overview-map-explorer select{background:#f8fafc;border-color:#cbd5e1;color:#334155}
+html.light .overview-map-explorer-actions button{background:#f1f5f9;border-color:#cbd5e1;color:#475569}
+html.light .overview-selection-card{background:rgba(255,255,255,.96);border-color:#bfdbfe;box-shadow:0 14px 30px rgba(15,23,42,.18)}
+html.light .overview-selection-name,html.light .overview-selection-grid b{color:#0f172a}
+html.light .overview-selection-grid span{background:#f1f5f9;color:#64748b}
+html.light #page-model3d .model3d-stage{background:linear-gradient(180deg,#eaf2fb,#dbe7f3)}
+html.light .synth-canvas-panel{background:#f8fafc}
+html.light .synth-tooltip,html.light .synth-zoom-readout{background:rgba(255,255,255,.94);color:#334155;border-color:#cbd5e1}
+
+@media(max-width:900px){.map-explain-grid{grid-template-columns:1fr 1fr}.overview-selection-card{width:calc(100% - 26px);left:13px;transform:translateY(12px)}.overview-selection-card.visible{transform:translateY(0)}}
+@media(max-width:600px){.map-explain-grid{grid-template-columns:1fr}.overview-map-explorer{display:none}.overview-selection-card{bottom:45px}.overview-selection-grid{grid-template-columns:1fr 1fr}.overview-selection-grid span:last-child{grid-column:1/-1}}
+.overview-layer-btn{background:rgba(13,17,23,.86)!important;border-color:rgba(99,179,237,.18)!important;color:#94a3b8!important;box-shadow:0 5px 14px rgba(0,0,0,.18)}
+.overview-layer-btn.active{background:rgba(99,179,237,.22)!important;border-color:rgba(99,179,237,.48)!important;color:#7dd3fc!important}
+html.light .overview-layer-btn{background:rgba(255,255,255,.95)!important;border-color:#cbd5e1!important;color:#475569!important;box-shadow:0 5px 14px rgba(15,23,42,.12)}
+html.light .overview-layer-btn.active{background:#e0f2fe!important;border-color:#60a5fa!important;color:#075985!important}

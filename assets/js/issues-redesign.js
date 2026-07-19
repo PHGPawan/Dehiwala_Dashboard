@@ -57,9 +57,9 @@
     else page.append(intro,grid);
 
     page.querySelectorAll(':scope > .ip-section-label').forEach(el=>el.remove());
-    // Start compact: keep the first item in each column open for quick comparison.
+    // Start fully collapsed so the comparison page is compact by default.
     [issues,potentials].forEach(acc=>{
-      acc.querySelectorAll('.ip-card').forEach((card,i)=>setOpen(card,i===0));
+      acc.querySelectorAll('.ip-card').forEach(card=>setOpen(card,false));
     });
   }
   document.addEventListener('DOMContentLoaded',init);

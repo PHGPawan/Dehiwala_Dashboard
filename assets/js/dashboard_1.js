@@ -152,6 +152,20 @@ const ROAD_STYLE = {
   unclassified:   { color:'#a0aec0', weight:1.5, opacity:0.65, dashArray:null },
 };
 const DEFAULT_ROAD_STYLE = { color:'#8892a4', weight:1.2, opacity:0.55, dashArray:null };
+const ROAD_STYLE_LIGHT = {
+  trunk:          { color:'#b45309', weight:4,   opacity:0.95, dashArray:null },
+  secondary:      { color:'#1d4ed8', weight:3.4, opacity:0.90, dashArray:null },
+  secondary_link: { color:'#2563eb', weight:2.4, opacity:0.78, dashArray:'6,4' },
+  tertiary:       { color:'#0f766e', weight:2.4, opacity:0.86, dashArray:null },
+  residential:    { color:'#52677f', weight:1.45,opacity:0.72, dashArray:null },
+  living_street:  { color:'#7e22ce', weight:1.45,opacity:0.72, dashArray:null },
+  service:        { color:'#64748b', weight:1.15,opacity:0.62, dashArray:'4,3' },
+  path:           { color:'#15803d', weight:1.15,opacity:0.60, dashArray:'3,4' },
+  footway:        { color:'#16a34a', weight:1.0, opacity:0.54, dashArray:'2,4' },
+  steps:          { color:'#dc2626', weight:1.15,opacity:0.60, dashArray:'2,3' },
+  unclassified:   { color:'#64748b', weight:1.4, opacity:0.66, dashArray:null },
+};
+const DEFAULT_ROAD_STYLE_LIGHT = { color:'#64748b', weight:1.15, opacity:0.58, dashArray:null };
 
 /* ---------- Marker colours by pop density ---------- */
 function gnColor(gn){
@@ -168,6 +182,7 @@ const map = L.map('leaflet-map', {
   attributionControl:true,
   scrollWheelZoom:true
 }).setView([6.853, 79.8690], 15);
+window.__overviewMap = map;
 
 L.control.zoom({position:'topright'}).addTo(map);
 
@@ -293,7 +308,9 @@ document.head.appendChild(mapStyle);
 let activeRoadLayer = null;
 function getStyle(f){
   const cls = f.properties.fclass;
-  const s = ROAD_STYLE[cls] || DEFAULT_ROAD_STYLE;
+  const isLight = document.documentElement.classList.contains('light');
+  const source = isLight ? ROAD_STYLE_LIGHT : ROAD_STYLE;
+  const s = source[cls] || (isLight ? DEFAULT_ROAD_STYLE_LIGHT : DEFAULT_ROAD_STYLE);
   return {color:s.color, weight:s.weight, opacity:s.opacity, dashArray:s.dashArray, lineCap:'round', lineJoin:'round'};
 }
 
@@ -323,9 +340,53 @@ const roadsLayer = L.geoJSON(ROADS_GEOJSON, {
     layer.on('click', function(e){ this.openPopup(e.latlng); });
   }
 }).addTo(map);
+window.__overviewRoadsLayer = roadsLayer;
 
 /* ---------- GN Division markers ---------- */
 const gnMarkers = [];
+const gnMarkerByName = new Map();
+let selectedGNMarker = null;
+let selectedGNHalo = null;
+function densityRank(gn){
+  const sorted=[...gnData].sort((a,b)=>(b.pop/b.area)-(a.pop/a.area));
+  return sorted.findIndex(x=>x.name===gn.name)+1;
+}
+function showGNSelection(gn,marker,{zoom=true}={}){
+  if(selectedGNMarker && selectedGNMarker!==marker){
+    const previous=gnData.find(x=>x.name===selectedGNMarker.__gnName);
+    selectedGNMarker.setStyle({radius:9,weight:2.5,color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117',fillColor:previous?gnColor(previous):'#63b3ed'});
+  }
+  selectedGNMarker=marker;
+  marker.__gnName=gn.name;
+  marker.setStyle({radius:13,weight:4,color:'#ffffff',fillColor:gnColor(gn),fillOpacity:1});
+  if(selectedGNHalo) map.removeLayer(selectedGNHalo);
+  selectedGNHalo=L.circle([gn.lat,gn.lng],{
+    radius:Math.max(180,Math.sqrt(gn.area)*470),
+    color:gnColor(gn),weight:2,opacity:.75,fillColor:gnColor(gn),fillOpacity:.08,dashArray:'6,5',interactive:false
+  }).addTo(map);
+  selectedGNHalo.bringToBack();
+  marker.openPopup();
+  if(zoom) map.flyTo([gn.lat,gn.lng],Math.max(map.getZoom(),16),{duration:.65});
+  const panel=document.getElementById('overview-selection-card');
+  if(panel){
+    const density=Math.round(gn.pop/gn.area);
+    panel.classList.add('visible');
+    panel.innerHTML=`<button type="button" class="overview-selection-close" aria-label="Clear selection">×</button><div class="overview-selection-kicker">Selected GN division</div><div class="overview-selection-name">${gn.name}</div><div class="overview-selection-grid"><span><b>${gn.pop.toLocaleString()}</b>Population</span><span><b>${density.toLocaleString()}/km²</b>Density</span><span><b>#${densityRank(gn)}</b>Density rank</span></div>`;
+    panel.querySelector('.overview-selection-close').onclick=clearGNSelection;
+  }
+  const select=document.getElementById('overview-gn-select');
+  if(select) select.value=gn.name;
+}
+function clearGNSelection(){
+  if(selectedGNMarker){
+    const previous=gnData.find(x=>x.name===selectedGNMarker.__gnName);
+    selectedGNMarker.setStyle({radius:9,weight:2.5,color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117',fillColor:previous?gnColor(previous):'#63b3ed'});
+    selectedGNMarker.closePopup(); selectedGNMarker=null;
+  }
+  if(selectedGNHalo){map.removeLayer(selectedGNHalo);selectedGNHalo=null;}
+  const panel=document.getElementById('overview-selection-card'); if(panel)panel.classList.remove('visible');
+  const select=document.getElementById('overview-gn-select'); if(select)select.value='';
+}
 gnData.forEach(gn => {
   const col = gnColor(gn);
   const density = Math.round(gn.pop / gn.area).toLocaleString();
@@ -343,10 +404,14 @@ gnData.forEach(gn => {
   </div>`;
 
   marker.bindPopup(html, {className:'gn-popup', maxWidth:220});
-  marker.on('mouseover', function(){ this.openPopup(); this.setStyle({radius:12, weight:3}); });
-  marker.on('mouseout',  function(){ this.closePopup(); this.setStyle({radius:9, weight:2.5}); });
-  gnMarkers.push(marker);
+  marker.__gnName=gn.name;
+  marker.on('mouseover', function(){ if(this!==selectedGNMarker){this.openPopup();this.setStyle({radius:11.5,weight:3});} });
+  marker.on('mouseout', function(){ if(this!==selectedGNMarker){this.closePopup();this.setStyle({radius:9,weight:2.5});} });
+  marker.on('click', function(){showGNSelection(gn,this,{zoom:false});});
+  gnMarkers.push(marker); gnMarkerByName.set(gn.name,marker);
 });
+window.__overviewGNData=gnData;
+window.__overviewGNMarkers=gnMarkerByName;
 
 /* ---------- Info bar ---------- */
 const mapWrap = document.querySelector('.map-wrap');
@@ -382,6 +447,10 @@ legendEl.innerHTML = `<button type="button" class="legend-mobile-toggle" aria-ex
   + gnLegend.map(i=>`<div class="leg-row"><div class="leg-dot" style="background:${i.color}"></div>${i.label}</div>`).join('')
   + `</div>`;
 mapWrap.appendChild(legendEl);
+const selectionCard=document.createElement('div');
+selectionCard.id='overview-selection-card';
+selectionCard.className='overview-selection-card';
+mapWrap.appendChild(selectionCard);
 
 const legendToggle = legendEl.querySelector('.legend-mobile-toggle');
 function setLegendExpanded(expanded){
@@ -405,11 +474,11 @@ map.fitBounds([[6.841, 79.860],[6.865, 79.878]], {padding:[10,10]});
 const LayerControl = L.Control.extend({
   options:{position:'topright'},
   onAdd(){
-    const d = L.DomUtil.create('div','');
+    const d = L.DomUtil.create('div','overview-layer-control');
     d.style.cssText='display:flex;flex-direction:column;gap:5px;margin-top:36px;';
     const mkBtn = (label, title, active, fn) => {
-      const b = L.DomUtil.create('button','');
-      b.textContent = label; b.title = title;
+      const b = L.DomUtil.create('button','overview-layer-btn');
+      b.textContent = label; b.title = title; b.classList.toggle('active',!!active);
       b.style.cssText=`background:${active?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'};
         border:1px solid rgba(99,179,237,${active?'.4':'.18'});border-radius:6px;
         color:${active?'#63b3ed':'#8892a4'};cursor:pointer;font-family:Inter,sans-serif;
@@ -425,12 +494,12 @@ const LayerControl = L.Control.extend({
     const rBtn = mkBtn('🛣 Roads','Toggle road layer',true,()=>{
       roadsOn=!roadsOn;
       roadsOn ? roadsLayer.addTo(map) : map.removeLayer(roadsLayer);
-      rBtn.style.background = roadsOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)';
+      rBtn.style.background = roadsOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'; rBtn.classList.toggle('active',roadsOn);
     });
     const gBtn = mkBtn('📍 GN Pts','Toggle GN markers',true,()=>{
       gnOn=!gnOn;
       gnMarkers.forEach(m=> gnOn ? m.addTo(map) : map.removeLayer(m));
-      gBtn.style.background = gnOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)';
+      gBtn.style.background = gnOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'; gBtn.classList.toggle('active',gnOn);
     });
     const fitBtn = mkBtn('⊹ Fit','Fit to bounds',false,()=> map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[10,10]}));
     d.appendChild(rBtn); d.appendChild(gBtn); d.appendChild(fitBtn);
@@ -438,6 +507,26 @@ const LayerControl = L.Control.extend({
   }
 });
 new LayerControl().addTo(map);
+
+/* ---------- GN finder, location and fullscreen controls ---------- */
+const ExplorerControl=L.Control.extend({
+  options:{position:'topleft'},
+  onAdd(){
+    const box=L.DomUtil.create('div','overview-map-explorer leaflet-bar');
+    L.DomEvent.disableClickPropagation(box); L.DomEvent.disableScrollPropagation(box);
+    box.innerHTML=`<div class="overview-map-explorer-title">Explore GN divisions</div><select id="overview-gn-select" aria-label="Select a GN division"><option value="">Choose a GN division…</option>${[...gnData].sort((a,b)=>a.name.localeCompare(b.name)).map(g=>`<option value="${g.name}">${g.name}</option>`).join('')}</select><div class="overview-map-explorer-actions"><button type="button" data-action="locate" title="Show your location">◎ Locate</button><button type="button" data-action="reset" title="Reset map">↺ Reset</button><button type="button" data-action="full" title="Fullscreen map">⛶ Full</button></div>`;
+    const select=box.querySelector('select');
+    select.addEventListener('change',()=>{const gn=gnData.find(g=>g.name===select.value);const marker=gn&&gnMarkerByName.get(gn.name);if(gn&&marker)showGNSelection(gn,marker,{zoom:true});else clearGNSelection();});
+    box.querySelector('[data-action="reset"]').onclick=()=>{clearGNSelection();map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[14,14]});};
+    box.querySelector('[data-action="locate"]').onclick=()=>map.locate({setView:true,maxZoom:16,enableHighAccuracy:true});
+    box.querySelector('[data-action="full"]').onclick=async()=>{const wrap=document.querySelector('#page-overview .map-wrap');try{if(document.fullscreenElement===wrap)await document.exitFullscreen();else await wrap.requestFullscreen();}catch(err){console.warn('Overview fullscreen unavailable',err);}};
+    return box;
+  }
+});
+new ExplorerControl().addTo(map);
+map.on('locationfound',e=>{L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:3,fillColor:'#2563eb',fillOpacity:1}).addTo(map).bindPopup(`<b>Your location</b><br>Accuracy: ${Math.round(e.accuracy)} m`).openPopup();});
+map.on('locationerror',()=>L.popup().setLatLng(map.getCenter()).setContent('Location access is unavailable.').openOn(map));
+document.addEventListener('fullscreenchange',()=>setTimeout(()=>{map.invalidateSize();map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[18,18]});},150));
 
 /* ---------- Scale bar ---------- */
 L.control.scale({position:'bottomright', imperial:false}).addTo(map);
@@ -447,7 +536,7 @@ const _origToggle = document.querySelector('.theme-toggle') && document.querySel
 const themeBtn = document.querySelector('.theme-toggle');
 if(themeBtn){
   const _orig = themeBtn.onclick;
-  themeBtn.addEventListener('click', ()=>{ setTimeout(updateTiles, 50); });
+  themeBtn.addEventListener('click', ()=>{ setTimeout(()=>{updateTiles();roadsLayer.setStyle(getStyle);gnMarkers.forEach(m=>{if(m!==selectedGNMarker)m.setStyle({color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117'});});}, 70); });
 }
 
 })();

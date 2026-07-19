@@ -24,6 +24,20 @@ const palettes = {
     entropy:['#073b4c','#116b76','#2d9488','#8cbf72','#e3b44c']
   }
 };
+const palettesLight={
+  centrality:{
+    b:['#1e3a5f','#2563a6','#38a3c7','#f59e42','#c93b4b'],
+    c:['#5b2c83','#6b5db5','#4b8fb4','#38a889','#c5ad35']
+  },
+  indices:{
+    fsi:['#dbeafe','#93c5fd','#3b82f6','#0ea5e9','#0f766e'],
+    gsi:['#dcfce7','#86efac','#22c55e','#15803d','#14532d'],
+    osr:['#fee2e2','#fca5a5','#fb923c','#84cc16','#15803d'],
+    umi:['#ede9fe','#c4b5fd','#8b5cf6','#c026d3','#be123c'],
+    entropy:['#cffafe','#67e8f9','#14b8a6','#84cc16','#d97706']
+  }
+};
+const activePalette=(group,key)=>document.documentElement.classList.contains('light')?palettesLight[group][key]:palettes[group][key];
 const landuseColors={
   'Residential':'#E76F51',
   'Commercial':'#C1121F',
@@ -213,17 +227,17 @@ function updateCentrality(first=false){
   const s=centralityState;if(!s.map||!s.data)return;
   const key=s.metric+s.radius; if(s.layer)s.map.removeLayer(s.layer);
   const selected={type:'FeatureCollection',features:s.data.features.filter(f=>f.properties.metric===key)};
-  const metricPalette=palettes.centrality[s.metric];
+  const metricPalette=activePalette('centrality',s.metric);
   s.layer=L.geoJSON(selected,{renderer:L.canvas({padding:.5}),style:f=>({
     color:metricPalette[f.properties.class],
-    weight:1.25+(f.properties.class*.48),
+    weight:0.72+(f.properties.class*.24),
     opacity:.9,
     lineCap:'round',lineJoin:'round'
   }),onEachFeature:(f,l)=>{
     const p=f.properties;
     l.bindPopup(popupRows(`${centralityNames[s.metric]} · ${s.radius} m`,[['Class',`${p.class+1} of 5`],['Value range',`${formatNumber(p.min)} – ${formatNumber(p.max)}`],['Street segments',formatNumber(p.count,0)]]));
     l.on({
-      mouseover:e=>e.target.setStyle({weight:Math.min(5.2,2.2+(p.class*.6)),opacity:1}),
+      mouseover:e=>e.target.setStyle({weight:Math.min(2.8,1.15+(p.class*.32)),opacity:1}),
       mouseout:e=>s.layer.resetStyle(e.target)
     });
   }}).addTo(s.map);
@@ -267,12 +281,13 @@ async function initIndexMap(which){
 function indexStyle(state,f){
   const br=state.meta[state.metric].breaks;
   const cls=classFor(Number(f.properties[state.metric]),br);
-  const palette=palettes.indices[state.metric];
-  return{fillColor:palette[cls],fillOpacity:.78,color:'rgba(255,255,255,.45)',weight:.42};
+  const palette=activePalette('indices',state.metric);
+  const light=document.documentElement.classList.contains('light');
+  return{fillColor:palette[cls],fillOpacity:(light ? 0.82 : 0.78),color:light?'rgba(30,41,59,.42)':'rgba(255,255,255,.45)',weight:(light ? 0.5 : 0.42)};
 }
 function renderIndexLegend(state){
   const br=state.meta[state.metric].breaks;
-  const palette=palettes.indices[state.metric];
+  const palette=activePalette('indices',state.metric);
   makeLegend(state.legend,indexTitle(state.metric),palette.map((c,i)=>({color:c,label:`${formatNumber(br[i],3)} – ${formatNumber(br[i+1],3)}`})));
 }
 function switchIndex(which,metric){const state=layers[which];if(!state)return;state.metric=metric;state.layer.setStyle(f=>indexStyle(state,f));renderIndexLegend(state);document.getElementById(`${which}-active-layer`).textContent=indexTitle(metric);}
@@ -339,7 +354,7 @@ async function initEnvironment(){
     const [landuse,elevation]=await Promise.all([getJSON('assets/data/landuse.geojson'),getJSON('assets/data/elevation_grid.json')]);
     const map=baseMap('landuse-real-map');maps.landuse=map;
     environmentState.map=map;environmentState.landuseData=landuse;environmentState.elevationData=elevation;
-    const landuseLayer=L.geoJSON(landuse,{renderer:L.canvas({padding:.5}),style:f=>({fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:.84,color:'rgba(15,23,42,.62)',weight:.7}),onEachFeature:(f,l)=>{
+    const landuseLayer=L.geoJSON(landuse,{renderer:L.canvas({padding:.5}),style:f=>{const light=document.documentElement.classList.contains('light');return{fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:(light ? 0.78 : 0.84),color:light?'rgba(30,41,59,.55)':'rgba(15,23,42,.62)',weight:(light ? 0.85 : 0.7)}},onEachFeature:(f,l)=>{
       l.bindPopup(popupRows(f.properties.main||'Land use',[['Sub-class',f.properties.sub||'—'],['Domain',f.properties.domain||'—'],['Recorded area',formatNumber(f.properties.area,2)]]));
       l.on({mouseover:e=>e.target.setStyle({weight:2,color:'#ffffff',fillOpacity:.96}),mouseout:e=>landuseLayer.resetStyle(e.target)});
     }});
@@ -360,6 +375,25 @@ async function initEnvironment(){
 function bindEnvironmentControls(){
   document.querySelectorAll('#environment-layer-tabs .real-layer-btn').forEach(btn=>btn.addEventListener('click',()=>switchEnvironmentLayer(btn.dataset.metric,{fitLayer:true})));
 }
+
+function refreshThematicStyles(){
+  if(centralityState.layer){
+    const palette=activePalette('centrality',centralityState.metric);
+    centralityState.layer.setStyle(f=>({color:palette[f.properties.class],weight:0.72+(f.properties.class*.24),opacity:.9,lineCap:'round',lineJoin:'round'}));
+    const key=centralityState.metric+centralityState.radius;
+    const br=centralityState.meta&&centralityState.meta[key]&&centralityState.meta[key].breaks;
+    if(br)makeLegend('centrality-real-legend',`${centralityNames[centralityState.metric]} · ${centralityState.radius} m`,palette.map((c,i)=>({color:c,label:`${formatNumber(br[i])} – ${formatNumber(br[i+1])}`})));
+  }
+  ['density','maturation'].forEach(name=>{
+    const state=layers[name];
+    if(state&&state.layer){state.layer.setStyle(f=>indexStyle(state,f));renderIndexLegend(state);}
+  });
+  if(environmentState.landuseLayer){
+    environmentState.landuseLayer.setStyle(f=>{const light=document.documentElement.classList.contains('light');return{fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:(light ? 0.78 : 0.84),color:light?'rgba(30,41,59,.55)':'rgba(15,23,42,.62)',weight:(light ? 0.85 : 0.7)}});
+    if(environmentState.mode==='landuse')renderLanduseLegend();
+  }
+}
+window.__refreshRealMapThemes=refreshThematicStyles;
 
 function initForPage(page){
   if(page==='centrality')initCentrality();

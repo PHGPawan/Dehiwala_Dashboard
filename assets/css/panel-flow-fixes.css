@@ -1,0 +1,101 @@
+/* ================================================================
+   Normal page-flow fixes
+   Removes nested scrolling from 3D and Synthesis side panels.
+   ================================================================ */
+@media (min-width:901px){
+  /* 3D MODEL: keep the model viewport controlled, but let the right panel
+     grow naturally and use only the dashboard page scrollbar. */
+  #page-model3d .model3d-layout{
+    align-items:start !important;
+  }
+  #page-model3d .model3d-control-panel{
+    height:auto !important;
+    max-height:none !important;
+    min-height:0 !important;
+    overflow:visible !important;
+    overscroll-behavior:auto !important;
+    padding-right:0 !important;
+    scrollbar-width:none !important;
+  }
+  #page-model3d .model3d-control-panel::-webkit-scrollbar{
+    display:none !important;
+    width:0 !important;
+  }
+  #page-model3d .model3d-control-card{
+    padding:10px 11px !important;
+  }
+  #page-model3d .model3d-control-card + .model3d-control-card{
+    margin-top:9px !important;
+  }
+  #page-model3d .model3d-control-title{
+    margin-bottom:7px !important;
+    font-size:9px !important;
+  }
+  #page-model3d .model3d-range-row{
+    margin-top:7px !important;
+  }
+  #page-model3d .model3d-profile{
+    padding:9px !important;
+  }
+  #page-model3d .model3d-profile-grid{
+    margin-top:7px !important;
+    gap:5px !important;
+  }
+  #page-model3d .gn3d-list{
+    gap:4px !important;
+  }
+  #page-model3d .gn3d-row{
+    padding:6px 7px !important;
+  }
+
+  /* SYNTHESIS: the network keeps a usable fixed viewport while the details
+     panel expands naturally. No scrollbar inside the details card. */
+  #page-synthesis .synth-stage{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    align-items:start !important;
+  }
+  #page-synthesis .synth-canvas-panel{
+    height:var(--synthesis-primary-h) !important;
+    min-height:300px !important;
+    max-height:490px !important;
+  }
+  #page-synthesis #synthesis-canvas{
+    height:100% !important;
+    min-height:0 !important;
+  }
+  #page-synthesis .synth-detail-panel{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    overscroll-behavior:auto !important;
+    scrollbar-width:none !important;
+    padding:12px !important;
+  }
+  #page-synthesis .synth-detail-panel::-webkit-scrollbar{
+    display:none !important;
+    width:0 !important;
+  }
+  #page-synthesis .synth-detail-content,
+  #page-synthesis .synth-overview{
+    overflow:visible !important;
+    max-height:none !important;
+  }
+  #page-synthesis .synth-relation-list{
+    gap:6px !important;
+  }
+  #page-synthesis .synth-relation-btn{
+    padding:7px 8px !important;
+  }
+}
+
+@media (max-width:900px){
+  #page-model3d .model3d-control-panel,
+  #page-synthesis .synth-detail-panel{
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+}
