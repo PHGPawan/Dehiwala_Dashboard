@@ -27,3 +27,132 @@
   .real-map-legend-row{margin:3px 0}
   .real-map-legend-swatch{width:18px;height:8px}
 }
+
+/* ===== Map viewport and interaction optimisation ===== */
+.real-map-panel{
+  isolation:isolate;
+  min-height:0;
+}
+.real-map-canvas{
+  height:clamp(420px,56dvh,560px);
+  min-height:380px;
+  max-height:560px;
+}
+.real-map-utility{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:700;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:5px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:10px;
+  background:rgba(13,17,23,.86);
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  backdrop-filter:blur(10px);
+}
+.real-map-tool{
+  height:31px;
+  min-width:31px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:7px;
+  background:rgba(255,255,255,.06);
+  color:#dbeafe;
+  font:700 9px Inter,sans-serif;
+  letter-spacing:.02em;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .18s,border-color .18s,color .18s,transform .18s;
+}
+.real-map-tool:hover,.real-map-tool.active{
+  background:rgba(99,179,237,.2);
+  border-color:rgba(99,179,237,.58);
+  color:#fff;
+  transform:translateY(-1px);
+}
+.real-map-tool-icon{font-size:13px;line-height:1}
+.real-map-legend{
+  right:10px;
+  bottom:10px;
+  max-height:min(46%,280px);
+  overflow:auto;
+  transition:opacity .2s ease,transform .22s ease,visibility .2s ease;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(148,163,184,.55) transparent;
+}
+.real-map-legend.is-collapsed{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(10px) scale(.96);
+}
+.real-map-scroll-hint{
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  z-index:620;
+  transform:translateX(-50%);
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(13,17,23,.76);
+  border:1px solid rgba(255,255,255,.12);
+  color:#cbd5e1;
+  font:600 8px Inter,sans-serif;
+  pointer-events:none;
+  opacity:.78;
+  transition:opacity .25s;
+}
+.real-map-panel:hover .real-map-scroll-hint{opacity:.95}
+.real-map-panel:fullscreen,
+.real-map-panel:-webkit-full-screen{
+  width:100vw;
+  height:100vh;
+  border:0;
+  border-radius:0;
+  background:#0b1119;
+}
+.real-map-panel:fullscreen .real-map-canvas,
+.real-map-panel:-webkit-full-screen .real-map-canvas{
+  width:100%;
+  height:100vh;
+  max-height:none;
+  min-height:0;
+  border-radius:0;
+}
+.real-map-panel:fullscreen .real-map-legend,
+.real-map-panel:-webkit-full-screen .real-map-legend{
+  max-height:55vh;
+}
+html.light .real-map-utility{background:rgba(248,250,252,.92);border-color:rgba(15,23,42,.15)}
+html.light .real-map-tool{background:rgba(15,23,42,.04);border-color:rgba(15,23,42,.12);color:#334155}
+html.light .real-map-tool:hover,html.light .real-map-tool.active{background:rgba(37,99,235,.12);border-color:rgba(37,99,235,.4);color:#0f172a}
+html.light .real-map-scroll-hint{background:rgba(248,250,252,.88);border-color:rgba(15,23,42,.12);color:#475569}
+
+@media(max-height:820px) and (min-width:901px){
+  .real-map-canvas{height:clamp(390px,52dvh,475px);min-height:370px;max-height:475px}
+}
+@media(max-width:900px){
+  .real-map-canvas{height:clamp(380px,54dvh,480px);min-height:360px;max-height:480px}
+  .real-map-utility{top:8px;right:8px}
+  .real-map-tool-label{display:none}
+  .real-map-tool{padding:0;min-width:32px}
+}
+@media(max-width:600px){
+  .real-map-canvas{height:clamp(340px,50dvh,420px);min-height:340px;max-height:420px}
+  .real-map-panel{border-radius:10px}
+  .real-map-utility{gap:4px;padding:4px;border-radius:9px}
+  .real-map-tool{height:30px;min-width:30px}
+  .real-map-wheel{display:none}
+  .real-map-interact{display:inline-flex}
+  .real-map-legend{right:7px;bottom:48px;min-width:132px;max-width:min(72vw,210px);max-height:42%;padding:8px 9px}
+  .real-map-scroll-hint{bottom:7px;max-width:68%;text-align:center;line-height:1.25}
+  .leaflet-control-attribution{max-width:65%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media(min-width:601px){.real-map-interact{display:none}}

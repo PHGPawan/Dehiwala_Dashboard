@@ -42,16 +42,82 @@ function status(id,msg,error=false){
   el.classList.remove('done'); el.classList.toggle('error',error);
   el.innerHTML=error?msg:`<span class="real-map-spinner"></span>${msg}`;
 }
+function attachMapUtilities(map,id){
+  const canvas=document.getElementById(id);
+  const panel=canvas && canvas.closest('.real-map-panel');
+  if(!panel || panel.dataset.toolsReady==='1') return;
+  panel.dataset.toolsReady='1';
+  const legend=panel.querySelector('.real-map-legend');
+  if(legend) legend.classList.add('is-collapsed');
+
+  const tools=document.createElement('div');
+  tools.className='real-map-utility';
+  tools.setAttribute('aria-label','Map display controls');
+  tools.innerHTML=`
+    <button class="real-map-tool real-map-fit" type="button" title="Fit the complete layer"><span class="real-map-tool-icon">⌖</span><span class="real-map-tool-label">Fit</span></button>
+    <button class="real-map-tool real-map-legend-toggle" type="button" title="Show or hide the legend"><span class="real-map-tool-icon">▤</span><span class="real-map-tool-label">Legend</span></button>
+    <button class="real-map-tool real-map-wheel" type="button" title="Enable or disable mouse-wheel zoom"><span class="real-map-tool-icon">↕</span><span class="real-map-tool-label">Wheel</span></button>
+    <button class="real-map-tool real-map-interact" type="button" title="Enable map pan and zoom on touch screens"><span class="real-map-tool-icon">☝</span><span class="real-map-tool-label">Interact</span></button>
+    <button class="real-map-tool real-map-fullscreen" type="button" title="Open map in fullscreen"><span class="real-map-tool-icon">⛶</span><span class="real-map-tool-label">Full</span></button>`;
+  panel.appendChild(tools);
+
+  const hint=document.createElement('div');
+  hint.className='real-map-scroll-hint';
+  hint.textContent=window.matchMedia('(max-width:600px)').matches?'Page scroll enabled · tap ☝ to interact':'Mouse-wheel scrolls the page · use +/− or enable Wheel';
+  panel.appendChild(hint);
+
+  tools.querySelector('.real-map-fit').addEventListener('click',()=>{
+    if(map.__analysisBounds && map.__analysisBounds.isValid()) map.fitBounds(map.__analysisBounds,{padding:[26,26],maxZoom:15});
+  });
+  const legendBtn=tools.querySelector('.real-map-legend-toggle');
+  legendBtn.addEventListener('click',()=>{
+    if(!legend)return;
+    const opening=legend.classList.contains('is-collapsed');
+    legend.classList.toggle('is-collapsed',!opening);
+    legendBtn.classList.toggle('active',opening);
+    legendBtn.setAttribute('aria-expanded',String(opening));
+  });
+  const wheelBtn=tools.querySelector('.real-map-wheel');
+  wheelBtn.addEventListener('click',()=>{
+    const enable=!map.scrollWheelZoom.enabled();
+    enable?map.scrollWheelZoom.enable():map.scrollWheelZoom.disable();
+    wheelBtn.classList.toggle('active',enable);
+    hint.textContent=enable?'Mouse-wheel zoom enabled':'Mouse-wheel scrolls the page · use +/− or enable Wheel';
+  });
+  const interactBtn=tools.querySelector('.real-map-interact');
+  interactBtn.addEventListener('click',()=>{
+    const enable=!map.dragging.enabled();
+    ['dragging','touchZoom','doubleClickZoom','boxZoom'].forEach(name=>{
+      if(map[name]) enable?map[name].enable():map[name].disable();
+    });
+    interactBtn.classList.toggle('active',enable);
+    hint.textContent=enable?'Map interaction enabled · tap ☝ again to release':'Page scroll enabled · tap ☝ to interact';
+  });
+  tools.querySelector('.real-map-fullscreen').addEventListener('click',async()=>{
+    try{
+      if(document.fullscreenElement===panel) await document.exitFullscreen();
+      else await panel.requestFullscreen();
+    }catch(err){console.warn('Fullscreen unavailable',err);}
+  });
+  document.addEventListener('fullscreenchange',()=>setTimeout(()=>map.invalidateSize(),120));
+  map.on('click',()=>{
+    if(window.innerWidth<=600 && legend && !legend.classList.contains('is-collapsed')){
+      legend.classList.add('is-collapsed'); legendBtn.classList.remove('active');
+    }
+  });
+}
 function baseMap(id){
-  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:11,maxZoom:20,renderer:L.canvas({padding:.5})});
+  const compact=window.matchMedia('(max-width:600px)').matches;
+  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:11,maxZoom:20,scrollWheelZoom:false,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
   const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
   const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap contributors'});
   const dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
   light.addTo(map);
   L.control.layers({'Professional Light':light,'Street':osm,'Dark':dark},null,{collapsed:true,position:'topleft'}).addTo(map);
+  attachMapUtilities(map,id);
   return map;
 }
-function fit(map,layer){const b=layer.getBounds();if(b&&b.isValid())map.fitBounds(b,{padding:[18,18]});}
+function fit(map,layer){const b=layer.getBounds();if(b&&b.isValid()){map.__analysisBounds=b;map.fitBounds(b,{padding:[26,26],maxZoom:15});}}
 function popupRows(title,rows){return `<div class="real-popup-title">${title}</div>${rows.map(([a,b])=>`<div class="real-popup-row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
 function makeLegend(id,title,rows){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="real-map-legend-title">${title}</div>${rows.map(r=>`<div class="real-map-legend-row"><span class="real-map-legend-swatch" style="background:${r.color}"></span><span>${r.label}</span></div>`).join('')}`;}
 function classFor(v,breaks){for(let i=0;i<breaks.length-1;i++)if(v<=breaks[i+1])return i;return breaks.length-2;}
@@ -86,6 +152,7 @@ function updateCentrality(first=false){
       mouseout:e=>s.layer.resetStyle(e.target)
     });
   }}).addTo(s.map);
+  const activeBounds=s.layer.getBounds(); if(activeBounds&&activeBounds.isValid())s.map.__analysisBounds=activeBounds;
   if(first)fit(s.map,s.layer);
   const br=s.meta[key].breaks;
   makeLegend('centrality-real-legend',`${centralityNames[s.metric]} · ${s.radius} m`,metricPalette.map((c,i)=>({color:c,label:`${formatNumber(br[i])} – ${formatNumber(br[i+1])}`})));
