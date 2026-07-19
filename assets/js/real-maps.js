@@ -78,7 +78,10 @@ function attachMapUtilities(map,id){
   panel.appendChild(hint);
 
   tools.querySelector('.real-map-fit').addEventListener('click',()=>{
-    if(map.__analysisBounds && map.__analysisBounds.isValid()) map.fitBounds(map.__analysisBounds,{padding:[26,26],maxZoom:15});
+    if(map.__analysisBounds && map.__analysisBounds.isValid()){
+      const centrality=id==='centrality-real-map';
+      stableFitBounds(map,map.__analysisBounds,{padding:centrality?44:30,maxZoom:centrality?13:15});
+    }
   });
   const legendBtn=tools.querySelector('.real-map-legend-toggle');
   legendBtn.addEventListener('click',()=>{
@@ -115,21 +118,32 @@ function attachMapUtilities(map,id){
 }
 function baseMap(id){
   const compact=window.matchMedia('(max-width:600px)').matches;
-  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:11,maxZoom:20,scrollWheelZoom:true,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
+  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:9,maxZoom:20,scrollWheelZoom:true,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
+  const professionalBase=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Tiles © Esri'});
+  const professionalLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Labels © Esri'});
+  const professional=L.layerGroup([professionalBase,professionalLabels]);
   const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
   const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap contributors'});
   const dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
   const centralityDefault=id==='centrality-real-map';
-  (centralityDefault?dark:light).addTo(map);
-  if(centralityDefault){
-    const canvas=document.getElementById(id);
-    if(canvas)canvas.classList.add('real-map-dark-default');
-  }
-  L.control.layers({'Dark':dark,'Professional Light':light,'Street':osm},null,{collapsed:true,position:'topleft'}).addTo(map);
+  (centralityDefault?dark:professional).addTo(map);
+  const canvas=document.getElementById(id);
+  if(canvas)canvas.classList.toggle('real-map-dark-default',centralityDefault);
+  L.control.layers({'Dark':dark,'Professional Gray':professional,'Professional Light':light,'Street':osm},null,{collapsed:true,position:'topleft'}).addTo(map);
   attachMapUtilities(map,id);
   return map;
 }
-function fit(map,layer){const b=layer.getBounds();if(b&&b.isValid()){map.__analysisBounds=b;map.fitBounds(b,{padding:[26,26],maxZoom:15});}}
+function stableFitBounds(map,bounds,{maxZoom=15,padding=30}={}){
+  if(!bounds||!bounds.isValid())return;
+  map.__analysisBounds=bounds;
+  const apply=()=>{
+    map.invalidateSize({pan:false,animate:false});
+    map.fitBounds(bounds,{padding:[padding,padding],maxZoom,animate:false});
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(apply));
+  setTimeout(apply,180);
+}
+function fit(map,layer,options={}){const b=layer.getBounds();if(b&&b.isValid())stableFitBounds(map,b,options);}
 function popupRows(title,rows){return `<div class="real-popup-title">${title}</div>${rows.map(([a,b])=>`<div class="real-popup-row"><span>${a}</span><b>${b}</b></div>`).join('')}`;}
 function makeLegend(id,title,rows){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="real-map-legend-title">${title}</div>${rows.map(r=>`<div class="real-map-legend-row"><span class="real-map-legend-swatch" style="background:${r.color}"></span><span>${r.label}</span></div>`).join('')}`;}
 function classFor(v,breaks){for(let i=0;i<breaks.length-1;i++)if(v<=breaks[i+1])return i;return breaks.length-2;}
@@ -137,7 +151,13 @@ function classFor(v,breaks){for(let i=0;i<breaks.length-1;i++)if(v<=breaks[i+1])
 let centralityState={metric:'b',radius:'500',data:null,meta:null,map:null,layer:null};
 const centralityNames={b:'Betweenness (movement potential)',c:'Closeness (network accessibility)'};
 async function initCentrality(){
-  if(centralityState.map){setTimeout(()=>centralityState.map.invalidateSize(),120);return;}
+  if(centralityState.map){
+    setTimeout(()=>{
+      centralityState.map.invalidateSize({pan:false});
+      if(centralityState.map.__analysisBounds) stableFitBounds(centralityState.map,centralityState.map.__analysisBounds,{maxZoom:13,padding:44});
+    },120);
+    return;
+  }
   status('centrality-real-status','Loading 37,148 street segments…');
   try{
     const [data,meta]=await Promise.all([getJSON('assets/data/centrality_classes.geojson'),getJSON('assets/data/centrality_meta.json')]);
@@ -164,12 +184,15 @@ function updateCentrality(first=false){
       mouseout:e=>s.layer.resetStyle(e.target)
     });
   }}).addTo(s.map);
-  const activeBounds=s.layer.getBounds(); if(activeBounds&&activeBounds.isValid())s.map.__analysisBounds=activeBounds;
-  if(first)fit(s.map,s.layer);
+  const activeBounds=s.layer.getBounds();
+  if(activeBounds&&activeBounds.isValid())stableFitBounds(s.map,activeBounds,{maxZoom:13,padding:44});
   const br=s.meta[key].breaks;
   makeLegend('centrality-real-legend',`${centralityNames[s.metric]} · ${s.radius} m`,metricPalette.map((c,i)=>({color:c,label:`${formatNumber(br[i])} – ${formatNumber(br[i+1])}`})));
   document.getElementById('centrality-active-layer').textContent=`${centralityNames[s.metric]} at ${s.radius} m radius`;
-  setTimeout(()=>s.map.invalidateSize(),80);
+  setTimeout(()=>{
+    s.map.invalidateSize({pan:false});
+    if(s.map.__analysisBounds) stableFitBounds(s.map,s.map.__analysisBounds,{maxZoom:13,padding:44});
+  },100);
 }
 window.buildCentralityGrid=function(scale){if(scale&&scale!=='all')centralityState.radius=scale;initCentrality().then(()=>updateCentrality(false));};
 function bindCentralityControls(){
@@ -195,7 +218,7 @@ async function initIndexMap(which){
         mouseout:e=>state.layer.resetStyle(e.target)
       });
     }}).addTo(map);
-    fit(map,state.layer);renderIndexLegend(state);status(cfg.status,'');
+    fit(map,state.layer,{maxZoom:15,padding:32});renderIndexLegend(state);status(cfg.status,'');
   }catch(err){status(cfg.status,`Could not load the analytical grid layer. (${err.message})`,true);}
 }
 function indexStyle(state,f){
@@ -228,7 +251,7 @@ async function initLanduse(){
         mouseout:e=>layer.resetStyle(e.target)
       });
     }}).addTo(map);
-    fit(map,layer);makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));status('landuse-real-status','');
+    fit(map,layer,{maxZoom:15,padding:32});makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));status('landuse-real-status','');
   }catch(err){status('landuse-real-status',`Could not load the land-use layer. (${err.message})`,true);}
 }
 
@@ -237,7 +260,15 @@ function initForPage(page){
   if(page==='density')initIndexMap('density');
   if(page==='maturation')initIndexMap('maturation');
   if(page==='environment')initLanduse();
-  setTimeout(()=>Object.values(maps).forEach(m=>m.invalidateSize()),260);
+  setTimeout(()=>{
+    Object.entries(maps).forEach(([name,m])=>{
+      m.invalidateSize({pan:false});
+      if(m.__analysisBounds){
+        const centrality=name==='centrality';
+        stableFitBounds(m,m.__analysisBounds,{maxZoom:centrality?13:15,padding:centrality?44:32});
+      }
+    });
+  },360);
 }
 function bindNavigation(){document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>setTimeout(()=>initForPage(item.dataset.page),340)));window.addEventListener('resize',()=>Object.values(maps).forEach(m=>m.invalidateSize()));}
 
