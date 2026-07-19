@@ -1,0 +1,113 @@
+/* ===== Professional dashboard tab transitions ===== */
+:root{
+  --tab-ease:cubic-bezier(.22,1,.36,1);
+  --tab-exit-ease:cubic-bezier(.4,0,.2,1);
+}
+
+/* Replace the older single-motion page animation with a layered transition. */
+.page{animation:none!important;transform-origin:50% 16%;}
+.page.exit{animation:none!important;}
+
+.page.tab-transition-out,
+.page.exit.tab-transition-out{
+  display:block!important;
+  position:absolute;
+  inset:0;
+  width:100%;
+  pointer-events:none;
+  z-index:1;
+  animation:professionalPageOut .28s var(--tab-exit-ease) both!important;
+}
+
+.page.active.tab-transition-in{
+  display:block;
+  position:relative;
+  z-index:2;
+  animation:professionalPageIn .58s var(--tab-ease) both!important;
+}
+
+.page.active.tab-transition-in .tab-stage-item{
+  opacity:0;
+  will-change:transform,opacity,filter;
+  animation:professionalStageIn .58s var(--tab-ease) both;
+  animation-delay:calc(65ms + (var(--tab-stage-order,0) * 42ms));
+}
+
+/* A subtle accent line makes the page change feel intentional without flashing. */
+.page.active.tab-transition-in::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:28px;
+  width:min(170px,24vw);
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--cyan2),transparent);
+  transform-origin:left center;
+  pointer-events:none;
+  opacity:0;
+  z-index:20;
+  animation:professionalAccentSweep .72s var(--tab-ease) .04s both;
+}
+
+.nav-item.tab-nav-press{
+  animation:professionalNavPress .36s var(--tab-ease);
+}
+.nav-indicator.tab-indicator-glow{
+  box-shadow:0 0 18px rgba(99,179,237,.85),0 0 34px rgba(79,209,197,.28);
+}
+
+/* Make maps/charts feel settled after the page transition. */
+.page.active.tab-transition-in .leaflet-container,
+.page.active.tab-transition-in canvas,
+.page.active.tab-transition-in model-viewer{
+  transition:filter .45s ease,opacity .45s ease;
+}
+
+@keyframes professionalPageIn{
+  0%{opacity:0;transform:translate3d(18px,10px,0) scale(.992);filter:blur(3px)}
+  45%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:none}
+}
+@keyframes professionalPageOut{
+  0%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:none}
+  100%{opacity:0;transform:translate3d(-12px,-4px,0) scale(.995);filter:blur(2px)}
+}
+@keyframes professionalStageIn{
+  0%{opacity:0;transform:translate3d(0,16px,0) scale(.986);filter:blur(2px)}
+  55%{filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:none}
+}
+@keyframes professionalAccentSweep{
+  0%{opacity:0;transform:scaleX(.05)}
+  35%{opacity:.9}
+  100%{opacity:0;transform:scaleX(1)}
+}
+@keyframes professionalNavPress{
+  0%{transform:translateX(0) scale(1)}
+  45%{transform:translateX(3px) scale(.985)}
+  100%{transform:translateX(0) scale(1)}
+}
+
+html.light .page.active.tab-transition-in::before{
+  background:linear-gradient(90deg,transparent,#2563eb,#0f766e,transparent);
+}
+
+@media(max-width:900px){
+  .page.active.tab-transition-in::before{left:16px;width:130px}
+  .page.active.tab-transition-in .tab-stage-item{
+    animation-delay:calc(40ms + (var(--tab-stage-order,0) * 28ms));
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .page,.page.exit,.page.tab-transition-out,.page.active.tab-transition-in,
+  .page.active.tab-transition-in .tab-stage-item,
+  .page.active.tab-transition-in::before,.nav-item.tab-nav-press{
+    animation:none!important;
+    transition:none!important;
+    opacity:1!important;
+    transform:none!important;
+    filter:none!important;
+  }
+}

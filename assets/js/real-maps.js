@@ -359,16 +359,22 @@ function rasterValueAt(data,latlng){
   return value===null||value===undefined?null:Number(value);
 }
 function renderElevationLegend(){
+  const legend=document.getElementById('landuse-real-legend');
+  if(legend)legend.classList.remove('landuse-full-legend');
   const e=environmentState.elevationData;
   const rows=e.colors.map((color,i)=>({color,label:`${formatNumber(e.breaks[i],0)} – ${formatNumber(e.breaks[i+1],0)} m`}));
   makeLegend('landuse-real-legend','Elevation above mean sea level',rows);
 }
 function renderUhiLegend(){
+  const legend=document.getElementById('landuse-real-legend');
+  if(legend)legend.classList.remove('landuse-full-legend');
   const u=environmentState.uhiData;
   const rows=u.colors.map((color,i)=>({color,label:`${formatNumber(u.breaks[i],1)} – ${formatNumber(u.breaks[i+1],1)} °C`}));
   makeLegend('landuse-real-legend','Urban heat / surface temperature',rows);
 }
 function renderLanduseLegend(){
+  const legend=document.getElementById('landuse-real-legend');
+  if(legend)legend.classList.add('landuse-full-legend');
   const cats=[...new Set(environmentState.landuseData.features.map(f=>f.properties.main||'Other'))].sort();
   makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));
 }
