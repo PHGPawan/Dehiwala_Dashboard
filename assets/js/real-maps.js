@@ -296,16 +296,14 @@ function bindIndexControls(){
   document.querySelectorAll('#maturation-layer-tabs .real-layer-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#maturation-layer-tabs .real-layer-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');switchIndex('maturation',btn.dataset.metric);}));
 }
 
-const environmentState={map:null,landuseData:null,elevationData:null,landuseLayer:null,elevationLayer:null,mode:'elevation',elevationBounds:null,landuseBounds:null};
-
-function elevationValueAt(latlng){
-  const e=environmentState.elevationData;
-  if(!e)return null;
-  const south=e.bounds[0][0], west=e.bounds[0][1], north=e.bounds[1][0], east=e.bounds[1][1];
+const environmentState={map:null,landuseData:null,elevationData:null,uhiData:null,landuseLayer:null,elevationLayer:null,uhiLayer:null,mode:'uhi',elevationBounds:null,uhiBounds:null,landuseBounds:null};
+function rasterValueAt(data,latlng){
+  if(!data)return null;
+  const south=data.bounds[0][0], west=data.bounds[0][1], north=data.bounds[1][0], east=data.bounds[1][1];
   if(latlng.lat<south||latlng.lat>north||latlng.lng<west||latlng.lng>east)return null;
-  const col=Math.min(e.width-1,Math.max(0,Math.floor((latlng.lng-west)/(east-west)*e.width)));
-  const row=Math.min(e.height-1,Math.max(0,Math.floor((north-latlng.lat)/(north-south)*e.height)));
-  const value=e.values[row*e.width+col];
+  const col=Math.min(data.width-1,Math.max(0,Math.floor((latlng.lng-west)/(east-west)*data.width)));
+  const row=Math.min(data.height-1,Math.max(0,Math.floor((north-latlng.lat)/(north-south)*data.height)));
+  const value=data.values[row*data.width+col];
   return value===null||value===undefined?null:Number(value);
 }
 function renderElevationLegend(){
@@ -313,34 +311,56 @@ function renderElevationLegend(){
   const rows=e.colors.map((color,i)=>({color,label:`${formatNumber(e.breaks[i],0)} – ${formatNumber(e.breaks[i+1],0)} m`}));
   makeLegend('landuse-real-legend','Elevation above mean sea level',rows);
 }
+function renderUhiLegend(){
+  const u=environmentState.uhiData;
+  const rows=u.colors.map((color,i)=>({color,label:`${formatNumber(u.breaks[i],1)} – ${formatNumber(u.breaks[i+1],1)} °C`}));
+  makeLegend('landuse-real-legend','Urban heat / surface temperature',rows);
+}
 function renderLanduseLegend(){
   const cats=[...new Set(environmentState.landuseData.features.map(f=>f.properties.main||'Other'))].sort();
   makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));
+}
+function setEnvironmentSummary(mode){
+  const summary=document.getElementById('environment-summary');
+  if(!summary)return;
+  if(mode==='landuse'){summary.style.display='none';return;}
+  summary.style.display='grid';
+  if(mode==='uhi'){
+    const u=environmentState.uhiData;
+    summary.innerHTML=`<div class="real-map-summary-card"><b>${formatNumber(u.min,1)}°C</b><span>Minimum heat value</span></div><div class="real-map-summary-card"><b>${formatNumber(u.mean,1)}°C</b><span>Mean heat value</span></div><div class="real-map-summary-card"><b>${formatNumber(u.max,1)}°C</b><span>Maximum heat value</span></div><div class="real-map-summary-card"><b>30 m</b><span>Source cell size</span></div>`;
+  }else{
+    summary.innerHTML='<div class="real-map-summary-card"><b>−2 m</b><span>Minimum elevation</span></div><div class="real-map-summary-card"><b>12.7 m</b><span>Mean elevation</span></div><div class="real-map-summary-card"><b>36 m</b><span>Maximum elevation</span></div><div class="real-map-summary-card"><b>12.5 m</b><span>DEM cell size</span></div>';
+  }
 }
 function switchEnvironmentLayer(mode,{fitLayer=true}={}){
   const s=environmentState;
   if(!s.map)return;
   s.mode=mode;
-  if(s.landuseLayer&&s.map.hasLayer(s.landuseLayer))s.map.removeLayer(s.landuseLayer);
-  if(s.elevationLayer&&s.map.hasLayer(s.elevationLayer))s.map.removeLayer(s.elevationLayer);
+  [s.landuseLayer,s.elevationLayer,s.uhiLayer].forEach(layer=>{if(layer&&s.map.hasLayer(layer))s.map.removeLayer(layer);});
   s.map.closePopup();
   const active=document.getElementById('environment-active-layer');
   const note=document.getElementById('environment-real-note');
-  const summary=document.getElementById('elevation-summary');
   document.querySelectorAll('#environment-layer-tabs .real-layer-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.metric===mode));
-  if(mode==='elevation'){
+  if(mode==='uhi'){
+    s.uhiLayer.addTo(s.map);
+    renderUhiLegend();
+    if(active)active.textContent='Urban heat surface';
+    if(note)note.innerHTML='<strong>Urban Heat layer:</strong> colourised from the uploaded Dehiwala UHI GeoTIFF. Click inside the raster to read temperature values in degrees Celsius.';
+    setEnvironmentSummary('uhi');
+    if(fitLayer)stableFitBounds(s.map,s.uhiBounds,{maxZoom:16,padding:24,tightness:0.02});
+  }else if(mode==='elevation'){
     s.elevationLayer.addTo(s.map);
     renderElevationLegend();
     if(active)active.textContent='Elevation & hillshade';
     if(note)note.innerHTML='<strong>Elevation layer:</strong> colourised and hillshaded from the uploaded Dehiwala DEM GeoTIFF. Click inside the terrain surface to read elevation in metres.';
-    if(summary)summary.style.display='grid';
+    setEnvironmentSummary('elevation');
     if(fitLayer)stableFitBounds(s.map,s.elevationBounds,{maxZoom:15,padding:24,tightness:0.02});
   }else{
     s.landuseLayer.addTo(s.map);
     renderLanduseLegend();
     if(active)active.textContent='Land-use polygons';
     if(note)note.innerHTML='<strong>Land-use layer:</strong> 704 original polygons and attributes loaded from the Landuse GeoPackage. Click a polygon to inspect its category and recorded area.';
-    if(summary)summary.style.display='none';
+    setEnvironmentSummary('landuse');
     if(fitLayer)stableFitBounds(s.map,s.landuseBounds,{maxZoom:15,padding:24,tightness:0.04});
   }
 }
@@ -349,11 +369,11 @@ async function initEnvironment(){
     setTimeout(()=>{environmentState.map.invalidateSize({pan:false});switchEnvironmentLayer(environmentState.mode,{fitLayer:true});},120);
     return;
   }
-  status('landuse-real-status','Loading land-use polygons and DEM elevation surface…');
+  status('landuse-real-status','Loading Urban Heat, Elevation and Land Use layers…');
   try{
-    const [landuse,elevation]=await Promise.all([getJSON('assets/data/landuse.geojson'),getJSON('assets/data/elevation_grid.json')]);
+    const [landuse,elevation,uhi]=await Promise.all([getJSON('assets/data/landuse.geojson'),getJSON('assets/data/elevation_grid.json'),getJSON('assets/data/uhi_grid.json')]);
     const map=baseMap('landuse-real-map');maps.landuse=map;
-    environmentState.map=map;environmentState.landuseData=landuse;environmentState.elevationData=elevation;
+    environmentState.map=map;environmentState.landuseData=landuse;environmentState.elevationData=elevation;environmentState.uhiData=uhi;
     const landuseLayer=L.geoJSON(landuse,{renderer:L.canvas({padding:.5}),style:f=>{const light=document.documentElement.classList.contains('light');return{fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:(light ? 0.78 : 0.84),color:light?'rgba(30,41,59,.55)':'rgba(15,23,42,.62)',weight:(light ? 0.85 : 0.7)}},onEachFeature:(f,l)=>{
       l.bindPopup(popupRows(f.properties.main||'Land use',[['Sub-class',f.properties.sub||'—'],['Domain',f.properties.domain||'—'],['Recorded area',formatNumber(f.properties.area,2)]]));
       l.on({mouseover:e=>e.target.setStyle({weight:2,color:'#ffffff',fillOpacity:.96}),mouseout:e=>landuseLayer.resetStyle(e.target)});
@@ -361,14 +381,19 @@ async function initEnvironment(){
     environmentState.landuseLayer=landuseLayer;
     environmentState.landuseBounds=landuseLayer.getBounds();
     environmentState.elevationBounds=L.latLngBounds(elevation.bounds[0],elevation.bounds[1]);
+    environmentState.uhiBounds=L.latLngBounds(uhi.bounds[0],uhi.bounds[1]);
     environmentState.elevationLayer=L.imageOverlay('assets/images/dehiwala_elevation_hillshade.png',environmentState.elevationBounds,{opacity:.9,interactive:false,crossOrigin:true});
+    environmentState.uhiLayer=L.imageOverlay('assets/images/dehiwala_uhi_surface.png',environmentState.uhiBounds,{opacity:.86,interactive:false,crossOrigin:true});
     map.on('click',e=>{
-      if(environmentState.mode!=='elevation')return;
-      const value=elevationValueAt(e.latlng);
-      if(value===null)return;
-      L.popup({maxWidth:230}).setLatLng(e.latlng).setContent(popupRows('DEM elevation',[['Elevation',`${formatNumber(value,1)} m`],['Latitude',formatNumber(e.latlng.lat,5)],['Longitude',formatNumber(e.latlng.lng,5)],['Cell size','12.5 m']])).openOn(map);
+      if(environmentState.mode==='elevation'){
+        const value=rasterValueAt(elevation,e.latlng);if(value===null)return;
+        L.popup({maxWidth:230}).setLatLng(e.latlng).setContent(popupRows('DEM elevation',[['Elevation',`${formatNumber(value,1)} m`],['Latitude',formatNumber(e.latlng.lat,5)],['Longitude',formatNumber(e.latlng.lng,5)],['Cell size','12.5 m']])).openOn(map);
+      }else if(environmentState.mode==='uhi'){
+        const value=rasterValueAt(uhi,e.latlng);if(value===null)return;
+        L.popup({maxWidth:240}).setLatLng(e.latlng).setContent(popupRows('Urban Heat raster',[['Temperature',`${formatNumber(value,1)} °C`],['Latitude',formatNumber(e.latlng.lat,5)],['Longitude',formatNumber(e.latlng.lng,5)],['Source resolution','30 m']])).openOn(map);
+      }
     });
-    switchEnvironmentLayer('elevation',{fitLayer:true});
+    switchEnvironmentLayer('uhi',{fitLayer:true});
     status('landuse-real-status','');
   }catch(err){status('landuse-real-status',`Could not load the environmental layers. (${err.message})`,true);}
 }

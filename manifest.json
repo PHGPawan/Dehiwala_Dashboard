@@ -8,10 +8,10 @@
     "interactive-urban-maturation",
     "interactive-land-use",
     "mobile-responsive",
-    "github-pages-ready"
+    "github-pages-ready",
+    "interactive-urban-heat"
   ],
   "raster_sources_required": [
-    "urban-heat-geotiff",
     "elevation-dem-geotiff"
   ],
   "elevation_layer": {
@@ -24,5 +24,17 @@
       36
     ],
     "resolution_m": 12.5
+  },
+  "urban_heat_layer": {
+    "source": "downloads/Dehiwala_UHI.tif",
+    "web_raster": "assets/images/dehiwala_uhi_surface.png",
+    "query_grid": "assets/data/uhi_grid.json",
+    "wgs84_download": "downloads/Dehiwala_UHI_WGS84.tif",
+    "range_c": [
+      31.5,
+      42.6
+    ],
+    "mean_c": 38.2,
+    "source_resolution_m": 30
   }
 }

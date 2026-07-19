@@ -44,13 +44,16 @@ function buildDescriptions(){
 
   const environmentAnchor=document.querySelector('#page-environment #environment-real-note');
   const environment=createGrid('environment-map-explanation',
+    card('Urban Heat surface','Spatial thermal intensity','The uploaded UHI raster displays temperature values from approximately <strong>31.5°C to 42.6°C</strong>. Click the surface to query the value of an individual raster cell.','#e34a33','data-env-card="uhi"')+
+    card('How to read heat','Dark purple to bright yellow','Cooler cells use dark purple tones, while orange and yellow identify the hottest surfaces. Compare these hotspots with dense built form, roads, land use and limited vegetation.','#f98e09','data-env-card="uhi"')+
+    card('Planning use','Target heat-mitigation investment','Prioritise the hottest pedestrian routes and built-up areas for shade trees, cool roofs, reflective paving, ventilation corridors and connected green infrastructure.','#f7e225','data-env-card="uhi"')+
     card('Elevation surface','Terrain height and relief','The colourised DEM and hillshade reveal low-lying ground, local ridges and drainage gradients. Click the terrain to query elevation in metres.','#2c7fb8','data-env-card="elevation"')+
     card('How to read elevation','Cool lowlands to warm high ground','Lower elevations may be more sensitive to water accumulation and coastal or pluvial flooding. Relative high ground can influence runoff direction and evacuation planning.','#7fcdbb','data-env-card="elevation"')+
     card('Planning use','Support drainage and risk-sensitive design','Combine terrain with land use, built density and drainage information to identify retention areas, flow paths and locations needing resilient access.','#fdae61','data-env-card="elevation"')+
     card('Land-use polygons','Existing urban functions','Each polygon represents the mapped land-use category and its attributes. Click a parcel to inspect its main class, sub-class, domain and recorded area.','#7B2CBF','data-env-card="landuse"')+
     card('How to read land use','Distinct colours for urban functions','Residential, commercial, institutional, transport, public space, water and other uses use separate colours so concentrations and transitions are easy to identify.','#E76F51','data-env-card="landuse"')+
     card('Planning use','Identify compatibility and opportunity','Use the pattern to locate mixed-use nodes, public-space gaps, incompatible adjacencies, redevelopment areas and opportunities for connected green or civic infrastructure.','#2A9D8F','data-env-card="landuse"')
-  ); if(environment){environment.dataset.mode='elevation';placeAfter(environmentAnchor,environment);}
+  ); if(environment){environment.dataset.mode='uhi';placeAfter(environmentAnchor,environment);}
 
   document.querySelectorAll('#environment-layer-tabs .real-layer-btn').forEach(btn=>btn.addEventListener('click',()=>{
     const grid=document.getElementById('environment-map-explanation');if(grid)grid.dataset.mode=btn.dataset.metric;

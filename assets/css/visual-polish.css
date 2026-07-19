@@ -25,6 +25,7 @@
 .map-explain-copy{margin-top:4px;color:var(--text3);font-size:9.5px;line-height:1.55}
 .map-explain-copy strong{color:var(--text2)}
 #environment-map-explanation .map-explain-card[data-env-card]{display:none}
+#environment-map-explanation[data-mode="uhi"] .map-explain-card[data-env-card="uhi"],
 #environment-map-explanation[data-mode="elevation"] .map-explain-card[data-env-card="elevation"],
 #environment-map-explanation[data-mode="landuse"] .map-explain-card[data-env-card="landuse"]{display:block}
 
