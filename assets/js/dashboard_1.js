@@ -65,44 +65,42 @@ function switchPage(page, item) {
   if (page === currentPage) return;
   const prevPage = document.getElementById('page-' + currentPage);
   const nextPage = document.getElementById('page-' + page);
-  const topbarLeft = document.querySelector('.topbar-left');
   const pageWrap = document.querySelector('.page-wrap');
+  if (!nextPage) return;
 
-  // Scroll back to top
-  pageWrap.scrollTop = 0;
-
-  // Exit current page with animation, then hide
+  // Swap immediately. A single opacity-only keyframe is applied to the new page.
+  if (pageWrap) pageWrap.scrollTop = 0;
   if (prevPage) {
-    prevPage.classList.remove('active');
-    prevPage.classList.add('exit');
-    setTimeout(() => prevPage.classList.remove('exit'), 230);
+    prevPage.classList.remove('active','exit','quick-page-in');
   }
+  nextPage.classList.remove('exit','quick-page-in');
+  nextPage.classList.add('active');
+  // Restart the tiny fade without forcing layout-heavy transforms.
+  requestAnimationFrame(() => nextPage.classList.add('quick-page-in'));
 
-  // Enter next page after brief delay
-  setTimeout(() => {
-    nextPage.classList.add('active');
-  }, 80);
-
-  // Topbar text swap animation
-  topbarLeft.classList.add('topbar-animating');
-  setTimeout(() => {
-    const m = PAGE_META[page];
+  // Update the heading immediately so it never waits behind the page content.
+  const m = PAGE_META[page];
+  if (m) {
     document.getElementById('page-eyebrow').textContent = m.eyebrow;
     document.getElementById('page-title').innerHTML = m.title + '<span>.</span>';
     document.getElementById('page-sub').textContent = m.sub;
-    topbarLeft.classList.remove('topbar-animating');
-  }, 180);
+  }
 
-  // Update nav state
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   item.classList.add('active');
   moveIndicator(item);
   currentPage = page;
 
-  // Lazy builds
-  if (page === 'centrality' && !window._centralityBuilt) buildCentralityGrid('all');
-  if (page === 'synthesis' && !window._synthBuilt) buildSynthesis();
-  if (page === 'livedata') buildLiveData();
+  // Paint the selected page first, then start only the heavy lazy work.
+  const runLazy = () => {
+    if (page === 'centrality' && !window._centralityBuilt) buildCentralityGrid('all');
+    if (page === 'synthesis' && !window._synthBuilt) buildSynthesis();
+    if (page === 'livedata') buildLiveData();
+    window.dispatchEvent(new Event('resize'));
+  };
+  requestAnimationFrame(() => setTimeout(runLazy, 0));
+
+  window.setTimeout(() => nextPage.classList.remove('quick-page-in'), 130);
 }
 
 // Init indicator position on load

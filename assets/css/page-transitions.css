@@ -1,83 +1,38 @@
-/* ===== Fast, GPU-friendly dashboard tab transitions ===== */
-:root{
-  --tab-fast-ease:cubic-bezier(.2,.8,.2,1);
-  --tab-fast-out:cubic-bezier(.4,0,1,1);
+/* ===== Ultra-light page transitions ===== */
+.page,
+.page.active,
+.page.exit{
+  animation:none!important;
+  transform:none!important;
+  filter:none!important;
+  will-change:auto!important;
 }
-
-/* Disable the older nested entrance animations that restart every time a page
-   changes. One coordinated page transition is smoother and much lighter. */
-.page{animation:none!important;transform-origin:center top;backface-visibility:hidden;}
 .page .stat-card,
-.page .map-card{animation:none!important;animation-delay:0s!important;}
-
-.page.exit.tab-transition-out{
-  display:block!important;
-  pointer-events:none;
-  position:absolute;
-  inset:0;
-  width:100%;
-  z-index:1;
-  will-change:opacity,transform;
-  animation:tabFastOut 125ms var(--tab-fast-out) both!important;
+.page .map-card,
+.page .panel,
+.page .section-header{
+  animation:none!important;
+  animation-delay:0s!important;
 }
-
-.page.active.tab-transition-in{
-  display:block;
-  position:relative;
-  z-index:2;
-  will-change:opacity,transform;
-  animation:tabFastIn 210ms var(--tab-fast-ease) both!important;
+.page.active.quick-page-in{
+  animation:quickPageFade 105ms linear both!important;
+  will-change:opacity!important;
 }
-
-/* Animate only the first few top-level sections. No blur, no filters and no
-   per-card animation, which keeps maps, charts and the 3D viewer responsive. */
-.page.active.tab-transition-in > :nth-child(-n+6){
-  will-change:opacity,transform;
-  animation:tabBlockFastIn 220ms var(--tab-fast-ease) both;
+@keyframes quickPageFade{
+  from{opacity:.72}
+  to{opacity:1}
 }
-.page.active.tab-transition-in > :nth-child(1){animation-delay:12ms}
-.page.active.tab-transition-in > :nth-child(2){animation-delay:24ms}
-.page.active.tab-transition-in > :nth-child(3){animation-delay:36ms}
-.page.active.tab-transition-in > :nth-child(4){animation-delay:48ms}
-.page.active.tab-transition-in > :nth-child(5){animation-delay:60ms}
-.page.active.tab-transition-in > :nth-child(6){animation-delay:72ms}
-
-.nav-item.tab-nav-press{
-  animation:tabNavFast 150ms var(--tab-fast-ease);
+/* Faster indicator movement without bounce or glow. */
+.nav-indicator{
+  transition:top 120ms ease-out,height 120ms ease-out!important;
+  box-shadow:0 0 7px rgba(99,179,237,.34)!important;
 }
-.nav-indicator.tab-indicator-glow{
-  box-shadow:0 0 12px rgba(99,179,237,.65),0 0 22px rgba(79,209,197,.18);
+.topbar-eyebrow,.topbar-title,.topbar-sub{
+  transition:none!important;
 }
-
-@keyframes tabFastIn{
-  from{opacity:0;transform:translate3d(9px,4px,0)}
-  to{opacity:1;transform:translate3d(0,0,0)}
-}
-@keyframes tabFastOut{
-  from{opacity:1;transform:translate3d(0,0,0)}
-  to{opacity:0;transform:translate3d(-6px,0,0)}
-}
-@keyframes tabBlockFastIn{
-  from{opacity:0;transform:translate3d(0,7px,0)}
-  to{opacity:1;transform:translate3d(0,0,0)}
-}
-@keyframes tabNavFast{
-  0%{transform:translateX(0)}
-  50%{transform:translateX(2px)}
-  100%{transform:translateX(0)}
-}
-
 @media(max-width:700px){
-  .page.active.tab-transition-in{animation-duration:170ms!important}
-  .page.active.tab-transition-in > :nth-child(-n+6){animation-duration:180ms;animation-delay:18ms}
+  .page.active.quick-page-in{animation-duration:80ms!important}
 }
-
 @media(prefers-reduced-motion:reduce){
-  .page,.page.exit,.page.exit.tab-transition-out,.page.active.tab-transition-in,
-  .page.active.tab-transition-in > :nth-child(-n+6),.nav-item.tab-nav-press{
-    animation:none!important;
-    transition:none!important;
-    opacity:1!important;
-    transform:none!important;
-  }
+  .page.active.quick-page-in{animation:none!important;opacity:1!important}
 }

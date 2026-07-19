@@ -36,5 +36,6 @@
     ],
     "mean_c": 38.2,
     "source_resolution_m": 30
-  }
+  },
+  "mapLoadingOptimization": "On-demand binary centrality layers, hover/idle prefetch, immediate basemap shells, and reduced resize work."
 }
