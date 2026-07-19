@@ -1,0 +1,97 @@
+/* ================================================================
+   True fullscreen layout for every real Leaflet analytical map
+   Overrides viewport-aware page heights while fullscreen is active.
+   ================================================================ */
+.real-map-panel:fullscreen,
+.real-map-panel:-webkit-full-screen {
+  position:fixed !important;
+  inset:0 !important;
+  display:block !important;
+  width:100vw !important;
+  height:100vh !important;
+  width:100dvw !important;
+  height:100dvh !important;
+  max-width:none !important;
+  max-height:none !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  background:#0b1119 !important;
+  box-shadow:none !important;
+}
+
+.real-map-panel:fullscreen .real-map-canvas,
+.real-map-panel:-webkit-full-screen .real-map-canvas,
+.real-map-panel:fullscreen .real-map-canvas.leaflet-container,
+.real-map-panel:-webkit-full-screen .real-map-canvas.leaflet-container {
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+
+.real-map-panel:fullscreen .leaflet-map-pane,
+.real-map-panel:-webkit-full-screen .leaflet-map-pane {
+  width:100% !important;
+  height:100% !important;
+}
+
+.real-map-panel:fullscreen .real-map-utility,
+.real-map-panel:-webkit-full-screen .real-map-utility {
+  top:max(14px,env(safe-area-inset-top)) !important;
+  right:max(14px,env(safe-area-inset-right)) !important;
+  z-index:1600 !important;
+}
+
+.real-map-panel:fullscreen .real-map-legend,
+.real-map-panel:-webkit-full-screen .real-map-legend {
+  right:max(16px,env(safe-area-inset-right)) !important;
+  bottom:max(20px,env(safe-area-inset-bottom)) !important;
+  max-width:min(280px,32vw) !important;
+  max-height:calc(100dvh - 110px) !important;
+  overflow:auto !important;
+  z-index:1550 !important;
+}
+
+.real-map-panel:fullscreen .real-map-scroll-hint,
+.real-map-panel:-webkit-full-screen .real-map-scroll-hint {
+  bottom:max(12px,env(safe-area-inset-bottom)) !important;
+  z-index:1540 !important;
+}
+
+.real-map-panel:fullscreen .real-map-status,
+.real-map-panel:-webkit-full-screen .real-map-status {
+  z-index:1700 !important;
+}
+
+.real-map-panel:fullscreen::after,
+.real-map-panel:-webkit-full-screen::after {
+  border-radius:0 !important;
+}
+
+@media (max-width:600px){
+  .real-map-panel:fullscreen .real-map-legend,
+  .real-map-panel:-webkit-full-screen .real-map-legend {
+    right:8px !important;
+    bottom:52px !important;
+    max-width:min(230px,72vw) !important;
+    max-height:42dvh !important;
+  }
+  .real-map-panel:fullscreen .real-map-utility,
+  .real-map-panel:-webkit-full-screen .real-map-utility {
+    top:8px !important;
+    right:8px !important;
+  }
+}

@@ -108,13 +108,32 @@ function attachMapUtilities(map,id){
     interactBtn.classList.toggle('active',enable);
     hint.textContent=enable?'Map interaction enabled · tap ☝ again to release':'Page scroll enabled · tap ☝ to interact';
   });
+  const refitAfterFullscreen=()=>{
+    const isFull=document.fullscreenElement===panel || (panel.matches && panel.matches(':fullscreen'));
+    const centrality=id==='centrality-real-map';
+    const apply=()=>{
+      map.invalidateSize({pan:false,animate:false});
+      if(map.__analysisBounds && map.__analysisBounds.isValid()){
+        stableFitBounds(map,map.__analysisBounds,{
+          maxZoom:centrality?14:15,
+          padding:isFull?(centrality?34:30):(centrality?26:24),
+          tightness:centrality?0.08:0.04
+        });
+      }
+    };
+    requestAnimationFrame(()=>requestAnimationFrame(apply));
+    setTimeout(apply,160);
+    setTimeout(apply,420);
+  };
   tools.querySelector('.real-map-fullscreen').addEventListener('click',async()=>{
     try{
       if(document.fullscreenElement===panel) await document.exitFullscreen();
       else await panel.requestFullscreen();
+      refitAfterFullscreen();
     }catch(err){console.warn('Fullscreen unavailable',err);}
   });
-  document.addEventListener('fullscreenchange',()=>setTimeout(()=>map.invalidateSize(),120));
+  document.addEventListener('fullscreenchange',refitAfterFullscreen);
+  document.addEventListener('webkitfullscreenchange',refitAfterFullscreen);
 }
 function baseMap(id){
   const compact=window.matchMedia('(max-width:600px)').matches;
