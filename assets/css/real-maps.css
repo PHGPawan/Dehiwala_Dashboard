@@ -156,3 +156,57 @@ html.light .real-map-scroll-hint{background:rgba(248,250,252,.88);border-color:r
   .leaflet-control-attribution{max-width:65%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media(min-width:601px){.real-map-interact{display:none}}
+
+
+/* ===== Compact centred analytical maps — defaults requested ===== */
+.real-map-toolbar,
+.interactive-layer-intro,
+.real-map-panel,
+.real-map-note,
+.real-map-summary{
+  width:min(100%,1160px);
+  margin-left:auto;
+  margin-right:auto;
+}
+.real-map-panel{
+  border-radius:14px;
+}
+.real-map-canvas{
+  height:clamp(390px,50dvh,510px);
+  min-height:370px;
+  max-height:510px;
+}
+.real-map-canvas.real-map-dark-default{
+  background:#111827;
+}
+.real-map-legend:not(.is-collapsed){
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:none;
+}
+.real-map-wheel.active,
+.real-map-legend-toggle.active{
+  background:rgba(99,179,237,.24);
+  border-color:rgba(99,179,237,.72);
+  color:#fff;
+}
+@media(min-width:1400px){
+  .real-map-toolbar,
+  .interactive-layer-intro,
+  .real-map-panel,
+  .real-map-note,
+  .real-map-summary{width:min(100%,1120px)}
+}
+@media(max-width:900px){
+  .real-map-toolbar,
+  .interactive-layer-intro,
+  .real-map-panel,
+  .real-map-note,
+  .real-map-summary{width:100%}
+  .real-map-canvas{height:clamp(380px,52dvh,480px);max-height:480px}
+}
+@media(max-width:600px){
+  .real-map-canvas{height:420px;min-height:360px;max-height:440px}
+  .real-map-legend{bottom:48px;max-height:36%;max-width:min(68vw,190px)}
+}

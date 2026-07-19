@@ -25,10 +25,22 @@ const palettes = {
   }
 };
 const landuseColors={
-  'Residential':'#d77991','Commercial':'#c7445d','Transport':'#566573','Water':'#2878b5',
-  'Institutional':'#6558c7','Public':'#3d9853','Public Space':'#3d9853','Open Space':'#6aae45',
-  'Industrial':'#87479d','Agriculture':'#91b847','Barren Land':'#b68b52','Cultural':'#9a68bd',
-  'Under Construction':'#d88732','Coastal area':'#269b9a','Other':'#94a3b8','Mixed':'#d99a32'
+  'Residential':'#E76F51',
+  'Commercial':'#C1121F',
+  'Transport':'#3A506B',
+  'Water':'#168AAD',
+  'Institutional':'#7B2CBF',
+  'Public':'#2A9D8F',
+  'Public Space':'#2A9D8F',
+  'Open Space':'#52B788',
+  'Industrial':'#6D597A',
+  'Agriculture':'#7CB342',
+  'Barren Land':'#C2A878',
+  'Cultural':'#F4A261',
+  'Under Construction':'#FFB703',
+  'Coastal area':'#00A6A6',
+  'Other':'#94A3B8',
+  'Mixed':'#D97706'
 };
 const formatNumber=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString(undefined,{maximumFractionDigits:d}):'—';
 async function getJSON(url){
@@ -48,22 +60,21 @@ function attachMapUtilities(map,id){
   if(!panel || panel.dataset.toolsReady==='1') return;
   panel.dataset.toolsReady='1';
   const legend=panel.querySelector('.real-map-legend');
-  if(legend) legend.classList.add('is-collapsed');
 
   const tools=document.createElement('div');
   tools.className='real-map-utility';
   tools.setAttribute('aria-label','Map display controls');
   tools.innerHTML=`
     <button class="real-map-tool real-map-fit" type="button" title="Fit the complete layer"><span class="real-map-tool-icon">⌖</span><span class="real-map-tool-label">Fit</span></button>
-    <button class="real-map-tool real-map-legend-toggle" type="button" title="Show or hide the legend"><span class="real-map-tool-icon">▤</span><span class="real-map-tool-label">Legend</span></button>
-    <button class="real-map-tool real-map-wheel" type="button" title="Enable or disable mouse-wheel zoom"><span class="real-map-tool-icon">↕</span><span class="real-map-tool-label">Wheel</span></button>
+    <button class="real-map-tool real-map-legend-toggle active" type="button" aria-expanded="true" title="Show or hide the legend"><span class="real-map-tool-icon">▤</span><span class="real-map-tool-label">Legend</span></button>
+    <button class="real-map-tool real-map-wheel active" type="button" aria-pressed="true" title="Enable or disable mouse-wheel zoom"><span class="real-map-tool-icon">↕</span><span class="real-map-tool-label">Wheel</span></button>
     <button class="real-map-tool real-map-interact" type="button" title="Enable map pan and zoom on touch screens"><span class="real-map-tool-icon">☝</span><span class="real-map-tool-label">Interact</span></button>
     <button class="real-map-tool real-map-fullscreen" type="button" title="Open map in fullscreen"><span class="real-map-tool-icon">⛶</span><span class="real-map-tool-label">Full</span></button>`;
   panel.appendChild(tools);
 
   const hint=document.createElement('div');
   hint.className='real-map-scroll-hint';
-  hint.textContent=window.matchMedia('(max-width:600px)').matches?'Page scroll enabled · tap ☝ to interact':'Mouse-wheel scrolls the page · use +/− or enable Wheel';
+  hint.textContent=window.matchMedia('(max-width:600px)').matches?'Legend visible · tap ☝ to interact':'Mouse-wheel zoom enabled · use Wheel to release page scrolling';
   panel.appendChild(hint);
 
   tools.querySelector('.real-map-fit').addEventListener('click',()=>{
@@ -82,7 +93,8 @@ function attachMapUtilities(map,id){
     const enable=!map.scrollWheelZoom.enabled();
     enable?map.scrollWheelZoom.enable():map.scrollWheelZoom.disable();
     wheelBtn.classList.toggle('active',enable);
-    hint.textContent=enable?'Mouse-wheel zoom enabled':'Mouse-wheel scrolls the page · use +/− or enable Wheel';
+    wheelBtn.setAttribute('aria-pressed',String(enable));
+    hint.textContent=enable?'Mouse-wheel zoom enabled · use Wheel to release page scrolling':'Mouse-wheel scrolls the page · click Wheel to enable zoom';
   });
   const interactBtn=tools.querySelector('.real-map-interact');
   interactBtn.addEventListener('click',()=>{
@@ -100,20 +112,20 @@ function attachMapUtilities(map,id){
     }catch(err){console.warn('Fullscreen unavailable',err);}
   });
   document.addEventListener('fullscreenchange',()=>setTimeout(()=>map.invalidateSize(),120));
-  map.on('click',()=>{
-    if(window.innerWidth<=600 && legend && !legend.classList.contains('is-collapsed')){
-      legend.classList.add('is-collapsed'); legendBtn.classList.remove('active');
-    }
-  });
 }
 function baseMap(id){
   const compact=window.matchMedia('(max-width:600px)').matches;
-  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:11,maxZoom:20,scrollWheelZoom:false,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
+  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:11,maxZoom:20,scrollWheelZoom:true,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
   const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
   const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'© OpenStreetMap contributors'});
   const dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
-  light.addTo(map);
-  L.control.layers({'Professional Light':light,'Street':osm,'Dark':dark},null,{collapsed:true,position:'topleft'}).addTo(map);
+  const centralityDefault=id==='centrality-real-map';
+  (centralityDefault?dark:light).addTo(map);
+  if(centralityDefault){
+    const canvas=document.getElementById(id);
+    if(canvas)canvas.classList.add('real-map-dark-default');
+  }
+  L.control.layers({'Dark':dark,'Professional Light':light,'Street':osm},null,{collapsed:true,position:'topleft'}).addTo(map);
   attachMapUtilities(map,id);
   return map;
 }
@@ -209,10 +221,10 @@ async function initLanduse(){
   try{
     const data=await getJSON('assets/data/landuse.geojson');const map=baseMap('landuse-real-map');maps.landuse=map;
     const cats=[...new Set(data.features.map(f=>f.properties.main||'Other'))].sort();
-    const layer=L.geoJSON(data,{renderer:L.canvas({padding:.5}),style:f=>({fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:.78,color:'rgba(255,255,255,.52)',weight:.55}),onEachFeature:(f,l)=>{
+    const layer=L.geoJSON(data,{renderer:L.canvas({padding:.5}),style:f=>({fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:.84,color:'rgba(15,23,42,.62)',weight:.7}),onEachFeature:(f,l)=>{
       l.bindPopup(popupRows(f.properties.main||'Land use',[['Sub-class',f.properties.sub||'—'],['Domain',f.properties.domain||'—'],['Recorded area',formatNumber(f.properties.area,2)]]));
       l.on({
-        mouseover:e=>e.target.setStyle({weight:1.7,color:'#ffffff',fillOpacity:.92}),
+        mouseover:e=>e.target.setStyle({weight:2,color:'#ffffff',fillOpacity:.96}),
         mouseout:e=>layer.resetStyle(e.target)
       });
     }}).addTo(map);
