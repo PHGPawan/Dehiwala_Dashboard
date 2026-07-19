@@ -229,3 +229,40 @@ html.light .real-map-scroll-hint{background:rgba(248,250,252,.88);border-color:r
   #elevation-summary{grid-template-columns:1fr 1fr!important;gap:7px}
   #elevation-summary .real-map-summary-card{padding:9px}
 }
+
+
+/* ===== Sharper environmental raster overlays ===== */
+#landuse-real-map .leaflet-image-layer.uhi-raster-overlay{
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  -ms-interpolation-mode:nearest-neighbor;
+  filter:saturate(1.14) contrast(1.08) brightness(1.02);
+}
+#landuse-real-map .leaflet-image-layer.elevation-raster-overlay{
+  image-rendering:auto;
+  filter:saturate(1.04) contrast(1.06);
+}
+
+
+/* ===== Map decorations: scale bar + north arrow ===== */
+.north-arrow-control{margin:0 0 10px 10px;pointer-events:auto}
+.overview-north-arrow{margin:0 10px 42px 0}
+.north-arrow-card{width:42px;height:58px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(13,17,23,.88);border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 24px rgba(0,0,0,.28);backdrop-filter:blur(10px)}
+.north-arrow-text{font:700 10px 'Space Grotesk',sans-serif;letter-spacing:.14em;color:#ffffff;line-height:1}
+.north-arrow-svg{width:18px;height:28px;display:block;fill:#63b3ed;filter:drop-shadow(0 2px 6px rgba(99,179,237,.24))}
+.leaflet-control-scale{margin:0 0 12px 12px!important}
+.overview-north-arrow + .leaflet-control-scale, .leaflet-bottom.leaflet-right .leaflet-control-scale{margin-right:10px!important;margin-bottom:10px!important}
+.leaflet-control-scale-line{border:1px solid rgba(255,255,255,.18)!important;border-top:none!important;background:rgba(13,17,23,.88)!important;color:#e2e8f0!important;border-radius:0 0 8px 8px;box-shadow:0 8px 18px rgba(0,0,0,.24);font:600 10px Inter,sans-serif;padding:2px 7px 3px}
+.leaflet-control-scale-line:not(:first-child){border-top:1px solid rgba(255,255,255,.18)!important;border-radius:8px 8px 0 0}
+html.light .north-arrow-card{background:rgba(255,255,255,.92);border-color:rgba(15,23,42,.14)}
+html.light .north-arrow-text{color:#0f172a}
+html.light .north-arrow-svg{fill:#2563eb;filter:drop-shadow(0 2px 6px rgba(37,99,235,.16))}
+html.light .leaflet-control-scale-line{background:rgba(255,255,255,.94)!important;color:#0f172a!important;border-color:rgba(15,23,42,.16)!important}
+
+/* ===== Urban heat raster tuning ===== */
+#landuse-real-map .leaflet-image-layer.uhi-raster-overlay{image-rendering:crisp-edges;image-rendering:-webkit-optimize-contrast;filter:saturate(1.08) contrast(1.06) brightness(1.01)}
+@media (max-width:700px){
+  .north-arrow-card{width:38px;height:52px}
+  .north-arrow-svg{width:16px;height:24px}
+  .overview-north-arrow{margin-right:8px;margin-bottom:40px}
+}

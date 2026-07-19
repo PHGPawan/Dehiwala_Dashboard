@@ -184,6 +184,20 @@ const map = L.map('leaflet-map', {
 }).setView([6.853, 79.8690], 15);
 window.__overviewMap = map;
 
+function addOverviewNorthArrow(position='bottomright'){
+  const NorthControl = L.Control.extend({
+    options:{position},
+    onAdd(){
+      const el=L.DomUtil.create('div','north-arrow-control overview-north-arrow');
+      el.setAttribute('aria-label','North arrow');
+      el.innerHTML='<div class="north-arrow-card"><span class="north-arrow-text">N</span><svg class="north-arrow-svg" viewBox="0 0 24 36" aria-hidden="true"><path d="M12 2 L20 22 L12 18 L4 22 Z"></path><rect x="11" y="18" width="2" height="12" rx="1"></rect></svg></div>';
+      L.DomEvent.disableClickPropagation(el);
+      return el;
+    }
+  });
+  return new NorthControl().addTo(map);
+}
+
 L.control.zoom({position:'topright'}).addTo(map);
 
 /* Base tiles: CartoDB dark for dark mode, CartoDB positron for light */
@@ -528,7 +542,8 @@ map.on('locationfound',e=>{L.circleMarker(e.latlng,{radius:8,color:'#fff',weight
 map.on('locationerror',()=>L.popup().setLatLng(map.getCenter()).setContent('Location access is unavailable.').openOn(map));
 document.addEventListener('fullscreenchange',()=>setTimeout(()=>{map.invalidateSize();map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[18,18]});},150));
 
-/* ---------- Scale bar ---------- */
+/* ---------- North arrow & scale bar ---------- */
+addOverviewNorthArrow('bottomright');
 L.control.scale({position:'bottomright', imperial:false}).addTo(map);
 
 /* ---------- Theme change hook ---------- */

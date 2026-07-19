@@ -57,6 +57,20 @@ const landuseColors={
   'Mixed':'#D97706'
 };
 const formatNumber=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString(undefined,{maximumFractionDigits:d}):'—';
+
+function addNorthArrow(map,position='bottomleft'){
+  const NorthControl=L.Control.extend({
+    options:{position},
+    onAdd(){
+      const el=L.DomUtil.create('div','north-arrow-control');
+      el.setAttribute('aria-label','North arrow');
+      el.innerHTML='<div class="north-arrow-card"><span class="north-arrow-text">N</span><svg class="north-arrow-svg" viewBox="0 0 24 36" aria-hidden="true"><path d="M12 2 L20 22 L12 18 L4 22 Z"></path><rect x="11" y="18" width="2" height="12" rx="1"></rect></svg></div>';
+      L.DomEvent.disableClickPropagation(el);
+      return el;
+    }
+  });
+  return new NorthControl().addTo(map);
+}
 async function getJSON(url){
   if(cache.has(url)) return cache.get(url);
   const promise=fetch(url).then(r=>{if(!r.ok) throw new Error(`${r.status} ${r.statusText}`);return r.json();});
@@ -186,6 +200,8 @@ function baseMap(id){
   const canvas=document.getElementById(id);
   if(canvas)canvas.classList.toggle('real-map-dark-default',centralityDefault);
   L.control.layers({'Dark':dark,'Professional Gray':professional,'Professional Light':light,'Street':osm},null,{collapsed:true,position:'topleft'}).addTo(map);
+  addNorthArrow(map,'bottomleft');
+  L.control.scale({position:'bottomleft', imperial:false}).addTo(map);
   attachMapUtilities(map,id);
   return map;
 }
@@ -383,7 +399,7 @@ async function initEnvironment(){
     environmentState.elevationBounds=L.latLngBounds(elevation.bounds[0],elevation.bounds[1]);
     environmentState.uhiBounds=L.latLngBounds(uhi.bounds[0],uhi.bounds[1]);
     environmentState.elevationLayer=L.imageOverlay('assets/images/dehiwala_elevation_hillshade.png',environmentState.elevationBounds,{opacity:.9,interactive:false,crossOrigin:true});
-    environmentState.uhiLayer=L.imageOverlay('assets/images/dehiwala_uhi_surface.png',environmentState.uhiBounds,{opacity:.86,interactive:false,crossOrigin:true});
+    environmentState.uhiLayer=L.imageOverlay('assets/images/dehiwala_uhi_surface.png?v=4',environmentState.uhiBounds,{opacity:.94,interactive:false,crossOrigin:true,className:'uhi-raster-overlay'});
     map.on('click',e=>{
       if(environmentState.mode==='elevation'){
         const value=rasterValueAt(elevation,e.latlng);if(value===null)return;

@@ -18,6 +18,8 @@ function makeLayout(mainNodes, explanation, className=''){
 }
 
 function arrangeOverview(){
+  return; // disabled to preserve original overview layout
+
   const page=document.getElementById('page-overview');
   const mapWrap=page && page.querySelector('.map-wrap');
   const explanation=document.getElementById('overview-map-explanation');
@@ -96,7 +98,8 @@ function refitMaps(){
 }
 
 function run(){
-  arrangeOverview();
+  // Keep the Overview page in its original two-column format:
+  // map on the left and live conditions on the right.
   arrangeRealMaps();
   addPopulationDescriptions();
   refitMaps();
