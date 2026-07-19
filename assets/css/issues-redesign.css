@@ -204,3 +204,19 @@
   .ip-dual-grid { gap:10px; }
   .ip-column-scroll { padding:7px; }
 }
+
+/* Normal page flow requested: no nested scrolling inside either column. */
+#page-issues .ip-column-scroll {
+  max-height:none !important;
+  min-height:0 !important;
+  height:auto !important;
+  overflow:visible !important;
+  overscroll-behavior:auto !important;
+}
+#page-issues .ip-compare-column-header {
+  position:relative !important;
+  top:auto !important;
+}
+#page-issues .ip-compare-column {
+  overflow:visible !important;
+}

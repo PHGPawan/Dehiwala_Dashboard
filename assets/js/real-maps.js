@@ -109,27 +109,50 @@ function attachMapUtilities(map,id){
     hint.textContent=enable?'Map interaction enabled · tap ☝ again to release':'Page scroll enabled · tap ☝ to interact';
   });
   const refitAfterFullscreen=()=>{
-    const isFull=document.fullscreenElement===panel || (panel.matches && panel.matches(':fullscreen'));
+    let selectorFull=false;
+    if(panel.matches){
+      try{ selectorFull=panel.matches(':fullscreen') || panel.matches(':-webkit-full-screen'); }
+      catch(_err){ selectorFull=false; }
+    }
+    const isFull=document.fullscreenElement===panel ||
+      document.webkitFullscreenElement===panel || selectorFull;
     const centrality=id==='centrality-real-map';
+
+    /* Class and inline-size fallback make fullscreen reliable even when
+       viewport-fit.css has higher-specificity ID rules with !important. */
+    panel.classList.toggle('map-is-fullscreen',Boolean(isFull));
+    if(isFull){
+      canvas.style.setProperty('width','100dvw','important');
+      canvas.style.setProperty('height','100dvh','important');
+      canvas.style.setProperty('min-height','0','important');
+      canvas.style.setProperty('max-height','none','important');
+    }else{
+      ['width','height','min-height','max-height'].forEach(prop=>canvas.style.removeProperty(prop));
+    }
+
     const apply=()=>{
       map.invalidateSize({pan:false,animate:false});
       if(map.__analysisBounds && map.__analysisBounds.isValid()){
         stableFitBounds(map,map.__analysisBounds,{
           maxZoom:centrality?14:15,
-          padding:isFull?(centrality?34:30):(centrality?26:24),
+          padding:isFull?(centrality?42:36):(centrality?26:24),
           tightness:centrality?0.08:0.04
         });
       }
     };
     requestAnimationFrame(()=>requestAnimationFrame(apply));
-    setTimeout(apply,160);
-    setTimeout(apply,420);
+    [80,220,520,900].forEach(delay=>setTimeout(apply,delay));
   };
   tools.querySelector('.real-map-fullscreen').addEventListener('click',async()=>{
     try{
-      if(document.fullscreenElement===panel) await document.exitFullscreen();
-      else await panel.requestFullscreen();
-      refitAfterFullscreen();
+      if(document.fullscreenElement===panel || document.webkitFullscreenElement===panel){
+        if(document.exitFullscreen) await document.exitFullscreen();
+        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }else if(panel.requestFullscreen){
+        await panel.requestFullscreen();
+      }else if(panel.webkitRequestFullscreen){
+        panel.webkitRequestFullscreen();
+      }
     }catch(err){console.warn('Fullscreen unavailable',err);}
   });
   document.addEventListener('fullscreenchange',refitAfterFullscreen);
