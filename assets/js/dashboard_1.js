@@ -183,14 +183,58 @@ const map = L.map('leaflet-map', {
   scrollWheelZoom:true
 }).setView([6.853, 79.8690], 15);
 window.__overviewMap = map;
+const OVERVIEW_BOUNDS=[[6.841,79.860],[6.865,79.878]];
+function overviewFitOptions(extra=0){
+  const width=map.getContainer().clientWidth||0;
+  if(width>700){
+    return {paddingTopLeft:[178+extra,18+extra],paddingBottomRight:[18+extra,18+extra],maxZoom:16,animate:false};
+  }
+  return {padding:[12+extra,12+extra],maxZoom:16,animate:false};
+}
+function fitOverviewMap(extra=0){
+  map.fitBounds(OVERVIEW_BOUNDS,overviewFitOptions(extra));
+}
+window.__fitOverviewMap=fitOverviewMap;
 
-function addOverviewNorthArrow(position='bottomright'){
-  const NorthControl = L.Control.extend({
+function formatOverviewScaleDistance(metres){
+  return metres>=1000?`${Number((metres/1000).toFixed(metres>=10000?0:1))} km`:`${Math.round(metres)} m`;
+}
+function niceOverviewScaleDistance(value){
+  const power=Math.pow(10,Math.floor(Math.log10(Math.max(value,1))));
+  const fraction=value/power;
+  return (fraction>=5?5:fraction>=2?2:1)*power;
+}
+function addOverviewProfessionalScale(position='bottomright'){
+  const ScaleControl=L.Control.extend({
     options:{position},
     onAdd(){
-      const el=L.DomUtil.create('div','north-arrow-control overview-north-arrow');
+      const el=L.DomUtil.create('div','pro-map-scale-control overview-pro-scale');
+      el.innerHTML='<div class="pro-scale-label">DISTANCE</div><div class="pro-scale-bar"><span></span><span></span><span></span><span></span></div><div class="pro-scale-value">—</div>';
+      const bar=el.querySelector('.pro-scale-bar');
+      const value=el.querySelector('.pro-scale-value');
+      const update=()=>{
+        const maxPixels=104;
+        const y=Math.max(1,map.getSize().y/2);
+        const metres=map.distance(map.containerPointToLatLng([0,y]),map.containerPointToLatLng([maxPixels,y]));
+        const chosen=niceOverviewScaleDistance(metres);
+        bar.style.width=`${Math.max(46,Math.min(maxPixels,maxPixels*(chosen/metres)))}px`;
+        value.textContent=formatOverviewScaleDistance(chosen);
+      };
+      map.on('zoomend moveend resize',update);
+      setTimeout(update,0);
+      L.DomEvent.disableClickPropagation(el);
+      return el;
+    }
+  });
+  return new ScaleControl().addTo(map);
+}
+function addOverviewNorthArrow(position='bottomright'){
+  const NorthControl=L.Control.extend({
+    options:{position},
+    onAdd(){
+      const el=L.DomUtil.create('div','pro-north-control overview-pro-north');
       el.setAttribute('aria-label','North arrow');
-      el.innerHTML='<div class="north-arrow-card"><span class="north-arrow-text">N</span><svg class="north-arrow-svg" viewBox="0 0 24 36" aria-hidden="true"><path d="M12 2 L20 22 L12 18 L4 22 Z"></path><rect x="11" y="18" width="2" height="12" rx="1"></rect></svg></div>';
+      el.innerHTML='<div class="pro-compass"><span class="pro-compass-n">N</span><svg viewBox="0 0 64 82" aria-hidden="true"><circle class="compass-ring" cx="32" cy="44" r="23"></circle><path class="compass-north" d="M32 5 L43 44 L32 38 L21 44 Z"></path><path class="compass-south" d="M32 77 L21 44 L32 50 L43 44 Z"></path><circle class="compass-centre" cx="32" cy="44" r="3.3"></circle></svg></div>';
       L.DomEvent.disableClickPropagation(el);
       return el;
     }
@@ -482,7 +526,7 @@ map.on('click',()=>{
 });
 
 /* ---------- Fit map to roads extent ---------- */
-map.fitBounds([[6.841, 79.860],[6.865, 79.878]], {padding:[10,10]});
+fitOverviewMap(0);
 
 /* ---------- Layer toggle control ---------- */
 const LayerControl = L.Control.extend({
@@ -515,7 +559,7 @@ const LayerControl = L.Control.extend({
       gnMarkers.forEach(m=> gnOn ? m.addTo(map) : map.removeLayer(m));
       gBtn.style.background = gnOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'; gBtn.classList.toggle('active',gnOn);
     });
-    const fitBtn = mkBtn('⊹ Fit','Fit to bounds',false,()=> map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[10,10]}));
+    const fitBtn = mkBtn('⊹ Fit','Fit to bounds',false,()=> fitOverviewMap(0));
     d.appendChild(rBtn); d.appendChild(gBtn); d.appendChild(fitBtn);
     return d;
   }
@@ -531,7 +575,7 @@ const ExplorerControl=L.Control.extend({
     box.innerHTML=`<div class="overview-map-explorer-title">Explore GN divisions</div><select id="overview-gn-select" aria-label="Select a GN division"><option value="">Choose a GN division…</option>${[...gnData].sort((a,b)=>a.name.localeCompare(b.name)).map(g=>`<option value="${g.name}">${g.name}</option>`).join('')}</select><div class="overview-map-explorer-actions"><button type="button" data-action="locate" title="Show your location">◎ Locate</button><button type="button" data-action="reset" title="Reset map">↺ Reset</button><button type="button" data-action="full" title="Fullscreen map">⛶ Full</button></div>`;
     const select=box.querySelector('select');
     select.addEventListener('change',()=>{const gn=gnData.find(g=>g.name===select.value);const marker=gn&&gnMarkerByName.get(gn.name);if(gn&&marker)showGNSelection(gn,marker,{zoom:true});else clearGNSelection();});
-    box.querySelector('[data-action="reset"]').onclick=()=>{clearGNSelection();map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[14,14]});};
+    box.querySelector('[data-action="reset"]').onclick=()=>{clearGNSelection();fitOverviewMap(4);};
     box.querySelector('[data-action="locate"]').onclick=()=>map.locate({setView:true,maxZoom:16,enableHighAccuracy:true});
     box.querySelector('[data-action="full"]').onclick=async()=>{const wrap=document.querySelector('#page-overview .map-wrap');try{if(document.fullscreenElement===wrap)await document.exitFullscreen();else await wrap.requestFullscreen();}catch(err){console.warn('Overview fullscreen unavailable',err);}};
     return box;
@@ -540,11 +584,11 @@ const ExplorerControl=L.Control.extend({
 new ExplorerControl().addTo(map);
 map.on('locationfound',e=>{L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:3,fillColor:'#2563eb',fillOpacity:1}).addTo(map).bindPopup(`<b>Your location</b><br>Accuracy: ${Math.round(e.accuracy)} m`).openPopup();});
 map.on('locationerror',()=>L.popup().setLatLng(map.getCenter()).setContent('Location access is unavailable.').openOn(map));
-document.addEventListener('fullscreenchange',()=>setTimeout(()=>{map.invalidateSize();map.fitBounds([[6.841,79.860],[6.865,79.878]],{padding:[18,18]});},150));
+document.addEventListener('fullscreenchange',()=>setTimeout(()=>{map.invalidateSize();fitOverviewMap(6);},150));
 
-/* ---------- North arrow & scale bar ---------- */
+/* ---------- Professional north arrow & scale bar ---------- */
 addOverviewNorthArrow('bottomright');
-L.control.scale({position:'bottomright', imperial:false}).addTo(map);
+addOverviewProfessionalScale('bottomright');
 
 /* ---------- Theme change hook ---------- */
 const _origToggle = document.querySelector('.theme-toggle') && document.querySelector('.theme-toggle').onclick;

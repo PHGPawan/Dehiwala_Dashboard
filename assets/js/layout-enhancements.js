@@ -18,31 +18,108 @@ function makeLayout(mainNodes, explanation, className=''){
 }
 
 function arrangeOverview(){
-  return; // disabled to preserve original overview layout
-
   const page=document.getElementById('page-overview');
-  const mapWrap=page && page.querySelector('.map-wrap');
-  const explanation=document.getElementById('overview-map-explanation');
-  if(!page||!mapWrap||!explanation)return;
+  const mapWrap=page&&page.querySelector('.map-wrap');
+  const mapTitle=[...page.querySelectorAll('.section-title')].find(el=>el.textContent.includes('Interactive Study Area Map'));
+  const mapHeader=mapTitle&&mapTitle.closest('.section-header');
+  const weatherTs=document.getElementById('weather-ts');
+  const liveHeader=weatherTs&&weatherTs.closest('.section-header');
+  if(!page||!mapWrap||!mapHeader||!liveHeader)return;
 
-  const firstTwoCol=[...page.querySelectorAll(':scope > .two-col')].find(el=>el.contains(mapWrap));
-  if(firstTwoCol)firstTwoCol.classList.add('overview-main-stack');
+  const mapColumn=mapHeader.parentElement;
+  const liveColumn=liveHeader.parentElement;
+  let primary=[...page.querySelectorAll(':scope > .two-col')].find(el=>el.contains(mapHeader)||el.contains(liveHeader));
+  if(!primary){
+    primary=document.createElement('div');
+    primary.className='two-col mb20';
+    mapColumn.parentNode.insertBefore(primary,mapColumn);
+    primary.append(mapColumn,liveColumn);
+  }
 
-  const result=makeLayout([mapWrap],explanation,'overview-map-layout');
-  if(!result)return;
+  /* Undo any old cached map-left/details-right transformation on Overview. */
+  const oldLayout=page.querySelector('.overview-map-layout');
+  if(oldLayout){
+    const oldMain=oldLayout.querySelector('.map-detail-main');
+    const oldAside=oldLayout.querySelector('.map-detail-aside');
+    if(mapWrap.parentNode!==mapColumn)mapColumn.insertBefore(mapWrap,mapHeader.nextSibling);
+    const explanation=oldAside&&oldAside.querySelector('#overview-map-explanation');
+    if(explanation)mapColumn.insertBefore(explanation,mapWrap.nextSibling);
+    oldLayout.remove();
+  }else if(mapWrap.parentNode!==mapColumn){
+    mapColumn.insertBefore(mapWrap,mapHeader.nextSibling);
+  }
 
-  // Move Leaflet finder and selected profile into the information column.
-  const moveControls=()=>{
-    const explorer=document.querySelector('.overview-map-explorer');
-    const selection=document.getElementById('overview-selection-card');
-    if(explorer && explorer.parentNode!==result.aside)result.aside.insertBefore(explorer,result.aside.firstChild);
-    if(selection && selection.parentNode!==result.aside){
-      const reference=result.aside.querySelector('#overview-map-explanation');
-      result.aside.insertBefore(selection,reference||null);
+  /* Restore Leaflet controls that an older cached script may have moved. */
+  const explorer=document.querySelector('.overview-map-explorer');
+  const leafletCorner=mapWrap.querySelector('.leaflet-top.leaflet-left');
+  if(explorer&&leafletCorner&&explorer.parentNode!==leafletCorner)leafletCorner.appendChild(explorer);
+  const selection=document.getElementById('overview-selection-card');
+  if(selection&&selection.parentNode!==mapWrap)mapWrap.appendChild(selection);
+
+  primary.classList.remove('overview-main-stack');
+  primary.classList.add('overview-primary-grid');
+  if(mapColumn.parentNode!==primary)primary.prepend(mapColumn);
+  if(liveColumn.parentNode!==primary)primary.appendChild(liveColumn);
+
+  setTimeout(()=>{
+    window.dispatchEvent(new Event('resize'));
+    if(window.__overviewMap){
+      window.__overviewMap.invalidateSize({pan:false});
+      if(window.__fitOverviewMap)window.__fitOverviewMap(0);
+    }
+  },180);
+}
+
+
+function addOverviewLiveSnapshot(){
+  const page=document.getElementById('page-overview');
+  const weatherTs=document.getElementById('weather-ts');
+  const liveColumn=weatherTs&&weatherTs.closest('.section-header')&&weatherTs.closest('.section-header').parentElement;
+  if(!page||!liveColumn||liveColumn.querySelector('.overview-live-snapshot'))return;
+
+  liveColumn.classList.add('overview-live-column');
+  const panel=document.createElement('section');
+  panel.className='overview-live-snapshot panel';
+  panel.innerHTML=`
+    <div class="overview-live-snapshot-head">
+      <div><div class="overview-live-kicker">LIVE PLANNING SNAPSHOT</div><div class="overview-live-title">Current urban-comfort signals</div></div>
+      <span class="overview-live-status"><i></i> Auto-updated</span>
+    </div>
+    <div class="overview-live-insight-grid">
+      <div class="overview-live-insight thermal"><span>Thermal comfort</span><b id="ov-live-thermal">Loading…</b><small id="ov-live-thermal-note">Reading apparent temperature</small></div>
+      <div class="overview-live-insight air"><span>Air quality</span><b id="ov-live-air">Loading…</b><small id="ov-live-air-note">Reading AQI and PM2.5</small></div>
+      <div class="overview-live-insight weather"><span>Outdoor conditions</span><b id="ov-live-weather">Loading…</b><small id="ov-live-weather-note">Reading rain, wind and humidity</small></div>
+    </div>`;
+  liveColumn.appendChild(panel);
+
+  const number=id=>{const el=document.getElementById(id);const v=el&&parseFloat(el.textContent);return Number.isFinite(v)?v:null;};
+  const update=()=>{
+    const feels=number('w-feels'),aqi=number('w-aqi'),pm=number('w-pm25'),rain=number('w-rain'),wind=number('w-wind'),hum=number('w-hum');
+    const thermal=document.getElementById('ov-live-thermal');
+    const thermalNote=document.getElementById('ov-live-thermal-note');
+    if(feels!==null){
+      const label=feels>=38?'High heat stress':feels>=32?'Warm / caution':feels>=27?'Moderately warm':'Comfortable';
+      thermal.textContent=`${label} · ${feels.toFixed(1)}°C`;
+      thermalNote.textContent=feels>=32?'Prioritise shade, hydration and cooler walking routes.':'Conditions are comparatively manageable for outdoor activity.';
+    }
+    const air=document.getElementById('ov-live-air');
+    const airNote=document.getElementById('ov-live-air-note');
+    if(aqi!==null){
+      const label=aqi<=20?'Good':aqi<=40?'Fair':aqi<=60?'Moderate':aqi<=80?'Poor':'Very poor';
+      air.textContent=`${label} · AQI ${Math.round(aqi)}`;
+      airNote.textContent=pm!==null?`PM2.5 currently ${pm.toFixed(1)} µg/m³.`:'Air-quality monitoring is active.';
+    }
+    const weather=document.getElementById('ov-live-weather');
+    const weatherNote=document.getElementById('ov-live-weather-note');
+    if(rain!==null&&wind!==null){
+      weather.textContent=rain>0.2?`Rain ${rain.toFixed(1)} mm`:`Dry · wind ${wind.toFixed(1)} km/h`;
+      weatherNote.textContent=hum!==null?`Humidity ${Math.round(hum)}%; consider pedestrian exposure and ventilation.`:'Outdoor conditions are being monitored.';
     }
   };
-  moveControls();
-  setTimeout(moveControls,250);
+  update();
+  ['w-feels','w-aqi','w-pm25','w-rain','w-wind','w-hum'].forEach(id=>{
+    const el=document.getElementById(id);if(el)new MutationObserver(update).observe(el,{childList:true,characterData:true,subtree:true});
+  });
 }
 
 function arrangeRealMaps(){
@@ -98,8 +175,8 @@ function refitMaps(){
 }
 
 function run(){
-  // Keep the Overview page in its original two-column format:
-  // map on the left and live conditions on the right.
+  arrangeOverview();
+  addOverviewLiveSnapshot();
   arrangeRealMaps();
   addPopulationDescriptions();
   refitMaps();

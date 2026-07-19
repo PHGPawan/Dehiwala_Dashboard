@@ -58,13 +58,47 @@ const landuseColors={
 };
 const formatNumber=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString(undefined,{maximumFractionDigits:d}):'—';
 
-function addNorthArrow(map,position='bottomleft'){
+function formatScaleDistance(metres){
+  return metres>=1000?`${Number((metres/1000).toFixed(metres>=10000?0:1))} km`:`${Math.round(metres)} m`;
+}
+function niceScaleDistance(value){
+  const power=Math.pow(10,Math.floor(Math.log10(Math.max(value,1))));
+  const fraction=value/power;
+  const nice=fraction>=5?5:fraction>=2?2:1;
+  return nice*power;
+}
+function addProfessionalScaleBar(map,position='bottomleft'){
+  const ScaleControl=L.Control.extend({
+    options:{position},
+    onAdd(){
+      const el=L.DomUtil.create('div','pro-map-scale-control');
+      el.innerHTML='<div class="pro-scale-label">DISTANCE</div><div class="pro-scale-bar"><span></span><span></span><span></span><span></span></div><div class="pro-scale-value">—</div>';
+      const bar=el.querySelector('.pro-scale-bar');
+      const value=el.querySelector('.pro-scale-value');
+      const update=()=>{
+        const maxPixels=104;
+        const y=Math.max(1,map.getSize().y/2);
+        const metres=map.distance(map.containerPointToLatLng([0,y]),map.containerPointToLatLng([maxPixels,y]));
+        const chosen=niceScaleDistance(metres);
+        const px=Math.max(46,Math.min(maxPixels,maxPixels*(chosen/metres)));
+        bar.style.width=`${px}px`;
+        value.textContent=formatScaleDistance(chosen);
+      };
+      map.on('zoomend moveend resize',update);
+      setTimeout(update,0);
+      L.DomEvent.disableClickPropagation(el);
+      return el;
+    }
+  });
+  return new ScaleControl().addTo(map);
+}
+function addProfessionalNorthArrow(map,position='bottomleft'){
   const NorthControl=L.Control.extend({
     options:{position},
     onAdd(){
-      const el=L.DomUtil.create('div','north-arrow-control');
+      const el=L.DomUtil.create('div','pro-north-control');
       el.setAttribute('aria-label','North arrow');
-      el.innerHTML='<div class="north-arrow-card"><span class="north-arrow-text">N</span><svg class="north-arrow-svg" viewBox="0 0 24 36" aria-hidden="true"><path d="M12 2 L20 22 L12 18 L4 22 Z"></path><rect x="11" y="18" width="2" height="12" rx="1"></rect></svg></div>';
+      el.innerHTML='<div class="pro-compass"><span class="pro-compass-n">N</span><svg viewBox="0 0 64 82" aria-hidden="true"><circle class="compass-ring" cx="32" cy="44" r="23"></circle><path class="compass-north" d="M32 5 L43 44 L32 38 L21 44 Z"></path><path class="compass-south" d="M32 77 L21 44 L32 50 L43 44 Z"></path><circle class="compass-centre" cx="32" cy="44" r="3.3"></circle></svg></div>';
       L.DomEvent.disableClickPropagation(el);
       return el;
     }
@@ -200,8 +234,8 @@ function baseMap(id){
   const canvas=document.getElementById(id);
   if(canvas)canvas.classList.toggle('real-map-dark-default',centralityDefault);
   L.control.layers({'Dark':dark,'Professional Gray':professional,'Professional Light':light,'Street':osm},null,{collapsed:true,position:'topleft'}).addTo(map);
-  addNorthArrow(map,'bottomleft');
-  L.control.scale({position:'bottomleft', imperial:false}).addTo(map);
+  addProfessionalNorthArrow(map,'bottomleft');
+  addProfessionalScaleBar(map,'bottomleft');
   attachMapUtilities(map,id);
   return map;
 }
