@@ -692,43 +692,22 @@ document.querySelectorAll('[data-download-key]').forEach(link=>{
 /* ======== CENTRALITY GRID ======== */
 const centralityMaps = {
   '500': [
-    {src:MAP_ASSETS.bet500, tag:'Betweenness · 500 m', title:'Betweenness Centrality — 500 m', desc:'Local movement potential and short-distance route choice.'},
-    {src:MAP_ASSETS.close500, tag:'Closeness · 500 m', title:'Closeness Centrality — 500 m', desc:'Pedestrian-scale accessibility around the local street network.'},
+    {src:MAP_ASSETS.bet500, tag:'Betweenness · 500 m', title:'Betweenness Centrality — 500 m', desc:'Highlights street segments that carry many shortest paths within 500 m. High values indicate likely local walking routes, junctions and short-distance movement channels.'},
+    {src:MAP_ASSETS.close500, tag:'Closeness · 500 m', title:'Closeness Centrality — 500 m', desc:'Measures how easily each street can reach nearby streets within 500 m. High values identify locally accessible, pedestrian-scale centres with strong proximity to surrounding routes.'},
   ],
   '2000':[
-    {src:MAP_ASSETS.bet2000, tag:'Betweenness · 2000 m', title:'Betweenness Centrality — 2000 m', desc:'Neighbourhood movement channels and intermediate through-routes.'},
-    {src:MAP_ASSETS.close2000, tag:'Closeness · 2000 m', title:'Closeness Centrality — 2000 m', desc:'Neighbourhood accessibility and the transition toward residential edges.'},
+    {src:MAP_ASSETS.bet2000, tag:'Betweenness · 2000 m', title:'Betweenness Centrality — 2000 m', desc:'Identifies streets likely to channel through-movement across a 2 km neighbourhood radius. High values reveal important connectors between residential areas, activity nodes and main corridors.'},
+    {src:MAP_ASSETS.close2000, tag:'Closeness · 2000 m', title:'Closeness Centrality — 2000 m', desc:'Measures access to the surrounding network within 2 km. High values mark streets with efficient neighbourhood-wide reach and stronger potential access to services and public transport.'},
   ],
   '5000':[
-    {src:MAP_ASSETS.bet5000, tag:'Betweenness · 5000 m', title:'Betweenness Centrality — 5000 m', desc:'Regional corridor movement linking Colombo with the southern urban belt.'},
-    {src:MAP_ASSETS.close5000, tag:'Closeness · 5000 m', title:'Closeness Centrality — 5000 m', desc:'City-wide reach and the role of the Dehiwala urban core as a regional node.'},
+    {src:MAP_ASSETS.bet5000, tag:'Betweenness · 5000 m', title:'Betweenness Centrality — 5000 m', desc:'Reveals strategic routes that carry city-scale through-movement within 5 km. High values identify regional movement spines and corridors connecting Dehiwala with the wider Colombo urban network.'},
+    {src:MAP_ASSETS.close5000, tag:'Closeness · 5000 m', title:'Closeness Centrality — 5000 m', desc:'Measures city-wide network reach within 5 km. High values identify streets that are efficiently connected to the broader urban system and support regional accessibility.'},
   ],
 };
 const allCentrality = [...centralityMaps['500'],...centralityMaps['2000'],...centralityMaps['5000']];
 
-function buildCentralityGrid(scale){
-  const maps = scale==='all' ? allCentrality : centralityMaps[scale]||[];
-  const grid = document.getElementById('centrality-grid');
-  if(!grid) return;
-  grid.innerHTML = maps.map(m=>`
-    <div class="map-card analysis-card" data-src="${m.src}" data-title="${m.title}">
-      <img class="analysis-map-img" src="${m.src}" alt="${m.title}">
-      <div class="map-card-info">
-        <div class="map-card-tag">${m.tag}</div>
-        <div class="map-card-title">${m.title}</div>
-        <div class="map-card-desc">${m.desc}</div>
-      </div>
-    </div>`).join('');
-  window._centralityBuilt=true;
-}
+function buildCentralityGrid(scale){ /* Interactive centrality map is initialized by real-maps.js */ }
 buildCentralityGrid('all');
-
-document.getElementById('scale-tabs').addEventListener('click',e=>{
-  const tab=e.target.closest('.scale-tab'); if(!tab) return;
-  document.querySelectorAll('.scale-tab').forEach(t=>t.classList.remove('active'));
-  tab.classList.add('active');
-  buildCentralityGrid(tab.dataset.scale);
-});
 
 /* ======== SPACE CHART ======== */
 const spaceLabels=['Dehiwala E','Malwatta','Hathbodhiya','Dehiwala W','Udyanaya','Kohuwala','Jayathilaka','Kawdana W','Mt. Lavinia','Galwala','Karagampitiya'];
