@@ -210,3 +210,22 @@ html.light .real-map-scroll-hint{background:rgba(248,250,252,.88);border-color:r
   .real-map-canvas{height:420px;min-height:360px;max-height:440px}
   .real-map-legend{bottom:48px;max-height:36%;max-width:min(68vw,190px)}
 }
+
+/* ===== Real DEM elevation layer ===== */
+#environment-layer-tabs .real-layer-btn[data-metric="landuse"].active{
+  background:linear-gradient(135deg,#166534,#0f766e);color:#fff;
+}
+#environment-layer-tabs .real-layer-btn[data-metric="elevation"].active{
+  background:linear-gradient(135deg,#164e63,#c47d3f 72%,#70424d);color:#fff;
+}
+#landuse-real-map .leaflet-image-layer{
+  image-rendering:auto;
+  filter:saturate(1.08) contrast(1.04);
+}
+@media(max-width:900px){
+  #elevation-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+  #elevation-summary{grid-template-columns:1fr 1fr!important;gap:7px}
+  #elevation-summary .real-map-summary-card{padding:9px}
+}

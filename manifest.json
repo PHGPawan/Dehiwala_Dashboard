@@ -10,5 +10,19 @@
     "mobile-responsive",
     "github-pages-ready"
   ],
-  "raster_sources_required": ["urban-heat-geotiff", "elevation-dem-geotiff"]
+  "raster_sources_required": [
+    "urban-heat-geotiff",
+    "elevation-dem-geotiff"
+  ],
+  "elevation_layer": {
+    "source": "downloads/Dehiwala_DEM.tif",
+    "web_raster": "assets/images/dehiwala_elevation_hillshade.png",
+    "query_grid": "assets/data/elevation_grid.json",
+    "wgs84_download": "downloads/Dehiwala_DEM_WGS84.tif",
+    "range_m": [
+      -2,
+      36
+    ],
+    "resolution_m": 12.5
+  }
 }
