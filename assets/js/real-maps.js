@@ -80,7 +80,7 @@ function attachMapUtilities(map,id){
   tools.querySelector('.real-map-fit').addEventListener('click',()=>{
     if(map.__analysisBounds && map.__analysisBounds.isValid()){
       const centrality=id==='centrality-real-map';
-      stableFitBounds(map,map.__analysisBounds,{padding:centrality?44:30,maxZoom:centrality?13:15});
+      stableFitBounds(map,map.__analysisBounds,{padding:centrality?26:24,maxZoom:centrality?14:15,tightness:(centrality ? 0.08 : 0.04)});
     }
   });
   const legendBtn=tools.querySelector('.real-map-legend-toggle');
@@ -133,12 +133,13 @@ function baseMap(id){
   attachMapUtilities(map,id);
   return map;
 }
-function stableFitBounds(map,bounds,{maxZoom=15,padding=30}={}){
+function stableFitBounds(map,bounds,{maxZoom=15,padding=30,tightness=0}={}){
   if(!bounds||!bounds.isValid())return;
   map.__analysisBounds=bounds;
+  const targetBounds=(tightness>0&&typeof bounds.pad==='function')?bounds.pad(-tightness):bounds;
   const apply=()=>{
     map.invalidateSize({pan:false,animate:false});
-    map.fitBounds(bounds,{padding:[padding,padding],maxZoom,animate:false});
+    map.fitBounds(targetBounds,{padding:[padding,padding],maxZoom,animate:false});
   };
   requestAnimationFrame(()=>requestAnimationFrame(apply));
   setTimeout(apply,180);
@@ -154,7 +155,7 @@ async function initCentrality(){
   if(centralityState.map){
     setTimeout(()=>{
       centralityState.map.invalidateSize({pan:false});
-      if(centralityState.map.__analysisBounds) stableFitBounds(centralityState.map,centralityState.map.__analysisBounds,{maxZoom:13,padding:44});
+      if(centralityState.map.__analysisBounds) stableFitBounds(centralityState.map,centralityState.map.__analysisBounds,{maxZoom:14,padding:26,tightness:0.08});
     },120);
     return;
   }
@@ -185,13 +186,13 @@ function updateCentrality(first=false){
     });
   }}).addTo(s.map);
   const activeBounds=s.layer.getBounds();
-  if(activeBounds&&activeBounds.isValid())stableFitBounds(s.map,activeBounds,{maxZoom:13,padding:44});
+  if(activeBounds&&activeBounds.isValid())stableFitBounds(s.map,activeBounds,{maxZoom:14,padding:26,tightness:0.08});
   const br=s.meta[key].breaks;
   makeLegend('centrality-real-legend',`${centralityNames[s.metric]} · ${s.radius} m`,metricPalette.map((c,i)=>({color:c,label:`${formatNumber(br[i])} – ${formatNumber(br[i+1])}`})));
   document.getElementById('centrality-active-layer').textContent=`${centralityNames[s.metric]} at ${s.radius} m radius`;
   setTimeout(()=>{
     s.map.invalidateSize({pan:false});
-    if(s.map.__analysisBounds) stableFitBounds(s.map,s.map.__analysisBounds,{maxZoom:13,padding:44});
+    if(s.map.__analysisBounds) stableFitBounds(s.map,s.map.__analysisBounds,{maxZoom:14,padding:26,tightness:0.08});
   },100);
 }
 window.buildCentralityGrid=function(scale){if(scale&&scale!=='all')centralityState.radius=scale;initCentrality().then(()=>updateCentrality(false));};
@@ -218,7 +219,7 @@ async function initIndexMap(which){
         mouseout:e=>state.layer.resetStyle(e.target)
       });
     }}).addTo(map);
-    fit(map,state.layer,{maxZoom:15,padding:32});renderIndexLegend(state);status(cfg.status,'');
+    fit(map,state.layer,{maxZoom:15,padding:24,tightness:0.04});renderIndexLegend(state);status(cfg.status,'');
   }catch(err){status(cfg.status,`Could not load the analytical grid layer. (${err.message})`,true);}
 }
 function indexStyle(state,f){
@@ -251,7 +252,7 @@ async function initLanduse(){
         mouseout:e=>layer.resetStyle(e.target)
       });
     }}).addTo(map);
-    fit(map,layer,{maxZoom:15,padding:32});makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));status('landuse-real-status','');
+    fit(map,layer,{maxZoom:15,padding:24,tightness:0.04});makeLegend('landuse-real-legend','Land-use categories',cats.map(c=>({color:landuseColors[c]||landuseColors.Other,label:c})));status('landuse-real-status','');
   }catch(err){status('landuse-real-status',`Could not load the land-use layer. (${err.message})`,true);}
 }
 
@@ -265,7 +266,7 @@ function initForPage(page){
       m.invalidateSize({pan:false});
       if(m.__analysisBounds){
         const centrality=name==='centrality';
-        stableFitBounds(m,m.__analysisBounds,{maxZoom:centrality?13:15,padding:centrality?44:32});
+        stableFitBounds(m,m.__analysisBounds,{maxZoom:centrality?14:15,padding:centrality?26:24,tightness:(centrality ? 0.08 : 0.04)});
       }
     });
   },360);
