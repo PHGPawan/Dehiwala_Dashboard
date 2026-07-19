@@ -208,17 +208,19 @@ function addOverviewProfessionalScale(position='bottomright'){
   const ScaleControl=L.Control.extend({
     options:{position},
     onAdd(){
-      const el=L.DomUtil.create('div','pro-map-scale-control overview-pro-scale');
-      el.innerHTML='<div class="pro-scale-label">DISTANCE</div><div class="pro-scale-bar"><span></span><span></span><span></span><span></span></div><div class="pro-scale-value">—</div>';
-      const bar=el.querySelector('.pro-scale-bar');
-      const value=el.querySelector('.pro-scale-value');
+      const el=L.DomUtil.create('div','pro-map-scale-control premium-map-scale overview-pro-scale');
+      el.innerHTML='<div class="premium-scale-kicker">GROUND DISTANCE</div><div class="premium-scale-ruler"><i class="premium-scale-cap left"></i><div class="premium-scale-segments"><span></span><span></span><span></span><span></span></div><i class="premium-scale-cap right"></i></div><div class="premium-scale-values"><span>0</span><span class="premium-scale-mid">—</span><span class="premium-scale-full">—</span></div>';
+      const ruler=el.querySelector('.premium-scale-ruler');
+      const mid=el.querySelector('.premium-scale-mid');
+      const full=el.querySelector('.premium-scale-full');
       const update=()=>{
-        const maxPixels=104;
+        const maxPixels=126;
         const y=Math.max(1,map.getSize().y/2);
         const metres=map.distance(map.containerPointToLatLng([0,y]),map.containerPointToLatLng([maxPixels,y]));
         const chosen=niceOverviewScaleDistance(metres);
-        bar.style.width=`${Math.max(46,Math.min(maxPixels,maxPixels*(chosen/metres)))}px`;
-        value.textContent=formatOverviewScaleDistance(chosen);
+        ruler.style.width=`${Math.max(72,Math.min(maxPixels,maxPixels*(chosen/metres)))}px`;
+        mid.textContent=formatOverviewScaleDistance(chosen/2);
+        full.textContent=formatOverviewScaleDistance(chosen);
       };
       map.on('zoomend moveend resize',update);
       setTimeout(update,0);
@@ -228,13 +230,13 @@ function addOverviewProfessionalScale(position='bottomright'){
   });
   return new ScaleControl().addTo(map);
 }
-function addOverviewNorthArrow(position='bottomright'){
+function addOverviewNorthArrow(position='topright'){
   const NorthControl=L.Control.extend({
     options:{position},
     onAdd(){
-      const el=L.DomUtil.create('div','pro-north-control overview-pro-north');
+      const el=L.DomUtil.create('div','pro-north-control premium-north-control overview-pro-north');
       el.setAttribute('aria-label','North arrow');
-      el.innerHTML='<div class="pro-compass"><span class="pro-compass-n">N</span><svg viewBox="0 0 64 82" aria-hidden="true"><circle class="compass-ring" cx="32" cy="44" r="23"></circle><path class="compass-north" d="M32 5 L43 44 L32 38 L21 44 Z"></path><path class="compass-south" d="M32 77 L21 44 L32 50 L43 44 Z"></path><circle class="compass-centre" cx="32" cy="44" r="3.3"></circle></svg></div>';
+      el.innerHTML='<div class="premium-compass"><span class="premium-compass-n">N</span><svg viewBox="0 0 72 94" aria-hidden="true"><circle class="premium-ring-outer" cx="36" cy="51" r="27"></circle><circle class="premium-ring-inner" cx="36" cy="51" r="20"></circle><path class="premium-arrow-north" d="M36 6 L49 52 L36 43 L23 52 Z"></path><path class="premium-arrow-south" d="M36 88 L23 52 L36 59 L49 52 Z"></path><circle class="premium-compass-centre" cx="36" cy="52" r="4"></circle></svg><span class="premium-compass-caption">TRUE NORTH</span></div>';
       L.DomEvent.disableClickPropagation(el);
       return el;
     }
@@ -243,6 +245,7 @@ function addOverviewNorthArrow(position='bottomright'){
 }
 
 L.control.zoom({position:'topright'}).addTo(map);
+addOverviewNorthArrow('topright');
 
 /* Base tiles: CartoDB dark for dark mode, CartoDB positron for light */
 const darkTile = L.tileLayer(
@@ -587,7 +590,6 @@ map.on('locationerror',()=>L.popup().setLatLng(map.getCenter()).setContent('Loca
 document.addEventListener('fullscreenchange',()=>setTimeout(()=>{map.invalidateSize();fitOverviewMap(6);},150));
 
 /* ---------- Professional north arrow & scale bar ---------- */
-addOverviewNorthArrow('bottomright');
 addOverviewProfessionalScale('bottomright');
 
 /* ---------- Theme change hook ---------- */

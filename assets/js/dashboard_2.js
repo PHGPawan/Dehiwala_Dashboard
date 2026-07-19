@@ -10,6 +10,21 @@
   const loading = document.getElementById('model3d-loading');
   const fill = document.getElementById('model3d-progress-fill');
   const progressLabel = document.getElementById('model3d-progress-label');
+
+  // Keep the selected-GN result visible at the top of the control column
+  // and also inside the viewer itself.
+  const profileNameEl=document.getElementById('model-profile-name');
+  const profileCard=profileNameEl && profileNameEl.closest('.model3d-control-card');
+  const controlPanel=profileCard && profileCard.closest('.model3d-control-panel');
+  if(profileCard && controlPanel){
+    profileCard.classList.add('model3d-profile-primary');
+    controlPanel.prepend(profileCard);
+  }
+  const quickProfile=document.createElement('div');
+  quickProfile.className='model3d-quick-profile';
+  quickProfile.setAttribute('aria-live','polite');
+  quickProfile.innerHTML='<div class="model3d-quick-kicker">SELECTED GN</div><div class="model3d-quick-name">Dehiwala East</div><div class="model3d-quick-stats"><span><b>8,262</b>Total</span><span><b>3,704</b>Male</span><span><b>4,558</b>Female</span></div>';
+  stage.appendChild(quickProfile);
   let baseColor = '#63b3ed';
   let colorMode = 'population';
   const highlightColor = '#f6c85f';
@@ -103,10 +118,20 @@
   function updateProfile(row){
     document.querySelectorAll('.gn3d-row').forEach(r=>r.classList.remove('active'));
     row.classList.add('active');
+    const total=Number(row.dataset.total).toLocaleString();
+    const male=Number(row.dataset.male).toLocaleString();
+    const female=Number(row.dataset.female).toLocaleString();
     document.getElementById('model-profile-name').textContent=row.dataset.name;
-    document.getElementById('model-profile-total').textContent=Number(row.dataset.total).toLocaleString();
-    document.getElementById('model-profile-male').textContent=Number(row.dataset.male).toLocaleString();
-    document.getElementById('model-profile-female').textContent=Number(row.dataset.female).toLocaleString();
+    document.getElementById('model-profile-total').textContent=total;
+    document.getElementById('model-profile-male').textContent=male;
+    document.getElementById('model-profile-female').textContent=female;
+    quickProfile.querySelector('.model3d-quick-name').textContent=row.dataset.name;
+    const quickValues=quickProfile.querySelectorAll('.model3d-quick-stats b');
+    quickValues[0].textContent=total; quickValues[1].textContent=male; quickValues[2].textContent=female;
+    quickProfile.classList.remove('selection-pulse');
+    requestAnimationFrame(()=>quickProfile.classList.add('selection-pulse'));
+    profileCard && profileCard.classList.remove('selection-pulse');
+    requestAnimationFrame(()=>profileCard && profileCard.classList.add('selection-pulse'));
   }
 
   function selectGN(row,{rotate=true}={}){
