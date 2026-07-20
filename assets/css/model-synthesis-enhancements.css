@@ -38,3 +38,42 @@ html.light .model3d-select,html.light .model3d-clear-btn{background:#f8fafc}
   .model3d-select-actions{align-items:stretch;flex-direction:column}.model3d-clear-btn{width:100%}
   .synth-finding-picker{grid-template-columns:1fr;width:100%;min-width:0}.synth-finding-picker label{grid-column:auto}.synth-finding-picker .synth-btn{width:100%}
 }
+
+/* ===== 3D focus workspace and stronger GN selection ===== */
+#page-model3d .model3d-layout{
+  grid-template-columns:minmax(0,1.62fr) minmax(315px,.58fr);
+  align-items:start;
+}
+.model3d-main-column{display:flex;flex-direction:column;gap:13px;min-width:0}
+.model3d-focus-panel{position:relative;min-height:190px;padding:15px 16px;border:1px solid rgba(0,240,200,.22);border-radius:12px;background:linear-gradient(145deg,rgba(0,240,200,.055),rgba(99,179,237,.035),var(--bg2));overflow:hidden}
+.model3d-focus-panel:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#00f0c8,#63b3ed);box-shadow:0 0 18px rgba(0,240,200,.34)}
+.model3d-focus-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.model3d-focus-head>div>span{display:block;color:#00d9b6;font:800 8px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.model3d-focus-head h3{margin:4px 0 0;color:var(--text);font:700 17px 'Space Grotesk',sans-serif}
+.model3d-focus-status{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);border-radius:999px;padding:5px 8px;font:700 8px Inter,sans-serif;white-space:nowrap}
+.model3d-focus-status.selected{border-color:rgba(0,240,200,.32);color:#69f9df;background:rgba(0,240,200,.08)}
+.model3d-focus-status.selected i{width:8px;height:8px;border-radius:3px;background:#00f0c8;box-shadow:0 0 0 2px #fff,0 0 12px rgba(0,240,200,.75)}
+.model3d-focus-copy{max-width:760px;margin:9px 0 11px;color:var(--text3);font-size:9.5px;line-height:1.55}
+.model3d-rank-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.model3d-rank-row{display:grid;grid-template-columns:minmax(0,1fr) 64px auto;align-items:center;gap:7px;min-height:31px;padding:6px 7px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.025);color:var(--text2);font:600 8.5px Inter,sans-serif;cursor:pointer;text-align:left;transition:.16s ease}
+.model3d-rank-row:hover{border-color:rgba(0,240,200,.42);background:rgba(0,240,200,.055);color:var(--text);transform:translateY(-1px)}
+.model3d-rank-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.model3d-rank-row>b{color:var(--text);font:700 8px 'Space Grotesk',sans-serif}
+.model3d-rank-row i{display:block;height:4px;border-radius:999px;background:var(--bg4);overflow:hidden}.model3d-rank-row em{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#126eaa,#00d9b6)}
+.model3d-focus-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.model3d-focus-metrics>div{padding:9px 10px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.035)}
+.model3d-focus-metrics b{display:block;color:var(--text);font:700 15px 'Space Grotesk',sans-serif}.model3d-focus-metrics span{display:block;margin-top:3px;color:var(--text3);font-size:8px;text-transform:uppercase;letter-spacing:.055em}
+.model3d-gender-compare{margin-top:11px}.model3d-gender-label{display:flex;justify-content:space-between;color:var(--text2);font:700 8px Inter,sans-serif}.model3d-gender-track{display:flex;height:7px;margin-top:5px;border-radius:999px;overflow:hidden;background:var(--bg4)}.model3d-gender-track span:first-child{background:#4da8e8}.model3d-gender-track span:last-child{background:#d776c7}
+.model3d-focus-note{display:flex;align-items:center;gap:9px;margin-top:10px;padding:8px 9px;border-radius:8px;background:rgba(0,240,200,.055);border:1px solid rgba(0,240,200,.16)}
+.model3d-focus-note p{margin:0;color:var(--text3);font-size:8.7px;line-height:1.45}.model3d-focus-swatch{flex:0 0 24px;height:16px;border-radius:5px;background:#00f0c8;border:2px solid #fff;box-shadow:0 0 12px rgba(0,240,200,.7)}
+.model3d-selected-banner{position:absolute;top:72px;left:50%;z-index:28;display:flex;align-items:center;gap:9px;transform:translate(-50%,-8px);padding:8px 12px;border:1px solid rgba(255,255,255,.6);border-radius:999px;background:rgba(8,18,29,.92);box-shadow:0 12px 28px rgba(0,0,0,.38),0 0 24px rgba(0,240,200,.18);backdrop-filter:blur(11px);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.model3d-selected-banner.visible{opacity:1;transform:translate(-50%,0)}.model3d-selected-banner-swatch{width:14px;height:14px;border-radius:4px;background:#00f0c8;border:2px solid #fff;box-shadow:0 0 11px rgba(0,240,200,.9)}.model3d-selected-banner small{display:block;color:#8da3b9;font:800 7px Inter,sans-serif;letter-spacing:.1em}.model3d-selected-banner b{display:block;margin-top:1px;color:#fff;font:700 11px 'Space Grotesk',sans-serif}
+.model3d-stage.has-gn-focus{border-color:rgba(0,240,200,.52)!important;box-shadow:0 0 0 1px rgba(0,240,200,.16),0 18px 40px rgba(0,0,0,.24),inset 0 0 48px rgba(0,240,200,.035)}
+.model3d-stage.has-gn-focus .model3d-quick-profile{border-color:rgba(0,240,200,.62);box-shadow:0 12px 28px rgba(0,0,0,.34),0 0 24px rgba(0,240,200,.14)}
+.model3d-stage.has-gn-focus .model3d-quick-kicker{color:#00f0c8}
+#model-selection-chip.is-selected{color:#00e8c4!important}
+.model3d-outline-key::before{background:#9fb2c8!important;border:1px solid rgba(255,255,255,.65);box-shadow:0 0 0 1px rgba(0,0,0,.25)!important}
+html.light .model3d-focus-panel{background:linear-gradient(145deg,#ecfffb,#eff7ff,#fff);border-color:rgba(0,140,120,.2)}
+html.light .model3d-rank-row,html.light .model3d-focus-metrics>div{background:#f8fafc}
+html.light .model3d-selected-banner{background:rgba(255,255,255,.94);border-color:rgba(0,130,112,.28)}html.light .model3d-selected-banner b{color:#0f172a}
+@media(max-width:1120px){#page-model3d .model3d-layout{grid-template-columns:1fr}.model3d-control-panel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));height:auto!important;overflow:visible!important}.model3d-main-column{width:100%}}
+@media(max-width:760px){.model3d-focus-metrics{grid-template-columns:repeat(2,1fr)}.model3d-rank-list{grid-template-columns:1fr}.model3d-selected-banner{top:104px;max-width:calc(100% - 20px)}.model3d-control-panel{display:flex!important}.model3d-focus-head{flex-direction:column}.model3d-focus-status{white-space:normal}}

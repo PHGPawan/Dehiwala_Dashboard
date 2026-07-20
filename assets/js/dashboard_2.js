@@ -20,11 +20,29 @@
   quickProfile.innerHTML='<div class="model3d-quick-kicker">SELECTED GN</div><div class="model3d-quick-name">No GN selected</div><div class="model3d-quick-stats"><span><b>—</b>Total</span><span><b>—</b>Male</span><span><b>—</b>Female</span></div>';
   stage.appendChild(quickProfile);
 
+  /* Use the empty space below the viewer as a live GN comparison workspace. */
+  const mainColumn=document.createElement('div');
+  mainColumn.className='model3d-main-column';
+  stage.parentNode.insertBefore(mainColumn,stage);
+  mainColumn.appendChild(stage);
+
+  const focusPanel=document.createElement('section');
+  focusPanel.id='model3d-focus-panel';
+  focusPanel.className='model3d-focus-panel is-empty';
+  focusPanel.setAttribute('aria-live','polite');
+  mainColumn.appendChild(focusPanel);
+
+  const selectedBanner=document.createElement('div');
+  selectedBanner.className='model3d-selected-banner';
+  selectedBanner.setAttribute('aria-live','polite');
+  selectedBanner.innerHTML='<span class="model3d-selected-banner-swatch"></span><span><small>HIGHLIGHTED GN</small><b>No selection</b></span>';
+  stage.appendChild(selectedBanner);
+
   let baseColor='#63b3ed';
   let colorMode='population';
-  const selectedFill='#f4b942';
-  const selectedOutline='#fff2a8';
-  const defaultOutline='#b7c7d9';
+  const selectedFill='#00f0c8';
+  const selectedOutline='#ffffff';
+  const defaultOutline='#9fb2c8';
   let selectedGN=null;
   let pointerStart=null;
   let pointerMoved=false;
@@ -54,6 +72,28 @@
   const popMin=Math.min(...popValues),popMax=Math.max(...popValues),popRange=Math.max(1,popMax-popMin);
   const rankRecords=[...records].sort((a,b)=>a.total-b.total);
   const rankMap=Object.fromEntries(rankRecords.map((r,i)=>[r.name,rankRecords.length===1?0:i/(rankRecords.length-1)]));
+  const populationRanks=Object.fromEntries([...records].sort((a,b)=>b.total-a.total).map((r,i)=>[r.name,i+1]));
+  const studyPopulation=records.reduce((sum,r)=>sum+r.total,0);
+  const fallbackAreas={'Dehiwala East':0.52,'Dehiwala West':0.59,'Galwala':0.31,'Jayathilaka':0.22,'Karagampitiya':0.25,'Kawdana West':0.35,'Malwatta':0.38,'Mount Lavinia':0.80,'Udyanaya':0.53};
+  const areaFor=name=>{const overview=(window.__overviewGNData||[]).find(g=>g.name===name);return overview?.area||fallbackAreas[name]||null;};
+
+  function renderEmptyFocus(){
+    focusPanel.classList.add('is-empty');
+    const sorted=[...records].sort((a,b)=>b.total-a.total);
+    focusPanel.innerHTML=`<div class="model3d-focus-head"><div><span>3D COMPARISON WORKSPACE</span><h3>Select a GN division</h3></div><span class="model3d-focus-status">9 divisions outlined</span></div><p class="model3d-focus-copy">Choose a GN from the dropdown or click a 3D division. The selected surface will turn bright turquoise, all other divisions will dim, and a white outline will hold the focus in place.</p><div class="model3d-rank-list">${sorted.map(r=>`<button type="button" class="model3d-rank-row" data-gn="${r.name}"><span>${r.name}</span><i><em style="width:${Math.max(18,r.total/popMax*100).toFixed(1)}%"></em></i><b>${r.total.toLocaleString()}</b></button>`).join('')}</div>`;
+  }
+
+  function renderSelectedFocus(rec){
+    focusPanel.classList.remove('is-empty');
+    const area=areaFor(rec.name);
+    const density=area?Math.round(rec.total/area):null;
+    const share=rec.total/studyPopulation*100;
+    const maleShare=rec.male/rec.total*100;
+    const femaleShare=rec.female/rec.total*100;
+    focusPanel.innerHTML=`<div class="model3d-focus-head"><div><span>CURRENTLY HIGHLIGHTED</span><h3>${rec.name}</h3></div><span class="model3d-focus-status selected"><i></i>Turquoise + white outline</span></div><div class="model3d-focus-metrics"><div><b>#${populationRanks[rec.name]}</b><span>Population rank</span></div><div><b>${share.toFixed(1)}%</b><span>Study-area share</span></div><div><b>${density?density.toLocaleString():'—'}</b><span>${density?'Persons / km²':'Density unavailable'}</span></div><div><b>${area?area.toFixed(2):'—'}</b><span>Area km²</span></div></div><div class="model3d-gender-compare"><div class="model3d-gender-label"><span>Male ${maleShare.toFixed(1)}%</span><span>Female ${femaleShare.toFixed(1)}%</span></div><div class="model3d-gender-track"><span style="width:${maleShare.toFixed(2)}%"></span><span style="width:${femaleShare.toFixed(2)}%"></span></div></div><div class="model3d-focus-note"><span class="model3d-focus-swatch"></span><p>The highlighted division is intentionally much brighter than the population palette. Auto-rotation pauses after selection so the chosen GN remains visible while you inspect it.</p></div>`;
+  }
+
+  focusPanel.addEventListener('click',e=>{const row=e.target.closest('.model3d-rank-row');if(!row)return;const rec=getRecord(row.dataset.gn);if(rec)selectGN(rec);});
 
   function getBaseColorForName(name){
     const rec=getRecord(name);if(!rec)return baseColor;
@@ -83,17 +123,18 @@
       const isSelected=Boolean(selectedGN&&gnName===selectedGN);
       try{
         if(isOutline){
-          const color=isSelected?selectedOutline:defaultOutline;
+          const color=isSelected?selectedOutline:(selectedGN?'#53677f':defaultOutline);
           material.pbrMetallicRoughness.setBaseColorFactor(toRgba(color,1));
-          material.pbrMetallicRoughness.setMetallicFactor(isSelected?.08:0);
-          material.pbrMetallicRoughness.setRoughnessFactor(isSelected?.18:.28);
-          setEmissive(material,isSelected?'#ffb000':'#213449');
+          material.pbrMetallicRoughness.setMetallicFactor(isSelected?.12:0);
+          material.pbrMetallicRoughness.setRoughnessFactor(isSelected?.08:.30);
+          setEmissive(material,isSelected?'#ffffff':'#14263a');
         }else{
-          const applied=isSelected?selectedFill:getBaseColorForName(gnName);
+          let applied=isSelected?selectedFill:getBaseColorForName(gnName);
+          if(selectedGN&&!isSelected)applied=blend(hexToRgb(applied),hexToRgb('#07111d'),.70);
           material.pbrMetallicRoughness.setBaseColorFactor(toRgba(applied,1));
-          material.pbrMetallicRoughness.setMetallicFactor(isSelected?.12:.02);
-          material.pbrMetallicRoughness.setRoughnessFactor(isSelected?.20:.48);
-          setEmissive(material,isSelected?'#7a3600':'#000000');
+          material.pbrMetallicRoughness.setMetallicFactor(isSelected?.18:.01);
+          material.pbrMetallicRoughness.setRoughnessFactor(isSelected?.10:.58);
+          setEmissive(material,isSelected?'#00bfa5':'#000000');
         }
       }catch(err){console.warn('GN material styling unavailable',err);}
     });
@@ -108,6 +149,9 @@
     quickProfile.classList.add('is-empty');
     quickProfile.querySelector('.model3d-quick-name').textContent='No GN selected';
     quickProfile.querySelectorAll('.model3d-quick-stats b').forEach(el=>el.textContent='—');
+    selectedBanner.classList.remove('visible');
+    selectedBanner.querySelector('b').textContent='No selection';
+    renderEmptyFocus();
   }
 
   function updateProfile(rec){
@@ -120,6 +164,9 @@
     quickProfile.classList.remove('is-empty');
     quickProfile.querySelector('.model3d-quick-name').textContent=rec.name;
     quickProfile.querySelectorAll('.model3d-quick-stats b').forEach((el,i)=>el.textContent=values[i]);
+    selectedBanner.classList.add('visible');
+    selectedBanner.querySelector('b').textContent=rec.name;
+    renderSelectedFocus(rec);
     quickProfile.classList.remove('selection-pulse');
     profileCard?.classList.remove('selection-pulse');
     requestAnimationFrame(()=>{quickProfile.classList.add('selection-pulse');profileCard?.classList.add('selection-pulse');});
@@ -127,10 +174,14 @@
 
   function selectGN(rec,{rotate=true}={}){
     if(!rec)return clearSelection();
-    selectedGN=rec.name;select.value=rec.name;updateProfile(rec);paintMaterials();
-    if(rotate){viewer.cameraOrbit=`${rec.angle}deg 55deg auto`;viewer.jumpCameraToGoal?.();}
+    selectedGN=rec.name;select.value=rec.name;
+    viewer.removeAttribute('auto-rotate');
+    const rotateToggle=document.getElementById('model-auto-rotate');if(rotateToggle)rotateToggle.checked=false;
+    updateProfile(rec);paintMaterials();
+    if(rotate){viewer.cameraOrbit=`${rec.angle}deg 52deg auto`;viewer.jumpCameraToGoal?.();}
+    stage.classList.remove('has-gn-focus');requestAnimationFrame(()=>stage.classList.add('has-gn-focus'));
   }
-  function clearSelection(){selectedGN=null;select.value='';setEmptyProfile();paintMaterials();}
+  function clearSelection(){selectedGN=null;select.value='';stage.classList.remove('has-gn-focus');setEmptyProfile();paintMaterials();}
 
   viewer.addEventListener('progress',e=>{
     const p=Math.round((e.detail.totalProgress||0)*100);fill.style.width=p+'%';

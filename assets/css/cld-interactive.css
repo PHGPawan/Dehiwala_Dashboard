@@ -12,3 +12,13 @@ html.light .cld-canvas-panel{background:radial-gradient(circle at 50% 40%,rgba(4
 @media(max-width:1180px){.cld-stage{grid-template-columns:1fr}.cld-detail-panel{border-left:0;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:14px}.cld-detail-topline,.cld-detail-panel h3,.cld-detail-panel>p{grid-column:1/-1}.cld-loop-cards{grid-template-columns:repeat(2,1fr)}.cld-planning-grid{grid-template-columns:1fr 1fr}.cld-intervention-card{grid-column:1/-1}}
 @media(max-width:760px){.cld-section-header{align-items:flex-start;flex-direction:column}.cld-header-actions{width:100%;flex-wrap:wrap}.cld-metrics{grid-template-columns:repeat(2,1fr)}.cld-toolbar{align-items:stretch}.cld-loop-tabs{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}.cld-loop-btn{white-space:nowrap}.cld-toolbar-right{width:100%}.cld-select-wrap{width:100%;justify-content:space-between}.cld-select-wrap select{flex:1;min-width:0}.cld-stage{min-height:0}#cld-svg{height:470px}.cld-detail-panel{display:block}.cld-loop-cards,.cld-planning-grid{grid-template-columns:1fr}.cld-intervention-card{grid-column:auto;align-items:flex-start;flex-direction:column}.cld-canvas-hint{display:none}.cld-loop-badge{right:8px;bottom:8px}.cld-section-header h2{font-size:20px}}
 @media(prefers-reduced-motion:reduce){.cld-canvas-panel.flow-on .cld-edge-group.is-active .cld-edge,.cld-canvas-panel.flow-on .cld-edge-group.is-connected .cld-edge{animation:none}.cld-loop-card,.cld-source-btn,.cld-secondary-btn,.cld-primary-btn{transition:none}}
+
+/* ===== Directional causal-flow arrows ===== */
+.cld-flow-arrow{fill:var(--cld-flow-color,#69c7ff);opacity:0;pointer-events:none;filter:drop-shadow(0 0 3px var(--cld-flow-color,#69c7ff));transition:opacity .16s ease}
+.cld-canvas-panel.flow-on .cld-edge-group:not(.is-muted) .cld-flow-arrow{opacity:.95}
+.cld-canvas-panel.flow-on .cld-edge-group.is-connected .cld-flow-arrow{opacity:1;filter:drop-shadow(0 0 5px var(--cld-flow-color,#69c7ff))}
+/* Moving arrowheads replace the older marching-dash effect for a cleaner network-flow look. */
+.cld-canvas-panel.flow-on .cld-edge-group.is-active .cld-edge,
+.cld-canvas-panel.flow-on .cld-edge-group.is-connected .cld-edge{stroke-dasharray:none!important;animation:none!important}
+.cld-flow-btn.active{border-color:rgba(99,179,237,.48)!important;background:rgba(99,179,237,.13)!important;color:#9bdcff!important}
+@media(prefers-reduced-motion:reduce){.cld-flow-arrow{display:none}}

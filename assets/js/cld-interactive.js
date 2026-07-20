@@ -45,6 +45,36 @@ const zoneLabels=[...svg.querySelectorAll('.cld-zone-label')];
 const select=document.getElementById('cld-variable-select');
 const loopBtns=[...document.querySelectorAll('.cld-loop-btn')];
 let activeLoop='all',selectedNode=null,scale=1,tx=0,ty=0,dragging=false,startX=0,startY=0,startTx=0,startTy=0;
+
+/* Moving causal arrows: lightweight SVG animateMotion markers travel along each relationship. */
+function buildFlowArrows(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const ns='http://www.w3.org/2000/svg';
+  edgeGroups.forEach((group,index)=>{
+    const edge=group.querySelector('.cld-edge');if(!edge)return;
+    let length=150;try{length=edge.getTotalLength();}catch(_){ }
+    const loops=(group.dataset.loops||'').split(/\s+/);
+    const color=loops.some(l=>l==='r1'||l==='r2')?'#ff6b6b':loops.some(l=>l==='b1'||l==='b2')?'#53d49b':loops.includes('drivers')?'#f5bd55':'#69c7ff';
+    group.style.setProperty('--cld-flow-color',color);
+    const duration=Math.max(1.35,Math.min(3.4,length/78));
+    const count=length>290?2:1;
+    for(let n=0;n<count;n++){
+      const arrow=document.createElementNS(ns,'path');
+      arrow.setAttribute('d','M -7 -4 L 7 0 L -7 4 L -3 0 Z');
+      arrow.setAttribute('class','cld-flow-arrow');
+      arrow.setAttribute('aria-hidden','true');
+      const motion=document.createElementNS(ns,'animateMotion');
+      motion.setAttribute('path',edge.getAttribute('d'));
+      motion.setAttribute('dur',duration.toFixed(2)+'s');
+      motion.setAttribute('begin',(-(index*.09+n*duration/count)).toFixed(2)+'s');
+      motion.setAttribute('repeatCount','indefinite');
+      motion.setAttribute('rotate','auto');
+      arrow.appendChild(motion);
+      group.insertBefore(arrow,group.querySelector('.cld-polarity'));
+    }
+  });
+}
+buildFlowArrows();
 Object.entries(nodeData).sort((a,b)=>a[1].label.localeCompare(b[1].label)).forEach(([id,n])=>{const o=document.createElement('option');o.value=id;o.textContent=n.label;select.appendChild(o);});
 function matchesLoop(el,loop){return loop==='all'||(el.dataset.loops||'').split(/\s+/).includes(loop);}
 function updateTransform(){viewport.setAttribute('transform',`translate(${tx} ${ty}) scale(${scale})`);}
@@ -88,7 +118,13 @@ document.getElementById('cld-show-all').addEventListener('click',()=>{scale=1;tx
 document.getElementById('cld-fit').addEventListener('click',()=>{scale=1;tx=0;ty=0;updateTransform();});
 document.getElementById('cld-zoom-in').addEventListener('click',()=>{scale=Math.min(2.2,scale*1.15);updateTransform();});
 document.getElementById('cld-zoom-out').addEventListener('click',()=>{scale=Math.max(.65,scale/1.15);updateTransform();});
-const flowBtn=document.getElementById('cld-flow-toggle');canvasPanel.classList.add('flow-on');flowBtn.addEventListener('click',()=>{const on=!canvasPanel.classList.contains('flow-on');canvasPanel.classList.toggle('flow-on',on);flowBtn.classList.toggle('active',on);flowBtn.setAttribute('aria-pressed',String(on));});
+const flowBtn=document.getElementById('cld-flow-toggle');canvasPanel.classList.add('flow-on');
+try{svg.unpauseAnimations?.();}catch(_){ }
+flowBtn.addEventListener('click',()=>{
+  const on=!canvasPanel.classList.contains('flow-on');
+  canvasPanel.classList.toggle('flow-on',on);flowBtn.classList.toggle('active',on);flowBtn.setAttribute('aria-pressed',String(on));
+  try{on?svg.unpauseAnimations?.():svg.pauseAnimations?.();}catch(_){ }
+});
 svg.addEventListener('wheel',e=>{e.preventDefault();const rect=svg.getBoundingClientRect();const mx=(e.clientX-rect.left)/rect.width*1380,my=(e.clientY-rect.top)/rect.height*780;const beforeX=(mx-tx)/scale,beforeY=(my-ty)/scale;const factor=e.deltaY<0?1.1:.91;scale=Math.max(.65,Math.min(2.3,scale*factor));tx=mx-beforeX*scale;ty=my-beforeY*scale;updateTransform();},{passive:false});
 svg.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.cld-node'))return;dragging=true;svg.classList.add('is-panning');svg.setPointerCapture(e.pointerId);startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;});
 svg.addEventListener('pointermove',e=>{if(!dragging)return;const r=svg.getBoundingClientRect();tx=startTx+(e.clientX-startX)*1380/r.width;ty=startTy+(e.clientY-startY)*780/r.height;updateTransform();});
