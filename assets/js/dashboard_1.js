@@ -1234,6 +1234,13 @@ function buildSynthesis(){
      imp:'Regional accessibility can support higher-order services, provided local access, pedestrian safety and congestion are addressed.'}
   ];
 
+  const findingSelect=document.getElementById('synth-finding-select');
+  if(findingSelect && findingSelect.options.length===1){
+    NODES.forEach(n=>{
+      const option=document.createElement('option');option.value=String(n.id);option.textContent=`${n.label} — ${n.cat}`;findingSelect.appendChild(option);
+    });
+  }
+
   const EDGES=[
     {a:0,b:7,type:'amplifies',label:'concentrates traffic'},
     {a:0,b:4,type:'colocated',label:'overlaps with mixed-use core'},
@@ -1458,8 +1465,9 @@ function buildSynthesis(){
       ctx.beginPath();ctx.arc(n.x,n.y,n.r+19,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
     }
     if(isSel){
-      ctx.beginPath();ctx.arc(n.x,n.y,n.r+7,0,Math.PI*2);ctx.strokeStyle=n.color;ctx.lineWidth=2;
-      ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r+10,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.98)';ctx.lineWidth=3.2;ctx.stroke();
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r+16,0,Math.PI*2);ctx.strokeStyle=n.color;ctx.lineWidth=2.2;
+      ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
     }
     ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
     ctx.fillStyle=isSel?n.color:(isHov?n.color+'dd':n.color+'a8');ctx.fill();
@@ -1511,6 +1519,8 @@ function buildSynthesis(){
 
   function setSelection(i){
     selected=i;traceSelection=false;activePath=null;
+    if(findingSelect)findingSelect.value=i===null?'':String(i);
+    document.getElementById('page-synthesis')?.classList.toggle('synth-has-selection',i!==null);
     updatePathCards();
     if(i===null){
       document.getElementById('synth-overview').style.display='flex';
@@ -1548,7 +1558,7 @@ function buildSynthesis(){
   }
 
   function setPath(name){
-    activePath=activePath===name?null:name;selected=null;traceSelection=false;
+    activePath=activePath===name?null:name;selected=null;traceSelection=false;if(findingSelect)findingSelect.value='';
     searchTerm='';category='all';relation='all';
     document.getElementById('synth-search').value='';
     document.getElementById('synth-relation-filter').value='all';
@@ -1571,7 +1581,7 @@ function buildSynthesis(){
   }
 
   function resetAll(){
-    selected=null;hovered=null;category='all';relation='all';searchTerm='';activePath=null;traceSelection=false;
+    selected=null;hovered=null;category='all';relation='all';searchTerm='';activePath=null;traceSelection=false;if(findingSelect)findingSelect.value='';
     document.getElementById('synth-search').value='';document.getElementById('synth-relation-filter').value='all';
     document.querySelectorAll('.synth-filter').forEach(b=>b.classList.toggle('active',b.dataset.cat==='all'));
     applyLayout('system',true);viewport={scale:1,x:0,y:0};fitNetwork();setSelection(null);updatePathCards();
@@ -1620,7 +1630,7 @@ function buildSynthesis(){
   });
 
   document.querySelectorAll('.synth-filter').forEach(btn=>btn.addEventListener('click',()=>{
-    category=btn.dataset.cat;selected=null;activePath=null;traceSelection=false;
+    category=btn.dataset.cat;selected=null;activePath=null;traceSelection=false;if(findingSelect)findingSelect.value='';
     document.querySelectorAll('.synth-filter').forEach(b=>b.classList.toggle('active',b===btn));
     document.getElementById('synth-overview').style.display='flex';document.getElementById('synth-content').style.display='none';
     activeLens.textContent=category==='all'?'All urban systems':category;updatePathCards();
@@ -1629,7 +1639,7 @@ function buildSynthesis(){
   document.querySelectorAll('.synth-layout-btn').forEach(btn=>btn.addEventListener('click',()=>{applyLayout(btn.dataset.layout,true);setTimeout(fitNetwork,480);}));
   document.getElementById('synth-relation-filter').addEventListener('change',e=>{relation=e.target.value;});
   document.getElementById('synth-search').addEventListener('input',e=>{
-    searchTerm=e.target.value.trim().toLowerCase();selected=null;activePath=null;traceSelection=false;
+    searchTerm=e.target.value.trim().toLowerCase();selected=null;activePath=null;traceSelection=false;if(findingSelect)findingSelect.value='';
     document.getElementById('synth-overview').style.display='flex';document.getElementById('synth-content').style.display='none';
     activeLens.textContent=searchTerm?'Search: “'+e.target.value.trim()+'”':(category==='all'?'All urban systems':category);updatePathCards();
   });
@@ -1641,6 +1651,11 @@ function buildSynthesis(){
   document.getElementById('synth-search-clear').addEventListener('click',()=>{
     const input=document.getElementById('synth-search');input.value='';input.dispatchEvent(new Event('input'));input.focus();
   });
+  findingSelect?.addEventListener('change',()=>{
+    if(findingSelect.value===''){setSelection(null);fitNetwork();return;}
+    const i=Number(findingSelect.value);setSelection(i);focusNode(i);
+  });
+  document.getElementById('synth-clear-focus')?.addEventListener('click',()=>{setSelection(null);fitNetwork();});
   document.getElementById('synth-reset-all').addEventListener('click',resetAll);
   document.getElementById('synth-zoom-in').addEventListener('click',()=>setZoom(viewport.scale*1.15));
   document.getElementById('synth-zoom-out').addEventListener('click',()=>setZoom(viewport.scale*.87));

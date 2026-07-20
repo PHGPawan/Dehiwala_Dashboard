@@ -1,0 +1,40 @@
+/* ===== 3D GN selector, permanent boundaries and synthesis focus ===== */
+.model3d-selector-card{
+  border-color:rgba(99,179,237,.32)!important;
+  background:linear-gradient(145deg,rgba(99,179,237,.08),var(--bg2))!important;
+}
+.model3d-select-label{display:block;margin:2px 0 6px;color:var(--text3);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.model3d-select{width:100%;height:39px;padding:0 36px 0 11px;border:1px solid var(--border2);border-radius:9px;background:var(--bg3);color:var(--text);font:600 11px Inter,sans-serif;outline:none;cursor:pointer}
+.model3d-select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(99,179,237,.13)}
+.model3d-select-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
+.model3d-clear-btn{min-height:31px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg3);color:var(--text2);font:700 9px Inter,sans-serif;cursor:pointer;transition:.18s}
+.model3d-clear-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.model3d-outline-key{display:inline-flex;align-items:center;gap:6px;color:var(--text3);font-size:9px;font-weight:600}
+.model3d-outline-key::before{content:"";width:18px;height:5px;border-radius:999px;background:#b7c7d9;box-shadow:0 0 0 1px rgba(255,255,255,.2)}
+.model3d-select-help{margin-top:8px;color:var(--text3);font-size:9px;line-height:1.5}
+#model-selection-chip{float:right;color:var(--text3);font-size:8px;letter-spacing:.08em}
+#model-selection-chip.is-selected{color:#f6c85f}
+.model3d-profile-primary{order:2}
+.model3d-quick-profile.is-empty{opacity:.78;border-style:dashed}
+.model3d-quick-profile.is-empty .model3d-quick-stats{display:none}
+.model3d-guide-grid{display:grid;gap:9px;margin-top:5px}
+.model3d-guide-item{display:grid;grid-template-columns:28px 1fr;gap:9px;align-items:start;padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--bg3)}
+.model3d-guide-badge{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(99,179,237,.12);color:var(--cyan);font:700 9px 'Space Grotesk',sans-serif}
+.model3d-guide-item strong{display:block;color:var(--text);font-size:10px;margin-bottom:2px}
+.model3d-guide-item small{display:block;color:var(--text3);font-size:9px;line-height:1.45}
+html.light .model3d-selector-card{background:linear-gradient(145deg,#eff6ff,#fff)!important}
+html.light .model3d-select,html.light .model3d-clear-btn{background:#f8fafc}
+
+.synth-finding-picker{display:grid;grid-template-columns:auto minmax(190px,1fr) auto;align-items:center;gap:7px;min-width:min(100%,410px);padding:6px;border:1px solid var(--border);border-radius:10px;background:var(--bg2)}
+.synth-finding-picker label{padding-left:4px;color:var(--text3);font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.synth-finding-picker .synth-select{min-width:0;width:100%;height:34px}
+.synth-finding-picker .synth-btn{height:34px;white-space:nowrap}
+#page-synthesis.synth-has-selection .synth-detail-panel{border-color:rgba(99,179,237,.42);box-shadow:inset 3px 0 0 var(--cyan),0 12px 34px rgba(0,0,0,.2)}
+#page-synthesis.synth-has-selection .synth-canvas-panel{border-color:rgba(99,179,237,.32)}
+#page-synthesis.synth-has-selection #synth-active-lens{color:var(--cyan)}
+
+@media(max-width:1100px){.synth-finding-picker{grid-template-columns:1fr auto}.synth-finding-picker label{grid-column:1/-1}}
+@media(max-width:700px){
+  .model3d-select-actions{align-items:stretch;flex-direction:column}.model3d-clear-btn{width:100%}
+  .synth-finding-picker{grid-template-columns:1fr;width:100%;min-width:0}.synth-finding-picker label{grid-column:auto}.synth-finding-picker .synth-btn{width:100%}
+}

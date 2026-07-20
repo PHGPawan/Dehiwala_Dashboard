@@ -9,7 +9,10 @@
     "interactive-land-use",
     "mobile-responsive",
     "github-pages-ready",
-    "interactive-urban-heat"
+    "interactive-urban-heat",
+    "interactive-causal-loop-diagram",
+    "cld-loop-filtering",
+    "cld-node-inspection"
   ],
   "raster_sources_required": [
     "elevation-dem-geotiff"
@@ -37,5 +40,10 @@
     "mean_c": 38.2,
     "source_resolution_m": 30
   },
-  "mapLoadingOptimization": "On-demand binary centrality layers, hover/idle prefetch, immediate basemap shells, and reduced resize work."
+  "mapLoadingOptimization": "On-demand binary centrality layers, hover/idle prefetch, immediate basemap shells, and reduced resize work.",
+  "files": [
+    "assets/css/cld-interactive.css",
+    "assets/js/cld-interactive.js",
+    "downloads/Dehiwala_Urban_Heat_CLD.pdf"
+  ]
 }
