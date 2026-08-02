@@ -167,14 +167,14 @@ function attachMapUtilities(map,id){
   tools.innerHTML=`
     <button class="real-map-tool real-map-fit" type="button" title="Fit the complete layer"><span class="real-map-tool-icon">⌖</span><span class="real-map-tool-label">Fit</span></button>
     <button class="real-map-tool real-map-legend-toggle active" type="button" aria-expanded="true" title="Show or hide the legend"><span class="real-map-tool-icon">▤</span><span class="real-map-tool-label">Legend</span></button>
-    <button class="real-map-tool real-map-wheel active" type="button" aria-pressed="true" title="Enable or disable mouse-wheel zoom"><span class="real-map-tool-icon">↕</span><span class="real-map-tool-label">Wheel</span></button>
+    <button class="real-map-tool real-map-wheel" type="button" aria-pressed="false" title="Enable or disable mouse-wheel zoom"><span class="real-map-tool-icon">↕</span><span class="real-map-tool-label">Wheel</span></button>
     <button class="real-map-tool real-map-interact" type="button" title="Enable map pan and zoom on touch screens"><span class="real-map-tool-icon">☝</span><span class="real-map-tool-label">Interact</span></button>
     <button class="real-map-tool real-map-fullscreen" type="button" title="Open map in fullscreen"><span class="real-map-tool-icon">⛶</span><span class="real-map-tool-label">Full</span></button>`;
   panel.appendChild(tools);
 
   const hint=document.createElement('div');
   hint.className='real-map-scroll-hint';
-  hint.textContent=window.matchMedia('(max-width:600px)').matches?'Legend visible · tap ☝ to interact':'Mouse-wheel zoom enabled · use Wheel to release page scrolling';
+  hint.textContent=window.matchMedia('(max-width:600px)').matches?'Legend visible · tap ☝ to interact':'Mouse-wheel scrolls the page · click Wheel to enable map zoom';
   panel.appendChild(hint);
 
   tools.querySelector('.real-map-fit').addEventListener('click',()=>{
@@ -260,7 +260,7 @@ function attachMapUtilities(map,id){
 }
 function baseMap(id){
   const compact=window.matchMedia('(max-width:600px)').matches;
-  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:9,maxZoom:20,scrollWheelZoom:true,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
+  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:9,maxZoom:20,scrollWheelZoom:false,dragging:!compact,touchZoom:!compact,doubleClickZoom:!compact,boxZoom:!compact,renderer:L.canvas({padding:.5})});
   const professionalBase=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Tiles © Esri'});
   const professionalLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Labels © Esri'});
   const professional=L.layerGroup([professionalBase,professionalLabels]);

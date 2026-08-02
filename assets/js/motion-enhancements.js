@@ -23,8 +23,22 @@
   let settleTimers = [];
 
   /* Add motion classes before enabling the global hidden state. */
+  function releaseNestedReveals(page){
+    if (!page) return;
+    page.querySelectorAll('.motion-reveal').forEach(el => {
+      /* Only direct page sections are animated. Elements moved into dynamic
+         layouts (such as the Issues accordions) must never remain hidden. */
+      if (el.parentElement !== page){
+        if (revealObserver) revealObserver.unobserve(el);
+        el.classList.remove('motion-reveal','motion-revealed','motion-settled');
+        el.style.removeProperty('--motion-delay');
+      }
+    });
+  }
+
   function decoratePage(page){
     if (!page) return [];
+    releaseNestedReveals(page);
     const children = Array.from(page.children).filter(el => {
       if (!(el instanceof HTMLElement)) return false;
       return !el.matches('script,style,.lightbox');
@@ -52,8 +66,8 @@
       });
     },{
       root: pageWrap,
-      threshold: 0.08,
-      rootMargin: '0px 0px -7% 0px'
+      threshold: 0.01,
+      rootMargin: '0px 0px -2% 0px'
     });
   }
 
@@ -70,6 +84,13 @@
         revealObserver.observe(el);
       }
     });
+    /* Visibility failsafe: browser resize, lazy maps, or DOM relocation must
+       never leave dashboard content permanently transparent. */
+    const timer = window.setTimeout(() => {
+      targets.forEach(el => el.classList.add('motion-revealed','motion-settled'));
+      releaseNestedReveals(page);
+    }, 1100);
+    settleTimers.push(timer);
   }
 
   function animateHeading(){
@@ -82,6 +103,10 @@
 
   function runPageEntrance(page,direction){
     if (!page) return;
+    /* Each tab starts at its top. Using an instant reset prevents a previous
+       page's smooth-scroll position from carrying into the next tab. */
+    pageWrap.scrollTo({top:0,left:0,behavior:'auto'});
+    requestAnimationFrame(() => { if (pageWrap.scrollTop) pageWrap.scrollTop = 0; });
     pages.forEach(p => p.classList.remove('motion-page-enter','motion-forward','motion-backward'));
     page.classList.add('motion-page-enter',direction === 'backward' ? 'motion-backward' : 'motion-forward');
     revealActivePage(page,true);
@@ -123,7 +148,9 @@
       mutation.addedNodes.forEach(node => {
         if (!(node instanceof HTMLElement)) return;
         const page = node.closest('.page');
-        if (!page || !page.classList.contains('active')) return;
+        if (!page) return;
+        releaseNestedReveals(page);
+        if (!page.classList.contains('active')) return;
         activePageChanged = true;
         const isDirectSection = node.parentElement === page;
         const isVisualCard = node.matches('.stat-card,.panel,.map-card,.real-map-panel,.dl-card,.finding-item,.synth-kpi,.ip-card,.model3d-control-card');

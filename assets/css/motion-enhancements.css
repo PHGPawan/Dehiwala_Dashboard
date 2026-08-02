@@ -15,10 +15,16 @@ html{scroll-behavior:smooth}
 body{overscroll-behavior:none}
 .main{position:relative;isolation:isolate}
 .page-wrap{
-  scroll-behavior:smooth;
-  overscroll-behavior:contain;
+  min-height:0;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scroll-behavior:auto!important;
+  overscroll-behavior-y:auto;
+  overscroll-behavior-x:none;
   scrollbar-gutter:stable;
+  -webkit-overflow-scrolling:touch;
 }
+.page.active{min-height:100%;}
 
 /* Thin progress indicator for the active dashboard page. */
 .motion-scroll-progress{
@@ -126,6 +132,18 @@ html.motion-ready .motion-reveal.motion-revealed{
 }
 html.motion-ready .motion-reveal.motion-revealed.motion-settled{
   will-change:auto;
+}
+
+/* Dynamic components moved below the page root must remain visible. */
+html.motion-ready .page .motion-reveal:not(.motion-revealed){
+  pointer-events:auto;
+}
+#page-issues .ip-accordion,
+#page-issues .ip-accordion.motion-reveal{
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  visibility:visible!important;
 }
 
 /* A soft animated accent appears while a section enters. */

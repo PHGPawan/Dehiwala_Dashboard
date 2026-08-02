@@ -125,7 +125,7 @@ flowBtn.addEventListener('click',()=>{
   canvasPanel.classList.toggle('flow-on',on);flowBtn.classList.toggle('active',on);flowBtn.setAttribute('aria-pressed',String(on));
   try{on?svg.unpauseAnimations?.():svg.pauseAnimations?.();}catch(_){ }
 });
-svg.addEventListener('wheel',e=>{e.preventDefault();const rect=svg.getBoundingClientRect();const mx=(e.clientX-rect.left)/rect.width*1380,my=(e.clientY-rect.top)/rect.height*780;const beforeX=(mx-tx)/scale,beforeY=(my-ty)/scale;const factor=e.deltaY<0?1.1:.91;scale=Math.max(.65,Math.min(2.3,scale*factor));tx=mx-beforeX*scale;ty=my-beforeY*scale;updateTransform();},{passive:false});
+svg.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const rect=svg.getBoundingClientRect();const mx=(e.clientX-rect.left)/rect.width*1380,my=(e.clientY-rect.top)/rect.height*780;const beforeX=(mx-tx)/scale,beforeY=(my-ty)/scale;const factor=e.deltaY<0?1.1:.91;scale=Math.max(.65,Math.min(2.3,scale*factor));tx=mx-beforeX*scale;ty=my-beforeY*scale;updateTransform();},{passive:false});
 svg.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.cld-node'))return;dragging=true;svg.classList.add('is-panning');svg.setPointerCapture(e.pointerId);startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;});
 svg.addEventListener('pointermove',e=>{if(!dragging)return;const r=svg.getBoundingClientRect();tx=startTx+(e.clientX-startX)*1380/r.width;ty=startTy+(e.clientY-startY)*780/r.height;updateTransform();});
 svg.addEventListener('pointerup',e=>{dragging=false;svg.classList.remove('is-panning');try{svg.releasePointerCapture(e.pointerId)}catch(_){}});

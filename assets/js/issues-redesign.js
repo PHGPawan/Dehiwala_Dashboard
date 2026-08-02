@@ -52,6 +52,16 @@
       buildColumn('potentials','Potentials','Strategic assets and leverage opportunities','✦',potentials)
     );
 
+    /* These accordions begin as direct page children and may have been marked
+       for scroll reveal before being moved into the comparison columns. Clear
+       that state so their complete data is always visible. */
+    [issues,potentials].forEach(acc=>{
+      acc.classList.remove('motion-reveal','motion-revealed','motion-settled','motion-new-item');
+      acc.style.removeProperty('--motion-delay');
+      acc.style.removeProperty('opacity');
+      acc.style.removeProperty('transform');
+    });
+
     const summary=page.querySelector('.ip-summary-strip');
     if(summary){ summary.insertAdjacentElement('afterend',intro); intro.insertAdjacentElement('afterend',grid); }
     else page.append(intro,grid);

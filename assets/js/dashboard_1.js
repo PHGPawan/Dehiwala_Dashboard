@@ -178,7 +178,7 @@ function gnColor(gn){
 const map = L.map('leaflet-map', {
   zoomControl:false,
   attributionControl:true,
-  scrollWheelZoom:true
+  scrollWheelZoom:false
 }).setView([6.853, 79.8690], 15);
 window.__overviewMap = map;
 const OVERVIEW_BOUNDS=[[6.841,79.860],[6.865,79.878]];
@@ -1619,7 +1619,7 @@ function buildSynthesis(){
   canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);
   canvas.addEventListener('pointerleave',()=>{if(!pointerDown){hovered=null;tooltip.classList.remove('visible');}});
   canvas.addEventListener('dblclick',e=>{const s=canvasPoint(e),i=hitTest(screenToWorld(s.x,s.y));if(i!==null){setSelection(i);focusNode(i);}});
-  canvas.addEventListener('wheel',e=>{e.preventDefault();const s=canvasPoint(e);setZoom(viewport.scale*(e.deltaY<0?1.12:.89),s.x,s.y);},{passive:false});
+  canvas.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const s=canvasPoint(e);setZoom(viewport.scale*(e.deltaY<0?1.12:.89),s.x,s.y);},{passive:false});
   canvas.addEventListener('keydown',e=>{
     if(e.key==='+'||e.key==='='){setZoom(viewport.scale*1.12);e.preventDefault();}
     if(e.key==='-'){setZoom(viewport.scale*.89);e.preventDefault();}
