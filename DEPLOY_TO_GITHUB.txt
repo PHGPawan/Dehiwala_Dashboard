@@ -1,0 +1,19 @@
+DEHIWALA DASHBOARD — GITHUB PAGES DEPLOYMENT
+
+IMPORTANT: Upload the CONTENTS of this folder to the repository root.
+The repository root must show:
+  index.html
+  .nojekyll
+  assets/
+  downloads/
+  manifest.json
+
+GitHub steps:
+1. Open repository Settings > Pages.
+2. Under Build and deployment, select Deploy from a branch.
+3. Select branch: main and folder: /(root), then Save.
+4. Wait for the Pages deployment to finish.
+5. Open: https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/
+
+Do not upload only index.html. The assets and downloads folders are required.
+Do not keep index.html inside an extra Dehiwala_Dashboard_Lightweight folder unless Pages is configured to publish that folder (GitHub Pages branch publishing only supports root or /docs).

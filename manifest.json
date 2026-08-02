@@ -1,6 +1,6 @@
 {
   "name": "Dehiwala Urban Analytics Dashboard",
-  "version": "interactive-layers-1.0",
+  "version": "full-motion-ui-1.0",
   "entry": "index.html",
   "features": [
     "interactive-centrality",
@@ -12,7 +12,12 @@
     "interactive-urban-heat",
     "interactive-causal-loop-diagram",
     "cld-loop-filtering",
-    "cld-node-inspection"
+    "cld-node-inspection",
+    "directional-tab-transitions",
+    "scroll-reveal-animations",
+    "scroll-progress-indicator",
+    "animated-dashboard-microinteractions",
+    "reduced-motion-accessibility"
   ],
   "raster_sources_required": [
     "elevation-dem-geotiff"
@@ -44,6 +49,8 @@
   "files": [
     "assets/css/cld-interactive.css",
     "assets/js/cld-interactive.js",
-    "downloads/Dehiwala_Urban_Heat_CLD.pdf"
+    "downloads/Dehiwala_Urban_Heat_CLD.pdf",
+    "assets/css/motion-enhancements.css",
+    "assets/js/motion-enhancements.js"
   ]
 }
