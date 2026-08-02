@@ -38,6 +38,21 @@
 
   function decoratePage(page){
     if (!page) return [];
+
+    /* The Live Data page is long and contains several responsive canvases.
+       Applying transforms and staggered reveal observers to the whole page
+       temporarily makes wheel scrolling feel delayed while charts initialise.
+       Keep this page in normal document flow and use only the lightweight
+       built-in opacity fade from page-transitions.css. */
+    if (page.id === 'page-livedata'){
+      page.querySelectorAll('.motion-reveal,.motion-revealed,.motion-settled').forEach(el => {
+        if (revealObserver) revealObserver.unobserve(el);
+        el.classList.remove('motion-reveal','motion-revealed','motion-settled');
+        el.style.removeProperty('--motion-delay');
+      });
+      return [];
+    }
+
     releaseNestedReveals(page);
     const children = Array.from(page.children).filter(el => {
       if (!(el instanceof HTMLElement)) return false;
@@ -108,11 +123,20 @@
     pageWrap.scrollTo({top:0,left:0,behavior:'auto'});
     requestAnimationFrame(() => { if (pageWrap.scrollTop) pageWrap.scrollTop = 0; });
     pages.forEach(p => p.classList.remove('motion-page-enter','motion-forward','motion-backward'));
-    page.classList.add('motion-page-enter',direction === 'backward' ? 'motion-backward' : 'motion-forward');
-    revealActivePage(page,true);
+
+    /* Avoid transforming the tall Live Data page. Large transformed pages
+       become temporary compositor layers and can feel sticky during chart
+       creation. The small quick-page-in fade still provides a clean entrance. */
+    if (page.id !== 'page-livedata'){
+      page.classList.add('motion-page-enter',direction === 'backward' ? 'motion-backward' : 'motion-forward');
+      revealActivePage(page,true);
+      window.setTimeout(() => page.classList.remove('motion-page-enter','motion-forward','motion-backward'), 650);
+    }else{
+      decoratePage(page);
+    }
+
     animateHeading();
     updateScrollUI();
-    window.setTimeout(() => page.classList.remove('motion-page-enter','motion-forward','motion-backward'), 650);
   }
 
   /* Determine whether the user moves forward or backward through the tabs.

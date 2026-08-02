@@ -1,0 +1,33 @@
+/* ================================================================
+   Live Data initial-scroll stability
+   Keeps the long canvas-heavy page in normal flow during activation.
+   ================================================================ */
+#page-livedata,
+#page-livedata.active,
+#page-livedata.active.quick-page-in{
+  transform:none !important;
+  will-change:auto !important;
+}
+
+/* Never stagger/translate the Live Data sections. The tab still receives the
+   short opacity fade, but scrolling is available from the first frame. */
+html.motion-ready #page-livedata > .motion-reveal,
+html.motion-ready #page-livedata > .motion-reveal.motion-revealed{
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+  transition-delay:0ms !important;
+  will-change:auto !important;
+}
+
+/* Each chart has a fixed-height wrapper. Layout/paint containment prevents a
+   chart update from invalidating the full, very long page while APIs resolve. */
+#page-livedata .chart-box{
+  contain:layout paint;
+  overflow:hidden;
+}
+#page-livedata canvas{
+  display:block;
+  max-width:100%;
+}

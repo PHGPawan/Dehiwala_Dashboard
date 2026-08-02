@@ -653,6 +653,21 @@ let _liveBuilt = false;
 function buildLiveData(){
   if(_liveBuilt) return; _liveBuilt = true;
 
+  /* The Live Data tab creates several charts together after the API returns.
+     Disable Chart.js drawing/resize animations for this batch so the dashboard
+     remains immediately scrollable while the live values are rendered. */
+  if(window.Chart && Chart.defaults){
+    Chart.defaults.animation = false;
+    if(Chart.defaults.transitions){
+      if(Chart.defaults.transitions.active && Chart.defaults.transitions.active.animation){
+        Chart.defaults.transitions.active.animation.duration = 0;
+      }
+      if(Chart.defaults.transitions.resize && Chart.defaults.transitions.resize.animation){
+        Chart.defaults.transitions.resize.animation.duration = 0;
+      }
+    }
+  }
+
   /* 1. Main weather + all hourly/daily charts */
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,wind_direction_10m,precipitation,uv_index,cloud_cover,weather_code&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,uv_index,precipitation,precipitation_probability,shortwave_radiation&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=7`)
   .then(r=>r.json()).then(d=>{
