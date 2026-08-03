@@ -29,13 +29,24 @@
   }
 
   function resizeVisuals() {
-    window.dispatchEvent(new Event('resize'));
-    if (window.__overviewMap && typeof window.__overviewMap.invalidateSize === 'function') {
+    const activePage = document.querySelector('.page.active');
+    if (
+      activePage &&
+      activePage.id === 'page-overview' &&
+      window.__overviewMap &&
+      typeof window.__overviewMap.invalidateSize === 'function'
+    ) {
       window.__overviewMap.invalidateSize({ pan: false, animate: false });
+    }
+    if (typeof window.__resizeActiveRealMap === 'function') {
+      window.__resizeActiveRealMap();
     }
     if (window.Chart && window.Chart.instances) {
       Object.values(window.Chart.instances).forEach(function (chart) {
-        if (chart && typeof chart.resize === 'function') chart.resize();
+        if (!chart || typeof chart.resize !== 'function') return;
+        const canvas = chart.canvas;
+        const page = canvas && canvas.closest('.page');
+        if (!page || page.classList.contains('active')) chart.resize();
       });
     }
   }

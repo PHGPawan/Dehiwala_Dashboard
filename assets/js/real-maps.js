@@ -144,6 +144,7 @@ function parseCentralityBinary(buffer){
 const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
 const idleRun=(fn,timeout=1200)=>window.requestIdleCallback?requestIdleCallback(fn,{timeout}):setTimeout(fn,Math.min(timeout,350));
 function allowBackgroundPreload(){
+  if(window.matchMedia('(max-width:700px)').matches)return false;
   const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
   return !(c&&(c.saveData||/2g/.test(c.effectiveType||'')));
 }
@@ -246,7 +247,9 @@ function attachMapUtilities(map,id){
 }
 function baseMap(id){
   const compact=window.matchMedia('(max-width:600px)').matches;
-  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:9,maxZoom:20,scrollWheelZoom:true,dragging:true,touchZoom:true,doubleClickZoom:true,boxZoom:true,renderer:L.canvas({padding:.5})});
+  const sharedRenderer=L.canvas({padding:compact ? .16 : .32});
+  const map=L.map(id,{preferCanvas:true,zoomControl:true,minZoom:9,maxZoom:20,scrollWheelZoom:true,dragging:true,touchZoom:true,doubleClickZoom:true,boxZoom:true,renderer:sharedRenderer});
+  map.__analysisRenderer=sharedRenderer;
   const professionalBase=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Tiles © Esri'});
   const professionalLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:20,attribution:'Labels © Esri'});
   const professional=L.layerGroup([professionalBase,professionalLabels]);
@@ -336,9 +339,10 @@ async function updateCentrality(first=false){
     status('centrality-real-status','Rendering street network…');
     if(s.layer)s.map.removeLayer(s.layer);
     const group=L.featureGroup();const metric=s.metric;const radius=s.radius;
+    const renderer=s.map.__analysisRenderer||s.map.options.renderer;
     for(const item of dataset.classes){
       await nextFrame();if(token!==s.updateToken)return;
-      const layer=L.polyline(item.lines,{renderer:L.canvas({padding:.5}),...centralityLineStyle(item.class,metric)});
+      const layer=L.polyline(item.lines,{renderer,...centralityLineStyle(item.class,metric)});
       layer.__centralityClass=item.class;
       layer.bindPopup(popupRows(`${centralityNames[metric]} · ${radius} m`,[['Class',`${item.class+1} of 5`],['Value range',`${formatNumber(item.min)} – ${formatNumber(item.max)}`],['Street segments',formatNumber(item.count,0)]]));
       layer.on({mouseover:e=>e.target.setStyle({weight:Math.min(2.8,1.15+(item.class*.32)),opacity:1}),mouseout:e=>e.target.setStyle(centralityLineStyle(item.class,metric))});
@@ -381,7 +385,7 @@ async function initIndexMap(which){
   state.loadPromise=(async()=>{
     try{
       const {data,meta}=await loadIndices();state.meta=meta;await nextFrame();
-      state.layer=L.geoJSON(data,{renderer:L.canvas({padding:.5}),style:f=>indexStyle(state,f),onEachFeature:(f,l)=>{
+      state.layer=L.geoJSON(data,{renderer:map.__analysisRenderer||map.options.renderer,style:f=>indexStyle(state,f),onEachFeature:(f,l)=>{
         l.bindPopup(()=>popupRows(`Grid cell ${formatNumber(f.properties.id,0)}`,[['FSI',formatNumber(f.properties.fsi,3)],['GSI',formatNumber(f.properties.gsi,3)],['OSR',formatNumber(f.properties.osr,3)],['Entropy',formatNumber(f.properties.entropy,3)],['UMI',formatNumber(f.properties.umi,3)],['Dominant land use',f.properties.landuse||'—']]));
         l.on({mouseover:e=>e.target.setStyle({weight:1.4,color:'#ffffff',fillOpacity:.88}),mouseout:e=>state.layer.resetStyle(e.target)});
       }}).addTo(map);
@@ -445,7 +449,7 @@ async function ensureLanduseLayer(){
   s.landusePromise=(async()=>{
     const landuse=await getJSON('assets/data/landuse.geojson');s.landuseData=landuse;await nextFrame();
     let layer;
-    layer=L.geoJSON(landuse,{renderer:L.canvas({padding:.5}),style:f=>{const light=document.documentElement.classList.contains('light');return{fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:light?.78:.84,color:light?'rgba(30,41,59,.55)':'rgba(15,23,42,.62)',weight:light?.85:.7}},onEachFeature:(f,l)=>{
+    layer=L.geoJSON(landuse,{renderer:s.map.__analysisRenderer||s.map.options.renderer,style:f=>{const light=document.documentElement.classList.contains('light');return{fillColor:landuseColors[f.properties.main]||landuseColors.Other,fillOpacity:light?.78:.84,color:light?'rgba(30,41,59,.55)':'rgba(15,23,42,.62)',weight:light?.85:.7}},onEachFeature:(f,l)=>{
       l.bindPopup(()=>popupRows(f.properties.main||'Land use',[['Sub-class',f.properties.sub||'—'],['Domain',f.properties.domain||'—'],['Recorded area',formatNumber(f.properties.area,2)]]));
       l.on({mouseover:e=>e.target.setStyle({weight:2,color:'#ffffff',fillOpacity:.96}),mouseout:e=>layer.resetStyle(e.target)});
     }});
@@ -564,7 +568,12 @@ function bindNavigation(){
     item.addEventListener('touchstart',warm,{passive:true});
     item.addEventListener('click',()=>requestAnimationFrame(()=>initForPage(page)));
   });
-  window.addEventListener('resize',()=>requestAnimationFrame(()=>Object.values(maps).forEach(m=>m.invalidateSize({pan:false}))));
+  const resizeVisibleMaps=()=>Object.values(maps).forEach(map=>{
+    const container=map.getContainer();
+    if(container&&container.offsetParent!==null)map.invalidateSize({pan:false});
+  });
+  window.__resizeActiveRealMap=()=>requestAnimationFrame(resizeVisibleMaps);
+  window.addEventListener('resize',()=>requestAnimationFrame(resizeVisibleMaps));
   if(allowBackgroundPreload()){idleRun(()=>preloadCentrality('b500').catch(()=>{}),700);idleRun(()=>loadIndices().catch(()=>{}),1500);idleRun(()=>Promise.allSettled([getJSON('assets/data/elevation_grid.json'),getJSON('assets/data/uhi_grid.json')]),2200);}
 }
 

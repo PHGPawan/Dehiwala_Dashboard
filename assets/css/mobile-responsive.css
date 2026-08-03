@@ -39,6 +39,16 @@ body {
   max-height: none !important;
 }
 
+/*
+ * Analytical layers in the centrality, density and maturation tabs use
+ * Leaflet canvas renderers. Their drawing surfaces intentionally extend
+ * beyond the pane, so responsive media sizing must not collapse them.
+ */
+.leaflet-container .leaflet-pane > canvas.leaflet-zoom-animated {
+  max-width: none !important;
+  max-height: none !important;
+}
+
 #leaflet-map path.overview-gn-point {
   filter:
     drop-shadow(0 0 1px rgba(0, 0, 0, .95))
