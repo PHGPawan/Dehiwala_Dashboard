@@ -1,9 +1,10 @@
-/* Ambient animated background — decorative only, no layout/scroll impact */
+/* Reactive ambient background — cursor and scroll parallax, decorative only */
 :root{
   --ambient-cyan: 81, 211, 255;
   --ambient-teal: 36, 211, 174;
   --ambient-blue: 83, 133, 255;
 }
+
 .ambient-ui-bg{
   position:fixed;
   inset:0;
@@ -13,6 +14,7 @@
   contain:strict;
   isolation:isolate;
 }
+
 .ambient-ui-bg::before{
   content:"";
   position:absolute;
@@ -24,18 +26,34 @@
   filter:blur(10px);
   animation:ambientGlowDrift 22s ease-in-out infinite alternate;
 }
-.ambient-wave{
+
+.ambient-pointer-light{
   position:absolute;
-  left:-12vw;
-  width:124vw;
-  height:240px;
-  opacity:.18;
-  will-change:transform;
+  left:0;
+  top:0;
+  width:520px;
+  height:520px;
+  border-radius:50%;
+  opacity:.08;
+  background:radial-gradient(circle, rgba(84,211,255,.24) 0%, rgba(43,189,255,.09) 29%, transparent 68%);
+  filter:blur(12px);
+  will-change:transform,opacity;
+  transition:opacity .5s ease;
 }
-.ambient-wave svg{width:100%;height:100%;display:block}
-.ambient-wave--one{bottom:-105px;animation:ambientWaveOne 18s ease-in-out infinite alternate}
-.ambient-wave--two{bottom:-65px;opacity:.11;animation:ambientWaveTwo 25s ease-in-out infinite alternate-reverse}
-.ambient-wave--three{top:22%;opacity:.055;transform:rotate(180deg);animation:ambientWaveThree 32s ease-in-out infinite alternate}
+
+.ambient-ui-bg.ambient-pointer-active .ambient-pointer-light{opacity:.16}
+
+.ambient-reactive{
+  will-change:transform;
+  transform:translate3d(0,0,0);
+  backface-visibility:hidden;
+}
+
+.ambient-grid-anchor{
+  position:absolute;
+  inset:-80px;
+}
+
 .ambient-grid{
   position:absolute;
   inset:0;
@@ -45,63 +63,160 @@
     linear-gradient(90deg,rgba(135,210,255,.23) 1px,transparent 1px);
   background-size:72px 72px;
   mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 80%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 80%,transparent 100%);
   animation:ambientGridMove 38s linear infinite;
 }
+
+.ambient-wave-anchor{
+  position:absolute;
+  left:-12vw;
+  width:124vw;
+  height:240px;
+}
+
+.ambient-wave-anchor--one{bottom:-105px}
+.ambient-wave-anchor--two{bottom:-65px}
+.ambient-wave-anchor--three{top:22%}
+
+.ambient-wave{
+  position:absolute;
+  inset:0;
+  opacity:.18;
+  will-change:transform;
+  transform-origin:center center;
+}
+
+.ambient-wave svg{width:100%;height:100%;display:block}
+.ambient-wave--one{animation:ambientWaveOne 18s ease-in-out infinite alternate}
+.ambient-wave--two{opacity:.11;animation:ambientWaveTwo 25s ease-in-out infinite alternate-reverse}
+.ambient-wave--three{opacity:.055;transform:rotate(180deg);animation:ambientWaveThree 32s ease-in-out infinite alternate}
+
+.ambient-ui-bg.ambient-is-scrolling .ambient-wave--one{filter:drop-shadow(0 -5px 14px rgba(72,191,255,.10))}
+.ambient-ui-bg.ambient-is-scrolling .ambient-wave--two{filter:drop-shadow(0 -4px 12px rgba(62,225,196,.08))}
+
+.ambient-orb-anchor{
+  position:absolute;
+  width:220px;
+  height:220px;
+}
+
+.ambient-orb-anchor--a{right:7%;top:15%}
+.ambient-orb-anchor--b{left:19%;bottom:11%;width:145px;height:145px}
+
 .ambient-orb{
   position:absolute;
-  width:220px;height:220px;border-radius:50%;
+  inset:0;
+  width:100%;
+  height:100%;
+  border-radius:50%;
   border:1px solid rgba(120,215,255,.10);
   box-shadow:inset 0 0 55px rgba(86,183,255,.045),0 0 70px rgba(45,201,255,.04);
   animation:ambientOrbFloat 20s ease-in-out infinite;
 }
+
 .ambient-orb::after{
-  content:"";position:absolute;inset:25%;border-radius:50%;border:1px dashed rgba(120,215,255,.12);
+  content:"";
+  position:absolute;
+  inset:25%;
+  border-radius:50%;
+  border:1px dashed rgba(120,215,255,.12);
   animation:ambientSpin 25s linear infinite;
 }
-.ambient-orb--a{right:7%;top:15%}
-.ambient-orb--b{left:19%;bottom:11%;width:145px;height:145px;animation-delay:-9s}
+
+.ambient-orb--b{animation-delay:-9s}
 .ambient-symbols{position:absolute;inset:0}
+
+.ambient-symbol-anchor{
+  position:absolute;
+  width:34px;
+  height:34px;
+}
+
 .ambient-symbol{
   position:absolute;
-  width:34px;height:34px;
-  display:grid;place-items:center;
+  inset:0;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
   color:rgba(150,225,255,.22);
   opacity:0;
   filter:drop-shadow(0 0 8px rgba(75,190,255,.12));
   animation:ambientSymbolFloat var(--dur,20s) ease-in-out var(--delay,0s) infinite;
   will-change:transform,opacity;
 }
+
 .ambient-symbol svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.35}
-.ambient-symbol:nth-child(3n){color:rgba(95,231,194,.20)}
-.ambient-symbol:nth-child(4n){width:25px;height:25px}
+.ambient-symbol-anchor:nth-child(3n) .ambient-symbol{color:rgba(95,231,194,.20)}
+.ambient-symbol-anchor:nth-child(4n),
+.ambient-symbol-anchor:nth-child(4n) .ambient-symbol{width:25px;height:25px}
 
 .sidebar,.main-content,.mobile-menu-btn,.sidebar-overlay,.lightbox{position:relative;z-index:2}
+
 body::after{
-  content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
   background:linear-gradient(115deg,rgba(255,255,255,.012),transparent 35%,rgba(89,211,255,.018) 58%,transparent 80%);
   transform:translateX(-130%);
   animation:ambientSheen 16s ease-in-out infinite;
 }
 
-@keyframes ambientGlowDrift{0%{transform:translate3d(-1.5%,-1%,0) scale(1)}100%{transform:translate3d(2%,1.5%,0) scale(1.05)}}
-@keyframes ambientWaveOne{0%{transform:translate3d(-2%,3px,0) scaleY(.94)}100%{transform:translate3d(2%,-10px,0) scaleY(1.06)}}
-@keyframes ambientWaveTwo{0%{transform:translate3d(3%,4px,0) scaleX(1.02)}100%{transform:translate3d(-3%,-7px,0) scaleX(.98)}}
-@keyframes ambientWaveThree{0%{transform:translate3d(-2%,0,0) rotate(180deg)}100%{transform:translate3d(2%,15px,0) rotate(180deg)}}
+@keyframes ambientGlowDrift{
+  0%{transform:translate3d(-1.5%,-1%,0) scale(1)}
+  100%{transform:translate3d(2%,1.5%,0) scale(1.05)}
+}
+@keyframes ambientWaveOne{
+  0%{transform:translate3d(-2%,3px,0) scaleY(.94)}
+  100%{transform:translate3d(2%,-10px,0) scaleY(1.06)}
+}
+@keyframes ambientWaveTwo{
+  0%{transform:translate3d(3%,4px,0) scaleX(1.02)}
+  100%{transform:translate3d(-3%,-7px,0) scaleX(.98)}
+}
+@keyframes ambientWaveThree{
+  0%{transform:translate3d(-2%,0,0) rotate(180deg)}
+  100%{transform:translate3d(2%,15px,0) rotate(180deg)}
+}
 @keyframes ambientGridMove{to{background-position:72px 72px}}
-@keyframes ambientOrbFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-18px,22px,0) scale(1.04)}}
+@keyframes ambientOrbFloat{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(-18px,22px,0) scale(1.04)}
+}
 @keyframes ambientSpin{to{transform:rotate(360deg)}}
-@keyframes ambientSheen{0%,72%{transform:translateX(-130%)}88%,100%{transform:translateX(130%)}}
+@keyframes ambientSheen{
+  0%,72%{transform:translateX(-130%)}
+  88%,100%{transform:translateX(130%)}
+}
 @keyframes ambientSymbolFloat{
   0%{opacity:0;transform:translate3d(0,18px,0) rotate(-8deg) scale(.88)}
   15%,76%{opacity:.85}
   45%{transform:translate3d(14px,-15px,0) rotate(5deg) scale(1)}
   100%{opacity:0;transform:translate3d(-8px,-38px,0) rotate(12deg) scale(.92)}
 }
+
+/* Light-theme tuning keeps the reactive background visible but restrained. */
+body.light-mode .ambient-pointer-light,
+[data-theme="light"] .ambient-pointer-light{opacity:.055}
+body.light-mode .ambient-grid,
+[data-theme="light"] .ambient-grid{opacity:.035}
+body.light-mode .ambient-symbol,
+[data-theme="light"] .ambient-symbol{color:rgba(36,124,173,.18)}
+
 @media (max-width:900px){
-  .ambient-wave{height:180px}.ambient-grid{opacity:.035;background-size:90px 90px}
-  .ambient-symbol:nth-child(n+8){display:none}.ambient-orb{opacity:.55}
+  .ambient-wave-anchor{height:180px}
+  .ambient-grid{opacity:.035;background-size:90px 90px}
+  .ambient-symbol-anchor:nth-child(n+8){display:none}
+  .ambient-orb-anchor{opacity:.55}
+  .ambient-pointer-light{width:380px;height:380px}
 }
+
 @media (prefers-reduced-motion:reduce){
   .ambient-ui-bg *,body::after{animation:none!important}
-  .ambient-symbol{opacity:.15}.ambient-wave{transform:none!important}
+  .ambient-symbol{opacity:.15}
+  .ambient-wave{transform:none!important}
+  .ambient-reactive{transform:none!important}
+  .ambient-pointer-light{display:none}
 }

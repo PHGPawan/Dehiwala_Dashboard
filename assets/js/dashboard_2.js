@@ -180,8 +180,9 @@
     updateProfile(rec);paintMaterials();
     if(rotate){viewer.cameraOrbit=`${rec.angle}deg 52deg auto`;viewer.jumpCameraToGoal?.();}
     stage.classList.remove('has-gn-focus');requestAnimationFrame(()=>stage.classList.add('has-gn-focus'));
+    document.dispatchEvent(new CustomEvent('dashboard:gnselect',{detail:{name:rec.name,source:'model'}}));
   }
-  function clearSelection(){selectedGN=null;select.value='';stage.classList.remove('has-gn-focus');setEmptyProfile();paintMaterials();}
+  function clearSelection(){selectedGN=null;select.value='';stage.classList.remove('has-gn-focus');setEmptyProfile();paintMaterials();document.dispatchEvent(new CustomEvent('dashboard:gnselect',{detail:{name:'',source:'model'}}));}
 
   viewer.addEventListener('progress',e=>{
     const p=Math.round((e.detail.totalProgress||0)*100);fill.style.width=p+'%';

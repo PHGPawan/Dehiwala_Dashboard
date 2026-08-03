@@ -1,6 +1,6 @@
 {
   "name": "Dehiwala Urban Analytics Dashboard",
-  "version": "full-motion-ui-1.0",
+  "version": "professional-decision-support-2.0",
   "entry": "index.html",
   "features": [
     "interactive-centrality",
@@ -17,7 +17,20 @@
     "scroll-reveal-animations",
     "scroll-progress-indicator",
     "animated-dashboard-microinteractions",
-    "reduced-motion-accessibility"
+    "reduced-motion-accessibility",
+    "guided-story-mode",
+    "global-gn-cross-filter",
+    "gn-map-focus-overlays",
+    "gn-comparison-workspace",
+    "layer-swipe-comparison",
+    "smart-planning-insights",
+    "professional-loading-states",
+    "methodology-and-source-drawers",
+    "fullscreen-presentation-mode",
+    "planning-map-bookmarks",
+    "rich-dashboard-tooltips",
+    "accessibility-control-centre",
+    "persistent-user-preferences"
   ],
   "raster_sources_required": [
     "elevation-dem-geotiff"
@@ -51,6 +64,8 @@
     "assets/js/cld-interactive.js",
     "downloads/Dehiwala_Urban_Heat_CLD.pdf",
     "assets/css/motion-enhancements.css",
-    "assets/js/motion-enhancements.js"
+    "assets/js/motion-enhancements.js",
+    "assets/css/professional-features.css",
+    "assets/js/professional-features.js"
   ]
 }

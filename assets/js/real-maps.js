@@ -527,6 +527,28 @@ function refreshThematicStyles(){
 }
 window.__refreshRealMapThemes=refreshThematicStyles;
 
+/* Global GN focus layer used by the professional cross-filter workspace. */
+const gnFocusData={
+  'Dehiwala East':[6.856035,79.869243,.52],'Dehiwala West':[6.858160,79.861970,.59],
+  'Galwala':[6.863200,79.866500,.31],'Jayathilaka':[6.853500,79.864800,.22],
+  'Karagampitiya':[6.849200,79.874500,.25],'Kawdana West':[6.845800,79.869000,.35],
+  'Malwatta':[6.854200,79.873800,.38],'Mount Lavinia':[6.844500,79.865000,.80],
+  'Udyanaya':[6.855963,79.875015,.53]
+};
+const gnFocusLayers={};
+window.__focusGNOnRealMaps=function(name,{zoom=false}={}){
+  Object.entries(maps).forEach(([key,map])=>{
+    if(gnFocusLayers[key]){gnFocusLayers[key].forEach(l=>map.removeLayer(l));delete gnFocusLayers[key];}
+    const d=gnFocusData[name];if(!d)return;
+    const marker=L.circleMarker([d[0],d[1]],{radius:9,color:'#ffffff',weight:3,fillColor:'#00d8b4',fillOpacity:.95,pane:'markerPane'}).bindTooltip(`<b>${name}</b><br>Global GN focus`,{direction:'top'});
+    const halo=L.circle([d[0],d[1]],{radius:Math.max(170,Math.sqrt(d[2])*430),color:'#00d8b4',weight:2,opacity:.9,fillColor:'#00d8b4',fillOpacity:.08,dashArray:'7,5',interactive:false});
+    halo.addTo(map);marker.addTo(map);gnFocusLayers[key]=[halo,marker];
+    if(zoom)map.flyTo([d[0],d[1]],Math.max(map.getZoom(),15),{duration:.55});
+  });
+};
+window.__realMaps=maps;
+
+
 function preloadForPage(page){
   if(page==='centrality')return preloadCentrality(centralityState.metric+centralityState.radius);
   if(page==='density'||page==='maturation')return loadIndices();

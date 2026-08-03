@@ -435,6 +435,7 @@ function showGNSelection(gn,marker,{zoom=true}={}){
   }
   const select=document.getElementById('overview-gn-select');
   if(select) select.value=gn.name;
+  document.dispatchEvent(new CustomEvent('dashboard:gnselect',{detail:{name:gn.name,source:'overview'}}));
 }
 function clearGNSelection(){
   if(selectedGNMarker){
@@ -445,6 +446,7 @@ function clearGNSelection(){
   if(selectedGNHalo){map.removeLayer(selectedGNHalo);selectedGNHalo=null;}
   const panel=document.getElementById('overview-selection-card'); if(panel)panel.classList.remove('visible');
   const select=document.getElementById('overview-gn-select'); if(select)select.value='';
+  document.dispatchEvent(new CustomEvent('dashboard:gnselect',{detail:{name:'',source:'overview'}}));
 }
 gnData.forEach(gn => {
   const col = gnColor(gn);
