@@ -563,9 +563,10 @@ function bindNavigation(){
   document.querySelectorAll('.nav-item').forEach(item=>{
     const page=item.dataset.page;
     const warm=()=>{preloadForPage(page).catch(()=>{});};
-    item.addEventListener('pointerenter',warm,{passive:true});
-    item.addEventListener('focusin',warm);
-    item.addEventListener('touchstart',warm,{passive:true});
+    if(allowBackgroundPreload()){
+      item.addEventListener('pointerenter',warm,{passive:true});
+      item.addEventListener('focusin',warm);
+    }
     item.addEventListener('click',()=>requestAnimationFrame(()=>initForPage(page)));
   });
   const resizeVisibleMaps=()=>Object.values(maps).forEach(map=>{

@@ -5,6 +5,7 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(pointer: fine)').matches;
+  const compactViewport = window.matchMedia('(max-width: 900px)').matches;
 
   const wrap = document.createElement('div');
   wrap.className = 'ambient-ui-bg';
@@ -70,6 +71,13 @@
 
   if (reduceMotion) {
     wrap.classList.add('ambient-reduced-motion');
+    return;
+  }
+
+  /* Touch devices keep the CSS wave, orb and symbol animations, but do not
+     need desktop pointer-parallax calculations running every frame. */
+  if (compactViewport || !finePointer) {
+    wrap.classList.add('ambient-mobile-passive');
     return;
   }
 

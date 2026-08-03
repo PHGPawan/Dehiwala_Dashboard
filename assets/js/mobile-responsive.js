@@ -51,6 +51,14 @@
     }
   }
 
+  let visualRefreshTimer = 0;
+  window.__resizeActiveDashboardVisuals = function (delay) {
+    window.clearTimeout(visualRefreshTimer);
+    visualRefreshTimer = window.setTimeout(function () {
+      requestAnimationFrame(resizeVisuals);
+    }, Math.max(0, Number(delay) || 0));
+  };
+
   document.querySelectorAll('.page table').forEach(function (table) {
     if (table.parentElement && table.parentElement.classList.contains('mobile-table-scroll')) return;
     const wrapper = document.createElement('div');
@@ -221,16 +229,12 @@
     });
     item.addEventListener('click', function () {
       closeNavigation();
-      requestAnimationFrame(function () {
-        if (pageWrap) pageWrap.scrollTop = 0;
-        resizeVisuals();
-        window.setTimeout(resizeVisuals, 180);
-        if (item.dataset.page === 'overview') {
-          window.setTimeout(function () {
-            if (typeof window.__fitOverviewMap === 'function') window.__fitOverviewMap(0);
-          }, 220);
-        }
-      });
+      if (pageWrap) pageWrap.scrollTop = 0;
+      if (item.dataset.page === 'overview') {
+        window.setTimeout(function () {
+          if (typeof window.__fitOverviewMap === 'function') window.__fitOverviewMap(0);
+        }, 240);
+      }
     });
   });
 

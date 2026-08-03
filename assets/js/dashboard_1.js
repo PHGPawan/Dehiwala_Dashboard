@@ -96,7 +96,9 @@ function switchPage(page, item) {
     if (page === 'centrality' && !window._centralityBuilt) buildCentralityGrid('all');
     if (page === 'synthesis' && !window._synthBuilt) buildSynthesis();
     if (page === 'livedata') buildLiveData();
-    window.dispatchEvent(new Event('resize'));
+    if (typeof window.__resizeActiveDashboardVisuals === 'function') {
+      window.__resizeActiveDashboardVisuals(window.innerWidth <= 900 ? 220 : 0);
+    }
   };
   requestAnimationFrame(() => setTimeout(runLazy, 0));
 

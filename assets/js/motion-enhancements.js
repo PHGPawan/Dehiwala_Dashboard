@@ -14,6 +14,7 @@
   if (!pageWrap || !main) return;
 
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compactMotion = window.matchMedia && window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
   const pages = Array.from(document.querySelectorAll('.page'));
   const navItems = Array.from(document.querySelectorAll('.nav-item[data-page]'));
   const navOrder = navItems.map(item => item.dataset.page);
@@ -38,6 +39,15 @@
 
   function decoratePage(page){
     if (!page) return [];
+
+    if (compactMotion){
+      page.querySelectorAll('.motion-reveal,.motion-revealed,.motion-settled').forEach(el => {
+        if (revealObserver) revealObserver.unobserve(el);
+        el.classList.remove('motion-reveal','motion-revealed','motion-settled');
+        el.style.removeProperty('--motion-delay');
+      });
+      return [];
+    }
 
     /* The Live Data page is long and contains several responsive canvases.
        Applying transforms and staggered reveal observers to the whole page
@@ -69,7 +79,7 @@
   navItems.forEach((item,index) => item.style.setProperty('--motion-nav-index',index));
   document.documentElement.classList.add('motion-ready');
 
-  if (!reduceMotion && 'IntersectionObserver' in window){
+  if (!compactMotion && !reduceMotion && 'IntersectionObserver' in window){
     revealObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
@@ -127,7 +137,7 @@
     /* Avoid transforming the tall Live Data page. Large transformed pages
        become temporary compositor layers and can feel sticky during chart
        creation. The small quick-page-in fade still provides a clean entrance. */
-    if (page.id !== 'page-livedata'){
+    if (!compactMotion && page.id !== 'page-livedata'){
       page.classList.add('motion-page-enter',direction === 'backward' ? 'motion-backward' : 'motion-forward');
       revealActivePage(page,true);
       window.setTimeout(() => page.classList.remove('motion-page-enter','motion-forward','motion-backward'), 650);
@@ -151,10 +161,12 @@
     const toIndex = navOrder.indexOf(toName);
     pendingDirection = (toIndex >= fromIndex) ? 'forward' : 'backward';
 
-    item.classList.remove('motion-nav-fired');
-    void item.offsetWidth;
-    item.classList.add('motion-nav-fired');
-    window.setTimeout(() => item.classList.remove('motion-nav-fired'), 560);
+    if (!compactMotion){
+      item.classList.remove('motion-nav-fired');
+      void item.offsetWidth;
+      item.classList.add('motion-nav-fired');
+      window.setTimeout(() => item.classList.remove('motion-nav-fired'), 560);
+    }
   },true);
 
   const pageClassObserver = new MutationObserver(() => {
@@ -189,7 +201,7 @@
       requestAnimationFrame(() => revealActivePage(active,false));
     }
   });
-  contentObserver.observe(pageWrap,{childList:true,subtree:true});
+  if (!compactMotion) contentObserver.observe(pageWrap,{childList:true,subtree:true});
 
   /* Scroll progress and page elevation. */
   const progress = document.createElement('div');
@@ -234,7 +246,7 @@
 
   document.addEventListener('pointerdown',event => {
     const target = event.target.closest(pressableSelector);
-    if (!target || reduceMotion) return;
+    if (!target || reduceMotion || compactMotion) return;
     target.classList.add('motion-pressable','motion-pressed');
 
     const rect = target.getBoundingClientRect();

@@ -62,7 +62,11 @@ function arrangeOverview(){
   if(liveColumn.parentNode!==primary)primary.appendChild(liveColumn);
 
   setTimeout(()=>{
-    window.dispatchEvent(new Event('resize'));
+    if(typeof window.__resizeActiveDashboardVisuals==='function'){
+      window.__resizeActiveDashboardVisuals(0);
+    }else{
+      window.dispatchEvent(new Event('resize'));
+    }
     if(window.__overviewMap){
       window.__overviewMap.invalidateSize({pan:false});
       if(window.__fitOverviewMap)window.__fitOverviewMap(0);
@@ -164,6 +168,10 @@ function addPopulationDescriptions(){
 
 function refitMaps(){
   setTimeout(()=>{
+    if(window.innerWidth<=900&&typeof window.__resizeActiveDashboardVisuals==='function'){
+      window.__resizeActiveDashboardVisuals(0);
+      return;
+    }
     ['centrality-real-map','density-real-map','maturation-real-map','environment-real-map','landuse-real-map','leaflet-map'].forEach(id=>{
       const el=document.getElementById(id);
       if(el && el._leaflet_id && window.L){

@@ -148,8 +148,10 @@ body {
     min-height: var(--mobile-control);
     padding: 0 !important;
     border-color: var(--border2);
-    background: color-mix(in srgb, var(--bg2) 94%, transparent);
-    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg2) 98%, transparent);
+    backdrop-filter: none;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   body:has(.pro-drawer.open) .mobile-menu-btn,
@@ -174,7 +176,11 @@ body {
     transform: translate3d(-105%, 0, 0) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    box-shadow: 22px 0 60px rgba(0, 0, 0, .45);
+    box-shadow: 14px 0 34px rgba(0, 0, 0, .38);
+    transition: transform 190ms cubic-bezier(.2, .8, .2, 1) !important;
+    will-change: transform;
+    backface-visibility: hidden;
+    contain: layout paint style;
   }
 
   .sidebar.open {
@@ -191,13 +197,17 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity .22s ease, visibility .22s ease;
+    backdrop-filter: none !important;
+    transition: opacity 170ms linear, visibility 0s linear 170ms !important;
+    will-change: opacity;
+    contain: strict;
   }
 
   .sidebar-overlay.visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transition-delay: 0s !important;
   }
 
   .sidebar-brand {
@@ -207,6 +217,37 @@ body {
   .nav-item {
     min-height: 44px;
     padding: 10px 18px;
+    transition: color 120ms ease, background-color 120ms ease !important;
+    contain: layout paint style;
+  }
+
+  body.mobile-nav-open .ambient-ui-bg * {
+    animation-play-state: paused !important;
+  }
+
+  body.mobile-nav-open .page-wrap {
+    pointer-events: none;
+  }
+
+  .page.active.motion-page-enter.motion-forward,
+  .page.active.motion-page-enter.motion-backward {
+    animation: quickPageFade 120ms linear both !important;
+    transform: none !important;
+    will-change: opacity !important;
+  }
+
+  html.motion-ready .motion-reveal,
+  html.motion-ready .motion-reveal.motion-revealed {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    transition-delay: 0s !important;
+    will-change: auto !important;
+  }
+
+  .motion-ripple-wave {
+    display: none !important;
   }
 
   .main {
@@ -877,6 +918,20 @@ body {
 
   .map-download-row {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) and (hover: none) {
+  .nav-item::after,
+  .nav-item::before {
+    display: none !important;
+  }
+
+  .nav-item:hover,
+  .nav-item:hover svg,
+  .nav-item:hover .nav-label,
+  .nav-item:hover .nav-badge {
+    transform: none !important;
   }
 }
 
