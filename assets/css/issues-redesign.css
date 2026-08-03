@@ -1,10 +1,12 @@
-/* Issues & Potentials — evidence matrix with branching structure */
+/* Issues & Potentials — two-sided planning tree */
 #page-issues{
-  --issue-accent:#fc8181;
-  --issue-soft:rgba(252,129,129,.12);
-  --potential-accent:#68d391;
-  --potential-soft:rgba(104,211,145,.12);
-  --matrix-line:color-mix(in srgb,var(--border2) 78%,transparent);
+  --issue-accent:#ff7f8f;
+  --issue-accent-2:#ef5f70;
+  --issue-soft:rgba(255,127,143,.10);
+  --potential-accent:#69d69a;
+  --potential-accent-2:#38b978;
+  --potential-soft:rgba(105,214,154,.10);
+  --tree-line:color-mix(in srgb,var(--cyan) 28%,var(--border2));
 }
 #page-issues .section-header{margin-bottom:12px}
 #page-issues .ip-summary-strip{
@@ -26,218 +28,257 @@
 #page-issues>#issues-accordion,
 #page-issues>#potentials-accordion{display:none!important}
 
-.ip-matrix-shell{
+.ip-tree-shell{
   position:relative;
-  border:1px solid var(--border2);
-  border-radius:16px;
   overflow:hidden;
+  border:1px solid var(--border2);
+  border-radius:18px;
   background:
-    radial-gradient(circle at 5% 0%,rgba(252,129,129,.065),transparent 29%),
-    radial-gradient(circle at 96% 100%,rgba(104,211,145,.065),transparent 31%),
-    linear-gradient(155deg,var(--bg2),color-mix(in srgb,var(--bg2) 91%,var(--bg3)));
-  box-shadow:0 18px 45px rgba(0,0,0,.14);
+    radial-gradient(circle at 3% 35%,rgba(255,127,143,.07),transparent 29%),
+    radial-gradient(circle at 97% 35%,rgba(105,214,154,.07),transparent 29%),
+    linear-gradient(160deg,var(--bg2),color-mix(in srgb,var(--bg2) 91%,var(--bg3)));
+  box-shadow:0 20px 52px rgba(0,0,0,.15);
+  isolation:isolate;
 }
-.ip-matrix-toolbar{
+.ip-tree-shell::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  opacity:.22;
+  background-image:radial-gradient(circle at 1px 1px,color-mix(in srgb,var(--text3) 24%,transparent) 1px,transparent 0);
+  background-size:24px 24px;
+  mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 88%,transparent 100%);
+}
+.ip-tree-toolbar{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
-  gap:16px;
-  padding:15px 16px;
+  gap:18px;
+  padding:16px 18px;
   border-bottom:1px solid var(--border);
-  background:color-mix(in srgb,var(--bg2) 91%,transparent);
-  backdrop-filter:blur(14px);
+  background:color-mix(in srgb,var(--bg2) 92%,transparent);
+  backdrop-filter:blur(15px);
 }
-.ip-matrix-eyebrow{
-  color:var(--cyan);
-  font:700 8.5px/1 Inter,sans-serif;
-  letter-spacing:.13em;
-  text-transform:uppercase;
-}
-.ip-matrix-title{
-  margin-top:5px;
-  color:var(--text);
-  font:700 16px/1.2 'Space Grotesk',sans-serif;
-}
-.ip-matrix-copy{
-  margin-top:4px;
-  max-width:690px;
-  color:var(--text3);
-  font:400 10px/1.5 Inter,sans-serif;
-}
-.ip-matrix-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.ip-matrix-filter{
+.ip-tree-eyebrow{color:var(--cyan);font:700 8.5px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.ip-tree-heading{margin-top:6px;color:var(--text);font:700 17px/1.2 'Space Grotesk',sans-serif}
+.ip-tree-copy{max-width:710px;margin-top:5px;color:var(--text3);font:400 10px/1.55 Inter,sans-serif}
+.ip-tree-filters{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;max-width:470px}
+.ip-tree-filter{
+  padding:7px 10px;
   border:1px solid var(--border);
   border-radius:999px;
-  padding:7px 10px;
   background:var(--bg3);
   color:var(--text2);
   cursor:pointer;
-  font:700 8.5px/1 Inter,sans-serif;
-  letter-spacing:.04em;
-  transition:.2s ease;
+  font:700 8.3px/1 Inter,sans-serif;
+  letter-spacing:.035em;
+  transition:border-color .2s ease,color .2s ease,background .2s ease,transform .2s ease;
 }
-.ip-matrix-filter:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
-.ip-matrix-filter.active{border-color:rgba(99,217,255,.5);background:rgba(99,217,255,.11);color:var(--cyan);box-shadow:0 0 20px rgba(99,217,255,.08)}
+.ip-tree-filter:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
+.ip-tree-filter.active{border-color:rgba(99,217,255,.5);background:rgba(99,217,255,.11);color:var(--cyan);box-shadow:0 0 20px rgba(99,217,255,.08)}
 
-.ip-matrix-head,
-.ip-matrix-row-main{
+.ip-tree-branch-heads{
   display:grid;
-  grid-template-columns:76px minmax(190px,1.15fr) minmax(240px,1.6fr) minmax(230px,1.45fr) 118px 34px;
+  grid-template-columns:minmax(0,1fr) 126px minmax(0,1fr);
   align-items:center;
-  gap:12px;
+  gap:0;
+  padding:20px 22px 13px;
 }
-.ip-matrix-head{
-  padding:10px 14px 10px 22px;
-  border-bottom:1px solid var(--border);
-  color:var(--text3);
-  background:color-mix(in srgb,var(--bg3) 72%,transparent);
-  font:700 8px/1 Inter,sans-serif;
-  letter-spacing:.09em;
-  text-transform:uppercase;
+.ip-tree-branch-title{display:flex;align-items:center;gap:10px}
+.ip-tree-branch-title>span{
+  display:grid;place-items:center;width:32px;height:32px;border-radius:50%;
+  font:800 18px/1 'Space Grotesk',sans-serif;
+  box-shadow:0 0 20px color-mix(in srgb,currentColor 24%,transparent);
 }
-.ip-matrix-group{position:relative;padding:0 12px 0 0}
-.ip-matrix-group::before{
-  content:"";
-  position:absolute;
-  left:36px;
-  top:45px;
-  bottom:34px;
-  width:1px;
-  background:linear-gradient(to bottom,transparent,var(--matrix-line) 8%,var(--matrix-line) 92%,transparent);
-}
-.ip-matrix-group-title{
+.ip-tree-branch-title b{display:block;color:var(--text);font:700 13px/1.2 'Space Grotesk',sans-serif}
+.ip-tree-branch-title small{display:block;margin-top:3px;color:var(--text3);font:600 8px/1.2 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.ip-tree-branch-title.is-issue{justify-content:flex-end;text-align:right;color:var(--issue-accent)}
+.ip-tree-branch-title.is-issue>span{order:2;border:1px solid rgba(255,127,143,.44);background:var(--issue-soft)}
+.ip-tree-branch-title.is-potential{color:var(--potential-accent)}
+.ip-tree-branch-title.is-potential>span{border:1px solid rgba(105,214,154,.44);background:var(--potential-soft)}
+.ip-tree-root{
+  position:relative;
+  z-index:3;
   display:flex;
+  min-height:69px;
+  flex-direction:column;
   align-items:center;
-  gap:9px;
-  padding:13px 16px 10px 21px;
-  border-bottom:1px solid rgba(255,255,255,.035);
-  color:var(--text);
-  font:700 11px/1 'Space Grotesk',sans-serif;
-  letter-spacing:.02em;
+  justify-content:center;
+  border:1px solid rgba(99,217,255,.42);
+  border-radius:15px;
+  background:linear-gradient(145deg,rgba(99,217,255,.13),rgba(99,217,255,.035)),var(--bg2);
+  box-shadow:0 0 30px rgba(99,217,255,.10),0 12px 24px rgba(0,0,0,.16);
+  text-align:center;
 }
-.ip-matrix-group-title i{width:9px;height:9px;border-radius:50%;box-shadow:0 0 13px currentColor}
-.ip-matrix-group-title span{margin-left:auto;color:var(--text3);font:600 8.5px Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em}
-.ip-matrix-group.is-issue .ip-matrix-group-title{color:var(--issue-accent)}
-.ip-matrix-group.is-potential .ip-matrix-group-title{color:var(--potential-accent)}
-.ip-matrix-item{position:relative;border-bottom:1px solid rgba(255,255,255,.045)}
-.ip-matrix-item:last-child{border-bottom:0}
-.ip-matrix-item::before{
+.ip-tree-root span{color:var(--cyan);font:800 8px/1 Inter,sans-serif;letter-spacing:.16em}
+.ip-tree-root b{margin-top:5px;color:var(--text);font:700 11px/1.2 'Space Grotesk',sans-serif}
+.ip-tree-root i{position:absolute;left:50%;bottom:-15px;width:10px;height:10px;transform:translateX(-50%);border:2px solid var(--cyan);border-radius:50%;background:var(--bg2);box-shadow:0 0 13px rgba(99,217,255,.5)}
+
+.ip-tree-body{position:relative;padding:10px 22px 24px}
+.ip-tree-body::before{
   content:"";
   position:absolute;
+  z-index:0;
+  top:0;
+  bottom:17px;
+  left:50%;
+  width:2px;
+  transform:translateX(-1px);
+  background:linear-gradient(to bottom,var(--cyan),var(--tree-line) 12%,var(--tree-line) 88%,transparent);
+  box-shadow:0 0 13px rgba(99,217,255,.13);
+}
+.ip-tree-row{
+  position:relative;
   z-index:1;
-  left:36px;
-  top:34px;
-  width:29px;
-  height:1px;
-  background:var(--matrix-line);
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr);
+  align-items:start;
+  min-height:126px;
+  padding:9px 0;
 }
-.ip-matrix-item::after{
+.ip-tree-junction{position:relative;align-self:stretch;display:flex;align-items:flex-start;justify-content:center;padding-top:27px}
+.ip-tree-junction::before,.ip-tree-junction::after{
   content:"";
   position:absolute;
+  top:35px;
+  height:1px;
+  background:var(--tree-line);
+}
+.ip-tree-row.has-left:not(.left-filtered) .ip-tree-junction::before{right:50%;width:50%}
+.ip-tree-row.has-right:not(.right-filtered) .ip-tree-junction::after{left:50%;width:50%}
+.ip-tree-junction span{
+  position:relative;
   z-index:2;
-  left:32px;
-  top:30px;
-  width:9px;
-  height:9px;
+  display:grid;
+  place-items:center;
+  width:19px;
+  height:19px;
+  border:2px solid color-mix(in srgb,var(--cyan) 72%,white);
   border-radius:50%;
   background:var(--bg2);
-  border:2px solid var(--row-accent);
-  box-shadow:0 0 12px color-mix(in srgb,var(--row-accent) 55%,transparent);
+  color:var(--cyan);
+  box-shadow:0 0 15px rgba(99,217,255,.28);
+  font:800 6.8px/1 Inter,sans-serif;
 }
-.ip-matrix-item.is-issue{--row-accent:var(--issue-accent);--row-soft:var(--issue-soft)}
-.ip-matrix-item.is-potential{--row-accent:var(--potential-accent);--row-soft:var(--potential-soft)}
-.ip-matrix-row-main{
+
+.ip-tree-node{
+  --node-accent:var(--cyan);
+  --node-soft:rgba(99,217,255,.09);
   position:relative;
-  z-index:0;
+  min-width:0;
+  border:1px solid color-mix(in srgb,var(--node-accent) 25%,var(--border));
+  border-radius:14px;
+  background:linear-gradient(145deg,var(--node-soft),transparent 46%),color-mix(in srgb,var(--bg2) 96%,transparent);
+  box-shadow:0 11px 28px rgba(0,0,0,.13);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+
+.ip-tree-node.is-issue{grid-column:1}
+.ip-tree-junction{grid-column:2}
+.ip-tree-node.is-potential{grid-column:3}
+.ip-tree-node.is-issue{--node-accent:var(--issue-accent);--node-soft:var(--issue-soft);margin-right:24px;border-right:3px solid var(--issue-accent)}
+.ip-tree-node.is-potential{--node-accent:var(--potential-accent);--node-soft:var(--potential-soft);margin-left:24px;border-left:3px solid var(--potential-accent)}
+.ip-tree-node.is-issue::after,.ip-tree-node.is-potential::before{
+  content:"";
+  position:absolute;
+  top:35px;
+  width:24px;
+  height:1px;
+  background:var(--tree-line);
+}
+.ip-tree-node.is-issue::after{right:-27px}
+.ip-tree-node.is-potential::before{left:-27px}
+.ip-tree-node:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--node-accent) 55%,var(--border));box-shadow:0 15px 34px rgba(0,0,0,.17),0 0 21px color-mix(in srgb,var(--node-accent) 7%,transparent)}
+.ip-tree-node-main{
+  position:relative;
   width:100%;
-  min-height:68px;
-  padding:10px 13px 10px 21px;
+  min-height:106px;
+  padding:12px 42px 12px 14px;
   border:0;
   background:transparent;
   color:inherit;
-  text-align:left;
   cursor:pointer;
-  transition:background .2s ease,transform .2s ease;
+  text-align:left;
 }
-.ip-matrix-row-main:hover{background:linear-gradient(90deg,var(--row-soft),transparent 72%)}
-.ip-matrix-item.open>.ip-matrix-row-main{background:linear-gradient(90deg,var(--row-soft),rgba(255,255,255,.012) 68%,transparent)}
-.ip-matrix-code{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  justify-self:start;
-  min-width:37px;
-  height:27px;
-  margin-left:41px;
-  padding:0 8px;
-  border:1px solid color-mix(in srgb,var(--row-accent) 42%,transparent);
-  border-radius:8px;
-  background:var(--row-soft);
-  color:var(--row-accent);
-  font:700 9px/1 'Space Grotesk',sans-serif;
-}
-.ip-matrix-finding b{display:block;color:var(--text);font:700 11.5px/1.35 'Space Grotesk',sans-serif}
-.ip-matrix-finding span{display:block;margin-top:4px;color:var(--row-accent);font:700 8px/1 Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em}
-.ip-matrix-evidence,.ip-matrix-action{color:var(--text2);font:400 9.5px/1.45 Inter,sans-serif}
-.ip-matrix-action strong{color:var(--text);font-weight:700}
-.ip-matrix-meta{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-.ip-matrix-meta span{display:inline-flex;max-width:100%;padding:4px 7px;border-radius:999px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font:700 7.5px/1 Inter,sans-serif;white-space:nowrap}
-.ip-matrix-chevron{
-  width:29px;height:29px;border-radius:8px;
-  display:grid;place-items:center;
-  border:1px solid var(--border);
-  background:var(--bg3);
-  color:var(--text2);
-  font-size:12px;
-  transition:.22s ease;
-}
-.ip-matrix-item.open .ip-matrix-chevron{transform:rotate(180deg);border-color:color-mix(in srgb,var(--row-accent) 45%,transparent);color:var(--row-accent)}
-.ip-matrix-detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s cubic-bezier(.2,.8,.2,1);background:rgba(0,0,0,.045)}
-.ip-matrix-item.open .ip-matrix-detail{grid-template-rows:1fr}
-.ip-matrix-detail-inner{min-height:0;overflow:hidden}
-.ip-matrix-detail-grid{
+.ip-tree-node.is-issue .ip-tree-node-main{text-align:right;padding-left:42px;padding-right:14px}
+.ip-tree-node-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ip-tree-node.is-issue .ip-tree-node-top{justify-content:flex-end}
+.ip-tree-code,.ip-tree-theme,.ip-tree-state{display:inline-flex;align-items:center;min-height:20px;padding:4px 7px;border-radius:999px;font:800 7.2px/1 Inter,sans-serif;letter-spacing:.055em;text-transform:uppercase}
+.ip-tree-code{border:1px solid color-mix(in srgb,var(--node-accent) 48%,transparent);background:var(--node-soft);color:var(--node-accent)}
+.ip-tree-theme{border:1px solid var(--border);background:var(--bg3);color:var(--text3)}
+.ip-tree-state{color:var(--node-accent);opacity:.82}
+.ip-tree-title{display:block;margin-top:8px;color:var(--text);font:700 12.5px/1.32 'Space Grotesk',sans-serif}
+.ip-tree-snapshot{display:-webkit-box;margin-top:5px;overflow:hidden;color:var(--text2);font:400 9.2px/1.45 Inter,sans-serif;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ip-tree-direction{display:block;margin-top:8px;padding-top:7px;border-top:1px solid color-mix(in srgb,var(--node-accent) 16%,var(--border));color:var(--text3);font:400 8.5px/1.4 Inter,sans-serif}
+.ip-tree-direction b{display:block;margin-bottom:3px;color:var(--node-accent);font:800 7.2px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.ip-tree-open-icon{
+  position:absolute;
+  right:12px;
+  top:12px;
   display:grid;
-  grid-template-columns:1.25fr .75fr 1fr;
-  gap:14px;
-  margin:0 14px 13px 65px;
-  padding:13px 14px;
-  border:1px solid color-mix(in srgb,var(--row-accent) 22%,var(--border));
-  border-radius:12px;
-  background:color-mix(in srgb,var(--bg3) 78%,transparent);
+  place-items:center;
+  width:24px;
+  height:24px;
+  border:1px solid color-mix(in srgb,var(--node-accent) 36%,var(--border));
+  border-radius:8px;
+  background:var(--node-soft);
+  color:var(--node-accent);
+  font:500 15px/1 Inter,sans-serif;
+  transition:transform .25s ease,background .2s ease;
 }
-.ip-matrix-detail h4{margin:0 0 8px;color:var(--row-accent);font:700 8px/1 Inter,sans-serif;text-transform:uppercase;letter-spacing:.1em}
-.ip-matrix-list{display:flex;flex-direction:column;gap:7px}
-.ip-matrix-list div{position:relative;padding-left:12px;color:var(--text2);font:400 9.2px/1.48 Inter,sans-serif}
-.ip-matrix-list div::before{content:"";position:absolute;left:0;top:.5em;width:5px;height:5px;border-radius:50%;background:var(--row-accent)}
-.ip-matrix-tags{display:flex;flex-wrap:wrap;gap:5px}
-.ip-matrix-tags span{padding:5px 7px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font:600 8px/1.2 Inter,sans-serif}
-.ip-matrix-empty{display:none;padding:36px;text-align:center;color:var(--text3);font-size:11px}
-.ip-matrix-empty.show{display:block}
-.ip-matrix-item[hidden],.ip-matrix-group[hidden]{display:none!important}
+.ip-tree-node.is-issue .ip-tree-open-icon{right:auto;left:12px}
+.ip-tree-node.open .ip-tree-open-icon{transform:rotate(45deg);background:color-mix(in srgb,var(--node-accent) 18%,var(--bg3))}
+.ip-tree-detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s cubic-bezier(.2,.8,.2,1)}
+.ip-tree-node.open .ip-tree-detail{grid-template-rows:1fr}
+.ip-tree-detail-inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px}
+.ip-tree-node.open .ip-tree-detail-inner{padding-bottom:12px}
+.ip-tree-detail-section{padding:10px;border:1px solid color-mix(in srgb,var(--node-accent) 17%,var(--border));border-radius:10px;background:color-mix(in srgb,var(--bg3) 79%,transparent);text-align:left}
+.ip-tree-detail-section.full{grid-column:1/-1}
+.ip-tree-detail h4{margin:0 0 7px;color:var(--node-accent);font:800 7.2px/1 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase}
+.ip-tree-list{display:flex;flex-direction:column;gap:6px}
+.ip-tree-list div{position:relative;padding-left:11px;color:var(--text2);font:400 8.7px/1.45 Inter,sans-serif}
+.ip-tree-list div::before{content:"";position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--node-accent)}
+.ip-tree-tags{display:flex;flex-wrap:wrap;gap:5px}
+.ip-tree-tags span{padding:4px 6px;border:1px solid var(--border);border-radius:7px;background:var(--bg2);color:var(--text2);font:600 7.5px/1.2 Inter,sans-serif}
+.ip-tree-empty-slot{min-height:1px}
+.ip-tree-empty{display:none;padding:34px;text-align:center;color:var(--text3);font-size:11px}
+.ip-tree-empty.show{display:block}
+.ip-tree-node[hidden],.ip-tree-row[hidden]{display:none!important}
+.ip-tree-row.left-filtered .ip-tree-junction::before,.ip-tree-row.right-filtered .ip-tree-junction::after{display:none}
 
-@media(max-width:1320px){
-  .ip-matrix-head,.ip-matrix-row-main{grid-template-columns:70px minmax(170px,1.1fr) minmax(190px,1.4fr) minmax(190px,1.25fr) 104px 32px;gap:9px}
-  .ip-matrix-evidence,.ip-matrix-action{font-size:9px}
+html.light .ip-tree-shell{box-shadow:0 18px 45px rgba(15,23,42,.08)}
+html.light .ip-tree-node{box-shadow:0 10px 25px rgba(15,23,42,.07)}
+
+@media(max-width:1120px){
+  .ip-tree-toolbar{flex-direction:column}.ip-tree-filters{justify-content:flex-start;max-width:none}
+  .ip-tree-row{grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr)}
+  .ip-tree-branch-heads{grid-template-columns:minmax(0,1fr) 112px minmax(0,1fr)}
+  .ip-tree-node.is-issue{margin-right:17px}.ip-tree-node.is-potential{margin-left:17px}
+  .ip-tree-node.is-issue::after,.ip-tree-node.is-potential::before{width:17px}
+  .ip-tree-node.is-issue::after{right:-20px}.ip-tree-node.is-potential::before{left:-20px}
 }
-@media(max-width:1040px){
-  .ip-matrix-head{display:none}
-  .ip-matrix-row-main{grid-template-columns:68px minmax(0,1fr) 112px 32px;grid-template-areas:"code finding meta chev" "code evidence evidence chev" "code action action chev";gap:6px 10px;padding-top:12px;padding-bottom:12px}
-  .ip-matrix-code{grid-area:code}.ip-matrix-finding{grid-area:finding}.ip-matrix-evidence{grid-area:evidence}.ip-matrix-action{grid-area:action}.ip-matrix-meta{grid-area:meta}.ip-matrix-chevron{grid-area:chev}
-  .ip-matrix-detail-grid{grid-template-columns:1fr 1fr;margin-left:65px}.ip-matrix-detail-grid>div:last-child{grid-column:1/-1}
-}
-@media(max-width:760px){
+@media(max-width:800px){
   #page-issues .ip-summary-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ip-matrix-toolbar{align-items:flex-start;flex-direction:column}.ip-matrix-filters{justify-content:flex-start}
-  .ip-matrix-row-main{grid-template-columns:61px minmax(0,1fr) 30px;grid-template-areas:"code finding chev" "code meta chev" "code evidence chev" "code action chev"}
-  .ip-matrix-meta{flex-direction:row;flex-wrap:wrap}.ip-matrix-code{margin-left:36px}
-  .ip-matrix-detail-grid{grid-template-columns:1fr;margin-left:52px}.ip-matrix-detail-grid>div:last-child{grid-column:auto}
-  .ip-matrix-group::before{left:31px}.ip-matrix-item::before{left:31px;width:24px}.ip-matrix-item::after{left:27px}
+  .ip-tree-branch-heads{grid-template-columns:1fr 1fr;padding:17px 14px 9px;gap:10px}
+  .ip-tree-root{grid-column:1/-1;grid-row:1;width:min(220px,72vw);justify-self:center;margin-bottom:8px}
+  .ip-tree-branch-title.is-issue{grid-column:1;grid-row:2}.ip-tree-branch-title.is-potential{grid-column:2;grid-row:2}
+  .ip-tree-body{padding:8px 12px 20px}.ip-tree-body::before{display:none}
+  .ip-tree-row{display:grid;grid-template-columns:1fr;gap:9px;min-height:0;padding:8px 0}
+  .ip-tree-junction{display:none}
+  .ip-tree-node.is-issue,.ip-tree-node.is-potential{grid-column:1;margin:0;border-left:3px solid var(--node-accent);border-right:1px solid color-mix(in srgb,var(--node-accent) 25%,var(--border))}
+  .ip-tree-node.is-issue::after,.ip-tree-node.is-potential::before{display:none}
+  .ip-tree-node.is-issue .ip-tree-node-main{text-align:left;padding-left:42px;padding-right:14px}
+  .ip-tree-node.is-issue .ip-tree-node-top{justify-content:flex-start}
+  .ip-tree-node.is-issue .ip-tree-open-icon{left:12px;right:auto}
+  .ip-tree-node.is-potential .ip-tree-open-icon{left:12px;right:auto}.ip-tree-node.is-potential .ip-tree-node-main{padding-left:42px;padding-right:14px}
 }
-@media(max-width:480px){
+@media(max-width:520px){
   #page-issues .ip-summary-strip{grid-template-columns:1fr 1fr!important;gap:7px}
   #page-issues .ip-sum-card{min-height:65px;padding:10px}
-  .ip-matrix-shell{border-radius:12px}.ip-matrix-toolbar{padding:12px}.ip-matrix-group{padding-right:0}
-  .ip-matrix-row-main{grid-template-columns:52px minmax(0,1fr) 28px;padding-left:10px;padding-right:8px}.ip-matrix-code{margin-left:31px;min-width:32px;padding:0 5px}
-  .ip-matrix-detail-grid{margin:0 8px 10px 43px;padding:10px}
-  .ip-matrix-group::before{left:26px}.ip-matrix-item::before{left:26px;width:20px}.ip-matrix-item::after{left:22px}
+  .ip-tree-shell{border-radius:13px}.ip-tree-toolbar{padding:13px}.ip-tree-copy{font-size:9.4px}
+  .ip-tree-branch-heads{padding-left:10px;padding-right:10px}.ip-tree-branch-title b{font-size:11px}.ip-tree-branch-title small{font-size:7px}
+  .ip-tree-branch-title>span{width:26px;height:26px;font-size:15px}
+  .ip-tree-body{padding-left:8px;padding-right:8px}
+  .ip-tree-detail-inner{grid-template-columns:1fr}.ip-tree-detail-section.full{grid-column:auto}
 }

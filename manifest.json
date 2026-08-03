@@ -1,6 +1,6 @@
 {
   "name": "Dehiwala Urban Analytics Dashboard",
-  "version": "professional-decision-support-2.0",
+  "version": "professional-decision-support-2.1",
   "entry": "index.html",
   "features": [
     "interactive-centrality",
@@ -28,9 +28,10 @@
     "methodology-and-source-drawers",
     "fullscreen-presentation-mode",
     "planning-map-bookmarks",
-    "rich-dashboard-tooltips",
     "accessibility-control-centre",
-    "persistent-user-preferences"
+    "persistent-user-preferences",
+    "default-map-wheel-zoom",
+    "two-sided-issues-potentials-tree"
   ],
   "raster_sources_required": [
     "elevation-dem-geotiff"
@@ -67,5 +68,6 @@
     "assets/js/motion-enhancements.js",
     "assets/css/professional-features.css",
     "assets/js/professional-features.js"
-  ]
+  ],
+  "interactionNotes": "Mouse-wheel zoom is enabled by default. Generic click-or-hover helper tooltips have been removed."
 }

@@ -178,7 +178,7 @@ function gnColor(gn){
 const map = L.map('leaflet-map', {
   zoomControl:false,
   attributionControl:true,
-  scrollWheelZoom:false
+  scrollWheelZoom:true
 }).setView([6.853, 79.8690], 15);
 window.__overviewMap = map;
 const OVERVIEW_BOUNDS=[[6.841,79.860],[6.865,79.878]];
@@ -406,6 +406,9 @@ const gnMarkers = [];
 const gnMarkerByName = new Map();
 let selectedGNMarker = null;
 let selectedGNHalo = null;
+function gnMarkerOutline(){
+  return document.documentElement.classList.contains('light') ? '#132238' : '#ffffff';
+}
 function densityRank(gn){
   const sorted=[...gnData].sort((a,b)=>(b.pop/b.area)-(a.pop/a.area));
   return sorted.findIndex(x=>x.name===gn.name)+1;
@@ -413,11 +416,12 @@ function densityRank(gn){
 function showGNSelection(gn,marker,{zoom=true}={}){
   if(selectedGNMarker && selectedGNMarker!==marker){
     const previous=gnData.find(x=>x.name===selectedGNMarker.__gnName);
-    selectedGNMarker.setStyle({radius:9,weight:2.5,color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117',fillColor:previous?gnColor(previous):'#63b3ed'});
+    selectedGNMarker.setStyle({radius:6.5,weight:2,color:gnMarkerOutline(),fillColor:previous?gnColor(previous):'#63b3ed'});
   }
   selectedGNMarker=marker;
   marker.__gnName=gn.name;
-  marker.setStyle({radius:13,weight:4,color:'#ffffff',fillColor:gnColor(gn),fillOpacity:1});
+  marker.setStyle({radius:9.5,weight:3,color:'#ffffff',fillColor:gnColor(gn),fillOpacity:1});
+  marker.bringToFront();
   if(selectedGNHalo) map.removeLayer(selectedGNHalo);
   selectedGNHalo=L.circle([gn.lat,gn.lng],{
     radius:Math.max(180,Math.sqrt(gn.area)*470),
@@ -440,7 +444,7 @@ function showGNSelection(gn,marker,{zoom=true}={}){
 function clearGNSelection(){
   if(selectedGNMarker){
     const previous=gnData.find(x=>x.name===selectedGNMarker.__gnName);
-    selectedGNMarker.setStyle({radius:9,weight:2.5,color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117',fillColor:previous?gnColor(previous):'#63b3ed'});
+    selectedGNMarker.setStyle({radius:6.5,weight:2,color:gnMarkerOutline(),fillColor:previous?gnColor(previous):'#63b3ed'});
     selectedGNMarker.closePopup(); selectedGNMarker=null;
   }
   if(selectedGNHalo){map.removeLayer(selectedGNHalo);selectedGNHalo=null;}
@@ -452,9 +456,10 @@ gnData.forEach(gn => {
   const col = gnColor(gn);
   const density = Math.round(gn.pop / gn.area).toLocaleString();
   const marker = L.circleMarker([gn.lat, gn.lng], {
-    radius:9, fillColor:col, color:'#0d1117',
-    weight:2.5, fillOpacity:0.92,
-    pane:'markerPane'
+    radius:6.5, fillColor:col, color:gnMarkerOutline(),
+    weight:2, fillOpacity:1,
+    pane:'markerPane',
+    className:'overview-gn-point'
   }).addTo(map);
 
   const html = `<div class="gn-popup-inner">
@@ -466,8 +471,8 @@ gnData.forEach(gn => {
 
   marker.bindPopup(html, {className:'gn-popup', maxWidth:220});
   marker.__gnName=gn.name;
-  marker.on('mouseover', function(){ if(this!==selectedGNMarker){this.openPopup();this.setStyle({radius:11.5,weight:3});} });
-  marker.on('mouseout', function(){ if(this!==selectedGNMarker){this.closePopup();this.setStyle({radius:9,weight:2.5});} });
+  marker.on('mouseover', function(){ if(this!==selectedGNMarker){this.openPopup();this.setStyle({radius:8.5,weight:2.5});this.bringToFront();} });
+  marker.on('mouseout', function(){ if(this!==selectedGNMarker){this.closePopup();this.setStyle({radius:6.5,weight:2,color:gnMarkerOutline()});} });
   marker.on('click', function(){showGNSelection(gn,this,{zoom:false});});
   gnMarkers.push(marker); gnMarkerByName.set(gn.name,marker);
 });
@@ -540,6 +545,9 @@ const LayerControl = L.Control.extend({
     const mkBtn = (label, title, active, fn) => {
       const b = L.DomUtil.create('button','overview-layer-btn');
       b.textContent = label; b.title = title; b.classList.toggle('active',!!active);
+      b.type = 'button';
+      b.setAttribute('aria-label', title);
+      if(title.startsWith('Toggle ')) b.setAttribute('aria-pressed', String(!!active));
       b.style.cssText=`background:${active?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'};
         border:1px solid rgba(99,179,237,${active?'.4':'.18'});border-radius:6px;
         color:${active?'#63b3ed':'#8892a4'};cursor:pointer;font-family:Inter,sans-serif;
@@ -556,11 +564,13 @@ const LayerControl = L.Control.extend({
       roadsOn=!roadsOn;
       roadsOn ? roadsLayer.addTo(map) : map.removeLayer(roadsLayer);
       rBtn.style.background = roadsOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'; rBtn.classList.toggle('active',roadsOn);
+      rBtn.setAttribute('aria-pressed', String(roadsOn));
     });
     const gBtn = mkBtn('📍 GN Pts','Toggle GN markers',true,()=>{
       gnOn=!gnOn;
       gnMarkers.forEach(m=> gnOn ? m.addTo(map) : map.removeLayer(m));
       gBtn.style.background = gnOn?'rgba(99,179,237,.25)':'rgba(13,17,23,.82)'; gBtn.classList.toggle('active',gnOn);
+      gBtn.setAttribute('aria-pressed', String(gnOn));
     });
     const fitBtn = mkBtn('⊹ Fit','Fit to bounds',false,()=> fitOverviewMap(0));
     d.appendChild(rBtn); d.appendChild(gBtn); d.appendChild(fitBtn);
@@ -597,7 +607,7 @@ const _origToggle = document.querySelector('.theme-toggle') && document.querySel
 const themeBtn = document.querySelector('.theme-toggle');
 if(themeBtn){
   const _orig = themeBtn.onclick;
-  themeBtn.addEventListener('click', ()=>{ setTimeout(()=>{updateTiles();roadsLayer.setStyle(getStyle);gnMarkers.forEach(m=>{if(m!==selectedGNMarker)m.setStyle({color:document.documentElement.classList.contains('light')?'#ffffff':'#0d1117'});});}, 70); });
+  themeBtn.addEventListener('click', ()=>{ setTimeout(()=>{updateTiles();roadsLayer.setStyle(getStyle);gnMarkers.forEach(m=>{if(m!==selectedGNMarker)m.setStyle({color:gnMarkerOutline()});});}, 70); });
 }
 
 })();
