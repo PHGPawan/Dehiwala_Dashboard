@@ -20,7 +20,7 @@
 
   function fitActivePage(){
     scheduled=0;
-    if(window.innerWidth<=900) return;
+    if(window.innerWidth<=1024) return;
     const active=document.querySelector('.page.active');
     if(!active) return;
     const id=active.id;

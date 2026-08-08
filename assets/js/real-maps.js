@@ -144,7 +144,7 @@ function parseCentralityBinary(buffer){
 const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
 const idleRun=(fn,timeout=1200)=>window.requestIdleCallback?requestIdleCallback(fn,{timeout}):setTimeout(fn,Math.min(timeout,350));
 function allowBackgroundPreload(){
-  if(window.matchMedia('(max-width:700px)').matches)return false;
+  if(window.matchMedia('(max-width:1024px), (pointer:coarse)').matches)return false;
   const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
   return !(c&&(c.saveData||/2g/.test(c.effectiveType||'')));
 }

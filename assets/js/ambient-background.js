@@ -5,7 +5,7 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(pointer: fine)').matches;
-  const compactViewport = window.matchMedia('(max-width: 900px)').matches;
+  const compactViewport = window.matchMedia('(max-width: 1024px)').matches;
 
   const wrap = document.createElement('div');
   wrap.className = 'ambient-ui-bg';

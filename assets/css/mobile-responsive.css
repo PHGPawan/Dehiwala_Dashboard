@@ -113,7 +113,7 @@ body {
   background: var(--border2);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   :root {
     --mobile-edge: 12px;
     --mobile-control: 44px;
@@ -212,6 +212,21 @@ body {
 
   .sidebar-brand {
     padding: 18px 18px 14px 68px;
+  }
+
+  html.motion-ready .sidebar-brand,
+  html.motion-ready .sidebar .nav-item {
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .sidebar .nav-list,
+  .sidebar .nav-item,
+  .sidebar .nav-label,
+  .sidebar .nav-badge {
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .nav-item {
@@ -921,7 +936,7 @@ body {
   }
 }
 
-@media (max-width: 900px) and (hover: none) {
+@media (max-width: 1024px) and (hover: none) {
   .nav-item::after,
   .nav-item::before {
     display: none !important;

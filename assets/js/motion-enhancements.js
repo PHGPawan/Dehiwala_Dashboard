@@ -14,7 +14,7 @@
   if (!pageWrap || !main) return;
 
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const compactMotion = window.matchMedia && window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+  const compactMotion = window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches;
   const pages = Array.from(document.querySelectorAll('.page'));
   const navItems = Array.from(document.querySelectorAll('.nav-item[data-page]'));
   const navOrder = navItems.map(item => item.dataset.page);

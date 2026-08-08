@@ -97,7 +97,7 @@ function switchPage(page, item) {
     if (page === 'synthesis' && !window._synthBuilt) buildSynthesis();
     if (page === 'livedata') buildLiveData();
     if (typeof window.__resizeActiveDashboardVisuals === 'function') {
-      window.__resizeActiveDashboardVisuals(window.innerWidth <= 900 ? 220 : 0);
+      window.__resizeActiveDashboardVisuals(window.innerWidth <= 1024 ? 220 : 0);
     }
   };
   requestAnimationFrame(() => setTimeout(runLazy, 0));
@@ -1801,11 +1801,13 @@ const sidebarEl = document.getElementById('sidebar');
 const overlayEl = document.getElementById('sidebar-overlay');
 function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('visible'); }
 function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('visible'); }
-menuBtn.addEventListener('click', ()=> sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar());
+if(!menuBtn.hasAttribute('data-navigation-toggle')){
+  menuBtn.addEventListener('click', ()=> sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar());
+}
 overlayEl.addEventListener('click', closeSidebar);
 // Close sidebar on nav item click (mobile)
 document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
+  item.addEventListener('click',()=>{ if(window.innerWidth<=1024) closeSidebar(); });
 });
 
 /* ======== LIGHTBOX CLICK ======== */

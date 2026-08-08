@@ -168,7 +168,7 @@ function addPopulationDescriptions(){
 
 function refitMaps(){
   setTimeout(()=>{
-    if(window.innerWidth<=900&&typeof window.__resizeActiveDashboardVisuals==='function'){
+    if(window.innerWidth<=1024&&typeof window.__resizeActiveDashboardVisuals==='function'){
       window.__resizeActiveDashboardVisuals(0);
       return;
     }
